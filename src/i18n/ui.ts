@@ -44,6 +44,7 @@ type Strings = {
   travel: Record<TravelMode, string>;
   subscribe: { title: string; text: string; button: string; emailLabel: string; rssPrefix: string; rssLink: string };
   comments: string;
+  donate: { title: string; text: string; amountLabel: string; other: string; idealSub: string; lightningTitle: (eur: string, sats: string) => string; lightningOpen: string; lightningCopy: string; lightningCopied: string; lightningLoading: string; lightningFallback: string; close: string; note: string };
   gallery: { label: string; viewer: string; close: string; prev: string; next: string };
   about: { title: string; heading: string; paragraphs: string[] };
   notFound: { title: string; heading: string; text: string; back: string };
@@ -90,6 +91,21 @@ export const ui: Record<Lang, Strings> = {
       emailLabel: 'E-mailadres',
       rssPrefix: 'Liever een feedreader?',
       rssLink: 'Volg via RSS',
+    },
+    donate: {
+      title: 'Trakteer ons op een koffie',
+      text: 'Vind je het leuk om mee te lezen? Met een kleine bijdrage drinken we onderweg een kopje kopi op jou.',
+      amountLabel: 'Bedrag',
+      other: 'Ander bedrag',
+      idealSub: 'via bunq.me · ook Bancontact of kaart',
+      lightningTitle: (eur, sats) => `${eur} ≈ ${sats} sats`,
+      lightningOpen: 'Open in wallet',
+      lightningCopy: 'Kopieer',
+      lightningCopied: 'Gekopieerd',
+      lightningLoading: 'Lightning-factuur maken…',
+      lightningFallback: 'Scan of kopieer ons Lightning-adres en kies het bedrag in je wallet.',
+      close: 'Sluiten',
+      note: 'Je gaat naar een beveiligde betaalpagina en kiest daar of controleert het bedrag.',
     },
     comments: 'Reacties',
     gallery: { label: 'Fotogalerij', viewer: 'Fotoviewer', close: 'Sluiten', prev: 'Vorige foto', next: 'Volgende foto' },
@@ -143,6 +159,21 @@ export const ui: Record<Lang, Strings> = {
       rssPrefix: 'Prefer a feed reader?',
       rssLink: 'Subscribe via RSS',
     },
+    donate: {
+      title: 'Buy us a coffee',
+      text: 'Enjoying the stories? A small contribution buys us a cup of kopi somewhere along the way.',
+      amountLabel: 'Amount',
+      other: 'Other amount',
+      idealSub: 'via bunq.me · also Bancontact or card',
+      lightningTitle: (eur, sats) => `${eur} ≈ ${sats} sats`,
+      lightningOpen: 'Open in wallet',
+      lightningCopy: 'Copy',
+      lightningCopied: 'Copied',
+      lightningLoading: 'Creating Lightning invoice…',
+      lightningFallback: 'Scan or copy our Lightning address and choose the amount in your wallet.',
+      close: 'Close',
+      note: 'You’ll go to a secure payment page where you can choose or check the amount.',
+    },
     comments: 'Comments',
     gallery: { label: 'Photo gallery', viewer: 'Photo viewer', close: 'Close', prev: 'Previous photo', next: 'Next photo' },
     about: {
@@ -194,6 +225,21 @@ export const ui: Record<Lang, Strings> = {
       emailLabel: 'E-Mail-Adresse',
       rssPrefix: 'Lieber einen Feedreader?',
       rssLink: 'Per RSS folgen',
+    },
+    donate: {
+      title: 'Spendiert uns einen Kaffee',
+      text: 'Gefallen euch die Geschichten? Mit einem kleinen Beitrag trinken wir unterwegs eine Tasse Kopi auf euch.',
+      amountLabel: 'Betrag',
+      other: 'Anderer Betrag',
+      idealSub: 'über bunq.me · auch Bancontact oder Karte',
+      lightningTitle: (eur, sats) => `${eur} ≈ ${sats} Sats`,
+      lightningOpen: 'In Wallet öffnen',
+      lightningCopy: 'Kopieren',
+      lightningCopied: 'Kopiert',
+      lightningLoading: 'Lightning-Rechnung wird erstellt…',
+      lightningFallback: 'Scannt oder kopiert unsere Lightning-Adresse und wählt den Betrag in eurer Wallet.',
+      close: 'Schließen',
+      note: 'Ihr landet auf einer sicheren Zahlungsseite und wählt oder prüft dort den Betrag.',
     },
     comments: 'Kommentare',
     gallery: { label: 'Fotogalerie', viewer: 'Fotoansicht', close: 'Schließen', prev: 'Vorheriges Foto', next: 'Nächstes Foto' },

@@ -1,0 +1,258 @@
+---
+// "Buy us a coffee": readers pick an amount, then pay with iDEAL (bunq.me link),
+// PayPal (PayPal.Me link) or Bitcoin Lightning (Lightning address).
+// Configure in src/site.config.ts → donate.
+import { SITE } from '../site.config';
+import { t, type Lang, LOCALES } from '../i18n/ui';
+
+interface Props { lang: Lang; compact?: boolean }
+const { lang, compact = false } = Astro.props;
+const s = t(lang).donate;
+const { bunqme, paypalme, lightning, amounts } = SITE.donate;
+const enabled = Boolean(bunqme || paypalme || lightning);
+const initial = amounts[1] ?? amounts[0] ?? 5;
+const uid = `donate-${Math.random().toString(36).slice(2, 8)}`;
+const strings = {
+  title: s.lightningTitle('{eur}', '{sats}'),
+  copied: s.lightningCopied,
+  copy: s.lightningCopy,
+  fallback: s.lightningFallback,
+  loading: s.lightningLoading,
+  locale: LOCALES[lang],
+};
+---
+{enabled && (
+  <aside class:list={['donate', { compact }]} data-donate data-bunqme={bunqme} data-paypalme={paypalme} data-lightning={lightning} data-strings={JSON.stringify(strings)}>
+    <div class="intro">
+      <span class="cup" aria-hidden="true">☕</span>
+      <div>
+        <h2>{s.title}</h2>
+        <p>{s.text}</p>
+      </div>
+    </div>
+    <div class="pay">
+      <fieldset class="amounts">
+        <legend class="visually-hidden">{s.amountLabel}</legend>
+        {amounts.map((a) => (
+          <label class="chip">
+            <input type="radio" name={uid} value={a} checked={a === initial} />
+            <span>€{a}</span>
+          </label>
+        ))}
+        <label class="chip other">
+          <span class="visually-hidden">{s.other}</span>
+          <span aria-hidden="true">€</span>
+          <input type="number" inputmode="decimal" min="1" max="500" step="0.5" placeholder={s.other} data-custom />
+        </label>
+      </fieldset>
+      <div class="buttons">
+        {bunqme && (
+          <a class="btn ideal" data-provider="bunq" href={`https://bunq.me/${bunqme}/${initial}`} target="_blank" rel="noopener">
+            iDEAL <small>{s.idealSub}</small>
+          </a>
+        )}
+        {paypalme && (
+          <a class="btn paypal" data-provider="paypal" href={`https://paypal.me/${paypalme}/${initial}EUR`} target="_blank" rel="noopener">
+            PayPal
+          </a>
+        )}
+        {lightning && (
+          <button type="button" class="btn lightning" data-provider="lightning">
+            <span aria-hidden="true">⚡</span> Lightning
+          </button>
+        )}
+      </div>
+      {(bunqme || paypalme) && <p class="note">{s.note}</p>}
+    </div>
+
+    {lightning && (
+      <dialog class="ln" aria-label="Lightning">
+        <form method="dialog"><button class="ln-close" aria-label={s.close}>×</button></form>
+        <p class="ln-title" data-ln-title>⚡ Lightning</p>
+        <div class="ln-qr" data-ln-qr aria-hidden="true"></div>
+        <p class="ln-status" data-ln-status>{s.lightningLoading}</p>
+        <div class="ln-code">
+          <code data-ln-code>{lightning}</code>
+          <button type="button" class="ln-copy" data-ln-copy>{s.lightningCopy}</button>
+        </div>
+        <a class="btn ln-open" data-ln-open href={`lightning:${lightning}`}>{s.lightningOpen}</a>
+      </dialog>
+    )}
+  </aside>
+)}
+
+<script>
+  import qrcode from 'qrcode-generator';
+
+  type Strings = { title: string; copied: string; copy: string; fallback: string; loading: string; locale: string };
+
+  function qrSvg(text: string) {
+    const qr = qrcode(0, 'M');
+    qr.addData(text.toUpperCase().startsWith('LNBC') ? text.toUpperCase() : text);
+    qr.make();
+    return qr.createSvgTag({ cellSize: 5, margin: 2, scalable: true });
+  }
+
+  async function btcEur(): Promise<number> {
+    try {
+      const r = await fetch('https://mempool.space/api/v1/prices');
+      const j = await r.json();
+      if (j.EUR > 0) return j.EUR;
+    } catch {}
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=eur');
+    const j = await r.json();
+    return j.bitcoin.eur;
+  }
+
+  /** LUD-16: resolve the Lightning address and ask it for an invoice of `sats`. */
+  async function invoice(address: string, sats: number) {
+    const [user, domain] = address.split('@');
+    const meta = await (await fetch(`https://${domain}/.well-known/lnurlp/${user}`)).json();
+    if (meta.tag !== 'payRequest') throw new Error('not a pay request');
+    const msat = Math.min(Math.max(sats * 1000, meta.minSendable), meta.maxSendable);
+    const url = new URL(meta.callback);
+    url.searchParams.set('amount', String(msat));
+    const res = await (await fetch(url)).json();
+    if (!res.pr) throw new Error(res.reason || 'no invoice');
+    return { pr: res.pr as string, sats: Math.round(msat / 1000) };
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-donate]').forEach((box) => {
+    const { bunqme: bunq, paypalme: paypal, lightning } = box.dataset;
+    const str: Strings = JSON.parse(box.dataset.strings || '{}');
+    const custom = box.querySelector<HTMLInputElement>('[data-custom]')!;
+    const radios = [...box.querySelectorAll<HTMLInputElement>('input[type=radio]')];
+
+    const amount = () => {
+      let a = Number(custom.value.replace(',', '.'));
+      if (!(a > 0)) a = Number(radios.find((r) => r.checked)?.value ?? 5);
+      return Math.min(Math.max(Math.round(a * 100) / 100, 1), 500);
+    };
+    const fmt = (a: number) => (Number.isInteger(a) ? String(a) : a.toFixed(2));
+
+    const update = () => {
+      const a = fmt(amount());
+      const bunqLink = box.querySelector<HTMLAnchorElement>('[data-provider=bunq]');
+      const paypalLink = box.querySelector<HTMLAnchorElement>('[data-provider=paypal]');
+      if (bunqLink && bunq) bunqLink.href = `https://bunq.me/${bunq}/${a}`;
+      if (paypalLink && paypal) paypalLink.href = `https://paypal.me/${paypal}/${a}EUR`;
+    };
+    radios.forEach((r) => r.addEventListener('change', () => { custom.value = ''; update(); }));
+    custom.addEventListener('input', () => {
+      if (custom.value) radios.forEach((r) => (r.checked = false));
+      update();
+    });
+    custom.addEventListener('focus', () => custom.closest('.chip')?.classList.add('focus'));
+    custom.addEventListener('blur', () => custom.closest('.chip')?.classList.remove('focus'));
+
+    // Lightning dialog
+    const dlg = box.querySelector<HTMLDialogElement>('dialog.ln');
+    const lnBtn = box.querySelector<HTMLButtonElement>('[data-provider=lightning]');
+    if (!dlg || !lnBtn || !lightning) return;
+    const qrEl = dlg.querySelector<HTMLElement>('[data-ln-qr]')!;
+    const statusEl = dlg.querySelector<HTMLElement>('[data-ln-status]')!;
+    const titleEl = dlg.querySelector<HTMLElement>('[data-ln-title]')!;
+    const codeEl = dlg.querySelector<HTMLElement>('[data-ln-code]')!;
+    const copyBtn = dlg.querySelector<HTMLButtonElement>('[data-ln-copy]')!;
+    const openEl = dlg.querySelector<HTMLAnchorElement>('[data-ln-open]')!;
+    let current = lightning;
+
+    const show = (payload: string, title: string, status: string) => {
+      current = payload;
+      qrEl.innerHTML = qrSvg(payload);
+      titleEl.textContent = title;
+      statusEl.textContent = status;
+      codeEl.textContent = payload.length > 42 ? `${payload.slice(0, 20)}…${payload.slice(-16)}` : payload;
+      openEl.href = `lightning:${payload}`;
+    };
+
+    lnBtn.addEventListener('click', async () => {
+      const eur = amount();
+      const eurText = new Intl.NumberFormat(str.locale, { style: 'currency', currency: 'EUR' }).format(eur);
+      qrEl.innerHTML = '';
+      statusEl.textContent = str.loading;
+      titleEl.textContent = '⚡ Lightning';
+      codeEl.textContent = lightning;
+      dlg.showModal();
+      try {
+        const price = await btcEur();
+        const sats = Math.round((eur / price) * 1e8);
+        const inv = await invoice(lightning, sats);
+        const satsText = new Intl.NumberFormat(str.locale).format(inv.sats);
+        show(inv.pr, '⚡ ' + str.title.replace('{eur}', eurText).replace('{sats}', satsText), '');
+      } catch {
+        // CORS, price API or wallet service unavailable: fall back to the plain address.
+        show(lightning, '⚡ Lightning', str.fallback);
+      }
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(current);
+        copyBtn.textContent = str.copied;
+        setTimeout(() => (copyBtn.textContent = str.copy), 1600);
+      } catch {}
+    });
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  });
+</script>
+
+<style>
+  .donate {
+    display: grid; gap: 1.5rem; align-items: center;
+    border: 1px solid var(--line); border-radius: calc(var(--radius) + 6px);
+    padding: clamp(1.4rem, 4vw, 2.25rem); background: #fffaf2;
+  }
+  .intro { display: flex; gap: 1rem; align-items: flex-start; }
+  .cup { font-size: 2rem; line-height: 1; }
+  h2 { margin: 0 0 0.3rem; font-size: clamp(1.35rem, 2.6vw, 1.7rem); }
+  .intro p { margin: 0; color: var(--ink-soft); }
+  .amounts { border: 0; padding: 0; margin: 0 0 0.9rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip {
+    position: relative; display: inline-flex; align-items: center; gap: 0.15rem;
+    border: 1px solid var(--line); border-radius: 999px; background: #fff;
+    font-weight: 600; cursor: pointer; transition: border-color 150ms ease, background-color 150ms ease;
+  }
+  .chip input[type=radio] { position: absolute; opacity: 0; pointer-events: none; }
+  .chip > span { padding: 0.5rem 1rem; }
+  .chip:has(input[type=radio]:checked) { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .chip:has(input[type=radio]:focus-visible) { outline: 2px solid var(--clay); outline-offset: 2px; }
+  .chip.other { padding-left: 0.9rem; cursor: text; }
+  .chip.other > span { padding: 0; }
+  .chip.other input {
+    width: 9.5rem; border: 0; background: transparent; font: inherit; font-weight: 600; color: var(--ink);
+    padding: 0.5rem 0.9rem 0.5rem 0.2rem; outline: none; -moz-appearance: textfield;
+  }
+  .chip.other input::-webkit-inner-spin-button, .chip.other input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .chip.other.focus, .chip.other:has(input:not(:placeholder-shown)) { border-color: var(--teal); box-shadow: 0 0 0 1px var(--teal); }
+  .buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .btn { flex-direction: column; justify-content: center; align-items: flex-start; gap: 0; line-height: 1.25; min-height: 3rem; }
+  .btn small { font-weight: 500; font-size: 0.72rem; opacity: 0.85; }
+  .ideal { background: var(--clay); }
+  .ideal:hover { background: #a6441f; }
+  .paypal { background: var(--ink); }
+  .paypal:hover { background: #000; }
+  .lightning { flex-direction: row; align-items: center; gap: 0.35rem; background: #f2a33a; color: var(--ink); }
+  .lightning:hover { background: #e08f1f; color: var(--ink); }
+  .note { margin: 0.75rem 0 0; font-size: 0.8rem; color: var(--muted); }
+  @media (min-width: 820px) { .donate:not(.compact) { grid-template-columns: 1fr 1fr; gap: 2.5rem; } }
+
+  .ln {
+    border: 0; border-radius: 18px; padding: 1.5rem 1.5rem 1.25rem; width: min(22rem, calc(100vw - 2rem));
+    background: #fff; color: var(--ink); text-align: center; box-shadow: 0 20px 60px rgb(0 0 0 / 0.25);
+  }
+  .ln::backdrop { background: rgb(12 16 16 / 0.6); }
+  .ln-close {
+    position: absolute; top: 0.6rem; right: 0.6rem; width: 2.25rem; height: 2.25rem; border-radius: 999px;
+    border: 0; background: var(--paper-2); font-size: 1.3rem; cursor: pointer; color: var(--ink);
+  }
+  .ln-title { font-family: var(--serif); font-weight: 600; font-size: 1.15rem; margin: 0.25rem 0 0.9rem; }
+  .ln-qr { width: 15rem; aspect-ratio: 1; margin: 0 auto; background: var(--paper-2); border-radius: 10px; overflow: hidden; }
+  .ln-qr :global(svg) { width: 100%; height: 100%; display: block; background: #fff; }
+  .ln-status { font-size: 0.85rem; color: var(--muted); margin: 0.8rem 0; min-height: 1.2em; }
+  .ln-code { display: flex; align-items: center; gap: 0.5rem; background: var(--paper); border-radius: 10px; padding: 0.4rem 0.4rem 0.4rem 0.75rem; }
+  .ln-code code { flex: 1; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+  .ln-copy { border: 0; background: var(--teal); color: #fff; border-radius: 8px; padding: 0.4rem 0.7rem; font: 600 0.8rem var(--sans); cursor: pointer; }
+  .ln-open { margin-top: 0.9rem; width: 100%; align-items: center; background: #f2a33a; color: var(--ink); }
+  .ln-open:hover { background: #e08f1f; color: var(--ink); }
+</style>

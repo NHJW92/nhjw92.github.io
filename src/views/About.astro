@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Subscribe from '../components/Subscribe.astro';
+import Donate from '../components/Donate.astro';
 import { localize, t, type Lang } from '../i18n/ui';
 
 interface Props { lang: Lang }
@@ -15,10 +16,11 @@ const paragraphs = s.paragraphs.map((p) => p.replace('{route}', localize('/map/'
     <h1>{s.heading}</h1>
     {paragraphs.map((p) => <p set:html={p} />)}
   </section>
-  <div class="prose-wrap"><Subscribe lang={lang} /></div>
+  <div class="prose-wrap stack"><Donate lang={lang} compact /><Subscribe lang={lang} /></div>
 </Base>
 
 <style>
   .head { padding: clamp(2.5rem, 7vw, 5rem) 0 2rem; }
   .head h1 { margin: 0.4rem 0 1.2rem; }
+  .stack { display: grid; gap: 1.25rem; }
 </style>

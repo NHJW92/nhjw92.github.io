@@ -4,6 +4,7 @@ import { Picture, getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Gallery from '../components/Gallery.astro';
 import Subscribe from '../components/Subscribe.astro';
+import Donate from '../components/Donate.astro';
 import Comments from '../components/Comments.astro';
 import RouteMap from '../components/RouteMap.astro';
 import { resolveImage } from '../lib/images';
@@ -59,7 +60,7 @@ const originalUrl = localize(`/posts/${post.id}/`, post.sourceLang);
       {newer ? <a href={postUrl(newer)} class="next"><span class="meta">{s.post.next}</span>{newer.data.title}</a> : <span></span>}
     </nav>
 
-    <div class="prose-wrap"><Subscribe lang={lang} /></div>
+    <div class="prose-wrap stack"><Donate lang={lang} compact /><Subscribe lang={lang} /></div>
     <div class="prose-wrap"><Comments lang={lang} term={post.id} /></div>
   </article>
 </Base>
@@ -80,4 +81,5 @@ const originalUrl = localize(`/posts/${post.id}/`, post.sourceLang);
   .pager a { display: grid; gap: 0.2rem; text-decoration: none; color: var(--ink); font-family: var(--serif); font-size: 1.1rem; font-weight: 600; }
   .pager a:hover { color: var(--teal); }
   .next { text-align: right; }
+  .stack { display: grid; gap: 1.25rem; }
 </style>

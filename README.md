@@ -83,6 +83,16 @@ Without the secret, the site builds normally and nothing is translated. To use a
 
 Translations are committed by `github-actions[bot]`, so run `git pull` before you edit locally. You can correct a translation by hand. Your edit stays until the original post changes, at which point the post is translated again.
 
+## Buy us a coffee
+
+A donation box appears on the homepage, on each post and on the About page. Readers pick €3, €5 or €10, or type their own amount, then choose how to pay. Each option only shows when it's set in `src/site.config.ts` → `donate`:
+
+- `bunqme`: your bunq.me name. This is the **iDEAL | Wero** option; readers can also use Bancontact or a card there. The link never expires. Receiving iDEAL payments on a personal bunq account is free; card payments cost 2.5%.
+- `paypalme`: your PayPal.Me name. The easiest option for readers outside the Netherlands.
+- `lightning`: a Lightning address (currently `opalgerbil72@aqua.net`). The site converts the chosen euro amount to sats at the current price and shows a QR invoice for exactly that amount. If that doesn't work, it shows the address and the reader picks the amount in their wallet.
+
+Tikkie and Revolut.me aren't suitable. Tikkie links expire after two weeks, and Revolut.me only accepts cards and Revolut Pay, so it doesn't offer iDEAL.
+
 ## Local development
 
 ```bash
