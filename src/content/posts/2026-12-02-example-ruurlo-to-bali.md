@@ -1,6 +1,6 @@
 ---
 title: "Example: From Ruurlo to Bali in one long day"
-date: 2026-12-02
+date: 2026-11-08
 location: Denpasar, Bali
 lat: -8.6705
 lng: 115.2126
