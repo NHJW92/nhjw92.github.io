@@ -89,7 +89,7 @@ A donation box appears on the homepage, on each post and on the About page. Read
 
 - `bunqme`: your bunq.me name. This is the **iDEAL | Wero** option; readers can also use Bancontact or a card there. The link never expires. Receiving iDEAL payments on a personal bunq account is free; card payments cost 2.5%.
 - `paypalme`: your PayPal.Me name. The easiest option for readers outside the Netherlands.
-- `lightning`: a Lightning address (currently `opalgerbil72@aqua.net`). The site converts the chosen euro amount to sats at the current price and shows a QR invoice for exactly that amount. If that doesn't work, it shows the address and the reader picks the amount in their wallet.
+- `lightning`: a Lightning address (currently `facialmoney929@walletofsatoshi.com`). The site converts the chosen euro amount to sats at the current price and shows a QR invoice for exactly that amount. If that doesn't work, it shows the address and the reader picks the amount in their wallet.
 
 Tikkie and Revolut.me aren't suitable. Tikkie links expire after two weeks, and Revolut.me only accepts cards and Revolut Pay, so it doesn't offer iDEAL.
 

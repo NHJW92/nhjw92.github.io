@@ -25,13 +25,13 @@ export const SITE = {
   donate: {
     bunqme: 'TravelEngineers',
     paypalme: 'TravelEngineers',
-    lightning: 'opalgerbil72@aqua.net',
+    lightning: 'facialmoney929@walletofsatoshi.com',
     amounts: [3, 5, 10], // euro suggestions; readers can also type their own
   },
 
   // Email subscriptions via Buttondown (https://buttondown.com).
   // Put your Buttondown username here to show the signup form; leave '' to hide it.
-  buttondownUsername: '',
+  buttondownUsername: 'TravelEngineers',
 
   // Comments via Giscus (https://giscus.app). Fill all four values from giscus.app
   // to enable comments; leave repo as '' to hide them.
