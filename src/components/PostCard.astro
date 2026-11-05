@@ -1,49 +1,74 @@
 ---
 import { Image } from 'astro:assets';
+import Dateline from './Dateline.astro';
 import { resolveImage } from '../lib/images';
 import { postUrl, type Post } from '../lib/posts';
+import type { Leg } from '../lib/journey';
 import { formatDate, t } from '../i18n/ui';
 
-interface Props { post: Post; featured?: boolean }
-const { post, featured = false } = Astro.props;
+interface Props {
+  post: Post;
+  /** 'feature' = wide split layout; 'card' = photo on top. */
+  variant?: 'feature' | 'card';
+  /** Mirror the feature layout (photo on the right). */
+  flip?: boolean;
+  leg?: Leg;
+}
+const { post, variant = 'card', flip = false, leg } = Astro.props;
 const cover = resolveImage(post.data.cover);
 const s = t(post.lang);
+const feature = variant === 'feature';
 ---
-<article class:list={['card', { featured }]}>
-  <a href={postUrl(post)} class="card-link">
+<article class:list={['story', variant, { flip }]} data-reveal>
+  <a href={postUrl(post)} class="link">
     <div class="media">
       {cover ? (
-        <Image src={cover} alt={post.data.coverAlt ?? ''} widths={featured ? [640, 960, 1400] : [400, 640, 900]} sizes={featured ? '(min-width: 900px) 60vw, 100vw' : '(min-width: 900px) 33vw, 100vw'} loading={featured ? 'eager' : 'lazy'} />
+        <Image
+          src={cover}
+          alt={post.data.coverAlt ?? ''}
+          widths={feature ? [640, 960, 1400, 1800] : [480, 720, 960]}
+          sizes={feature ? '(min-width: 960px) 58vw, 100vw' : '(min-width: 960px) 30vw, (min-width: 640px) 50vw, 100vw'}
+          loading="lazy"
+        />
       ) : (
-        <div class="placeholder" aria-hidden="true"></div>
+        <div class="placeholder" aria-hidden="true"><span>{post.data.location}</span></div>
       )}
       {post.data.draft && <span class="draft">{s.post.draft}</span>}
     </div>
     <div class="body">
-      <span class="eyebrow">{post.data.location}</span>
-      <h2>{post.data.title}</h2>
-      {post.data.summary && <p>{post.data.summary}</p>}
-      <span class="meta"><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, post.lang)}</time></span>
+      {leg ? <Dateline leg={leg} lang={post.lang} size="sm" /> : <span class="kicker">{post.data.location}</span>}
+      <h3>{post.data.title}</h3>
+      {post.data.summary && <p class="sum">{post.data.summary}</p>}
+      <span class="meta">{leg && <>{post.data.location} · </>}<time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, post.lang)}</time></span>
     </div>
   </a>
 </article>
 
 <style>
-  .card-link { display: grid; gap: 1rem; color: inherit; text-decoration: none; }
-  .media { position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius); overflow: hidden; background: var(--paper-2); }
-  .media :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 400ms cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .card-link:hover .media :global(img) { transform: scale(1.03); }
-  .placeholder { width: 100%; height: 100%; background: linear-gradient(135deg, #0e5c57, #c0532b); opacity: 0.25; }
-  .draft { position: absolute; top: 0.75rem; left: 0.75rem; background: var(--ink); color: #fff; font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 999px; }
-  .body { display: grid; gap: 0.35rem; }
-  h2 { font-size: 1.4rem; margin: 0; transition: color 150ms ease; }
-  .card-link:hover h2 { color: var(--teal); }
-  p { margin: 0; color: var(--ink-soft); font-size: 0.98rem; }
-  .featured .card-link { gap: 1.5rem; }
-  .featured h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); }
-  .featured p { font-size: 1.1rem; }
-  @media (min-width: 900px) {
-    .featured .card-link { grid-template-columns: 1.5fr 1fr; align-items: center; gap: 2.5rem; }
-    .featured .media { aspect-ratio: 3 / 2; }
+  .link { display: grid; gap: 1.1rem; color: inherit; text-decoration: none; }
+  .media { position: relative; overflow: hidden; background: var(--panel); aspect-ratio: 4 / 5; border-radius: var(--radius); }
+  .media :global(img) { width: 100%; height: 100%; object-fit: cover; transform: scale(1.001); transition: transform 1200ms var(--ease-out); }
+  .link:hover .media :global(img) { transform: scale(1.04); }
+  .placeholder {
+    width: 100%; height: 100%; display: grid; place-items: end start; padding: 1.25rem;
+    background: radial-gradient(120% 80% at 20% 0%, #2a4a5f, var(--deep));
+    color: var(--on-deep); font-family: var(--display); font-size: 1.6rem; font-style: italic;
+  }
+  .draft {
+    position: absolute; top: 0.75rem; left: 0.75rem; background: var(--accent); color: #121a22;
+    font: 500 0.7rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; padding: 0.3rem 0.6rem;
+  }
+  .body { display: grid; gap: 0.6rem; align-content: start; }
+  h3 { margin: 0; font-size: clamp(1.5rem, 2.4vw, 1.9rem); line-height: 1.08; transition: opacity 200ms var(--ease-soft); }
+  .sum { margin: 0; color: var(--ink-2); font-size: 1.05rem; line-height: 1.5; max-width: 42ch; }
+  .link:hover h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.12em; }
+
+  .feature .media { aspect-ratio: 3 / 2; }
+  .feature h3 { font-size: clamp(2rem, 4.2vw, 3.4rem); line-height: 1; }
+  .feature .sum { font-size: 1.2rem; font-style: italic; }
+  @media (min-width: 960px) {
+    .feature .link { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 4vw, 4rem); align-items: center; }
+    .feature.flip .media { order: 2; }
+    .feature .media { aspect-ratio: 5 / 4; }
   }
 </style>

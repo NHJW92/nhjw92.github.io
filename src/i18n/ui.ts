@@ -33,9 +33,18 @@ type Strings = {
   description: string;
   nav: { stories: string; route: string; about: string };
   language: string;
-  home: { currentlyIn: (place: string) => string; journal: string; empty: string; routeTitle: string; fullMap: string; earlier: string };
+  skip: string;
+  edition: string;
+  colophon: string;
+  home: {
+    currentlyIn: (place: string) => string; journal: string; empty: string; routeTitle: string; fullMap: string; earlier: string;
+    coverStory: string; readStory: string; byline: string;
+    stats: { stops: string; stories: string; km: string };
+  };
+  /** "Flight from Abu Dhabi" */
+  leg: (mode: string, from: string) => string;
   post: {
-    whereTitle: string; previous: string; next: string; draft: string;
+    whereTitle: string; previous: string; next: string; draft: string; photos: string; readingTime: (min: number) => string;
     machineTranslated: (from: string) => string;
     notYetTranslated: (from: string) => string;
   };
@@ -59,7 +68,15 @@ export const ui: Record<Lang, Strings> = {
     description: 'Babet en Niels reizen door Indonesië: verhalen, foto’s en de route tot nu toe.',
     nav: { stories: 'Verhalen', route: 'Route', about: 'Over ons' },
     language: 'Taal',
+    skip: 'Naar de inhoud',
+    edition: 'Indonesië',
+    colophon: 'Een reisdagboek van Babet en Niels, onderweg geschreven in Indonesië.',
+    leg: (mode, from) => `${mode} vanaf ${from}`,
     home: {
+      coverStory: 'Nieuwste verhaal',
+      readStory: 'Lees het verhaal',
+      byline: 'Door Babet en Niels',
+      stats: { stops: 'stops', stories: 'verhalen', km: 'km gereisd' },
       currentlyIn: (p) => `Nu in ${p}`,
       journal: 'Reisdagboek',
       empty: 'Het eerste verhaal komt eraan.',
@@ -72,6 +89,8 @@ export const ui: Record<Lang, Strings> = {
       previous: '← Vorige',
       next: 'Volgende →',
       draft: 'Concept',
+      photos: 'Foto’s',
+      readingTime: (m) => `${m} min lezen`,
       machineTranslated: (from) => `Automatisch vertaald uit het ${from}.`,
       notYetTranslated: (from) => `Dit verhaal is nog niet vertaald en staat hier in het ${from}.`,
     },
@@ -126,7 +145,15 @@ export const ui: Record<Lang, Strings> = {
     description: 'Babet and Niels travel through Indonesia: stories, photos and the route so far.',
     nav: { stories: 'Stories', route: 'Route', about: 'About' },
     language: 'Language',
+    skip: 'Skip to content',
+    edition: 'Indonesia',
+    colophon: 'A travel journal by Babet and Niels, written on the road through Indonesia.',
+    leg: (mode, from) => `${mode} from ${from}`,
     home: {
+      coverStory: 'Latest story',
+      readStory: 'Read the story',
+      byline: 'By Babet and Niels',
+      stats: { stops: 'stops', stories: 'stories', km: 'km travelled' },
       currentlyIn: (p) => `Currently in ${p}`,
       journal: 'Travel journal',
       empty: 'The first story is on its way.',
@@ -139,6 +166,8 @@ export const ui: Record<Lang, Strings> = {
       previous: '← Previous',
       next: 'Next →',
       draft: 'Draft',
+      photos: 'Photos',
+      readingTime: (m) => `${m} min read`,
       machineTranslated: (from) => `Automatically translated from ${from}.`,
       notYetTranslated: (from) => `This story hasn’t been translated yet, so it’s shown in ${from}.`,
     },
@@ -193,7 +222,15 @@ export const ui: Record<Lang, Strings> = {
     description: 'Babet und Niels reisen durch Indonesien: Geschichten, Fotos und die bisherige Route.',
     nav: { stories: 'Geschichten', route: 'Route', about: 'Über uns' },
     language: 'Sprache',
+    skip: 'Zum Inhalt',
+    edition: 'Indonesien',
+    colophon: 'Ein Reisetagebuch von Babet und Niels, unterwegs durch Indonesien geschrieben.',
+    leg: (mode, from) => `${mode} ab ${from}`,
     home: {
+      coverStory: 'Neueste Geschichte',
+      readStory: 'Geschichte lesen',
+      byline: 'Von Babet und Niels',
+      stats: { stops: 'Halte', stories: 'Geschichten', km: 'km gereist' },
       currentlyIn: (p) => `Gerade in ${p}`,
       journal: 'Reisetagebuch',
       empty: 'Die erste Geschichte ist unterwegs.',
@@ -206,6 +243,8 @@ export const ui: Record<Lang, Strings> = {
       previous: '← Zurück',
       next: 'Weiter →',
       draft: 'Entwurf',
+      photos: 'Fotos',
+      readingTime: (m) => `${m} Min. Lesezeit`,
       machineTranslated: (from) => `Automatisch aus dem ${from}en übersetzt.`,
       notYetTranslated: (from) => `Diese Geschichte ist noch nicht übersetzt und wird auf ${from} angezeigt.`,
     },

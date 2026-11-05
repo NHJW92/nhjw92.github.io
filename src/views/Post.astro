@@ -1,7 +1,9 @@
 ---
 import { render } from 'astro:content';
-import { Picture, getImage } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
+import Cover from '../components/Cover.astro';
+import Dateline from '../components/Dateline.astro';
 import Gallery from '../components/Gallery.astro';
 import Subscribe from '../components/Subscribe.astro';
 import Donate from '../components/Donate.astro';
@@ -9,6 +11,7 @@ import Comments from '../components/Comments.astro';
 import RouteMap from '../components/RouteMap.astro';
 import { resolveImage } from '../lib/images';
 import { postUrl, routePoints, type Post } from '../lib/posts';
+import { legFor } from '../lib/journey';
 import { formatDate, localize, t } from '../i18n/ui';
 
 interface Props { post: Post; newer?: Post; older?: Post; all: Post[] }
@@ -21,44 +24,94 @@ const ogImage = cover ? (await getImage({ src: cover, width: 1200, format: 'jpg'
 const hasCoords = typeof post.data.lat === 'number' && typeof post.data.lng === 'number';
 const sourceName = s.langNames[post.sourceLang];
 const originalUrl = localize(`/posts/${post.id}/`, post.sourceLang);
+const points = routePoints(all, lang);
+const leg = legFor(points, postUrl(post));
+const words = (post.entry.body ?? '').split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.round(words / 220));
+const date = formatDate(post.data.date, lang);
+const pager = [
+  older && { post: older, label: s.post.previous, cls: 'prev' },
+  newer && { post: newer, label: s.post.next, cls: 'next' },
+].filter(Boolean) as { post: Post; label: string; cls: string }[];
 ---
-<Base lang={lang} title={post.data.title} description={post.data.summary ?? undefined} image={ogImage}>
+<Base lang={lang} title={post.data.title} description={post.data.summary ?? undefined} image={ogImage} overlay={Boolean(cover)}>
   <article>
-    <header class="prose-wrap head">
-      <p class="eyebrow">{post.data.location}</p>
-      <h1>{post.data.title}</h1>
-      <p class="meta"><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, lang)}</time>{post.data.draft && ` · ${s.post.draft}`}</p>
+    {cover ? (
+      <Cover image={cover} alt={post.data.coverAlt ?? ''}>
+        <header class="opener">
+          <p class="kicker loc">{post.data.location}</p>
+          <h1>{post.data.title}</h1>
+          {post.data.summary && <p class="dek">{post.data.summary}</p>}
+          {leg && <Dateline leg={leg} lang={lang} />}
+        </header>
+      </Cover>
+    ) : (
+      <header class="wrap opener plain">
+        <p class="kicker loc">{post.data.location}</p>
+        <h1>{post.data.title}</h1>
+        {post.data.summary && <p class="dek">{post.data.summary}</p>}
+        {leg && <Dateline leg={leg} lang={lang} />}
+      </header>
+    )}
+
+    <div class="prose-wrap standfirst">
+      <p class="meta">
+        <span>{s.home.byline}</span>
+        <span aria-hidden="true">·</span>
+        <time datetime={post.data.date.toISOString()}>{date}</time>
+        <span aria-hidden="true">·</span>
+        <span>{s.post.readingTime(minutes)}</span>
+        {post.data.draft && <><span aria-hidden="true">·</span><span class="draft">{s.post.draft}</span></>}
+      </p>
       {post.status === 'translated' && (
         <p class="notice">{s.post.machineTranslated(sourceName)} <a href={originalUrl} hreflang={post.sourceLang}>{t(post.sourceLang).langNames[post.sourceLang]} ↗</a></p>
       )}
       {post.status === 'missing' && <p class="notice">{s.post.notYetTranslated(sourceName)}</p>}
-    </header>
+    </div>
 
-    {cover && (
-      <figure class="cover wrap">
-        <Picture src={cover} alt={post.data.coverAlt ?? ''} formats={['avif', 'webp']} widths={[640, 1024, 1600, 2200]} sizes="(min-width: 1180px) 1152px, 100vw" loading="eager" fetchpriority="high" />
-      </figure>
-    )}
-
-    <div class="prose-wrap prose" lang={post.status === 'missing' ? post.sourceLang : undefined}>
+    <div class="prose-wrap prose dropcap" lang={post.status === 'missing' ? post.sourceLang : undefined}>
       <Content />
     </div>
 
     {post.data.gallery.length > 0 && (
-      <div class="wrap"><Gallery items={post.data.gallery} lang={lang} /></div>
-    )}
-
-    {hasCoords && (
-      <div class="prose-wrap where">
-        <h2>{s.post.whereTitle}</h2>
-        <RouteMap points={routePoints(all, lang)} height="18rem" focus={{ lat: post.data.lat!, lng: post.data.lng! }} lang={lang} />
+      <div class="wrap essay">
+        <header class="essay-head">
+          <p class="kicker">{s.post.photos} · {post.data.gallery.length}</p>
+          <span class="rule" aria-hidden="true"></span>
+        </header>
+        <Gallery items={post.data.gallery} lang={lang} />
       </div>
     )}
 
-    <nav class="prose-wrap pager">
-      {older ? <a href={postUrl(older)} class="prev"><span class="meta">{s.post.previous}</span>{older.data.title}</a> : <span></span>}
-      {newer ? <a href={postUrl(newer)} class="next"><span class="meta">{s.post.next}</span>{newer.data.title}</a> : <span></span>}
-    </nav>
+    {hasCoords && (
+      <section class="wrap where" aria-labelledby="where-title">
+        <div class="where-head">
+          <p class="kicker">{leg ? leg.coords : post.data.location}</p>
+          <h2 id="where-title">{s.post.whereTitle}</h2>
+        </div>
+        <RouteMap points={points} height="clamp(18rem, 50vh, 28rem)" focus={{ lat: post.data.lat!, lng: post.data.lng! }} lang={lang} />
+      </section>
+    )}
+
+    {pager.length > 0 && (
+      <nav class="wrap pager" aria-label={s.nav.stories}>
+        {pager.map(({ post: p, label, cls }) => {
+          const img = resolveImage(p.data.cover);
+          return (
+            <a href={postUrl(p)} class:list={['turn', cls]} data-reveal>
+              <span class="turn-media">
+                {img ? <Image src={img} alt="" widths={[480, 800, 1200]} sizes="(min-width: 800px) 50vw, 100vw" loading="lazy" /> : <span class="turn-ph" aria-hidden="true"></span>}
+              </span>
+              <span class="turn-copy">
+                <span class="kicker">{label}</span>
+                <span class="turn-title">{p.data.title}</span>
+                <span class="meta">{p.data.location}</span>
+              </span>
+            </a>
+          );
+        })}
+      </nav>
+    )}
 
     <div class="prose-wrap stack"><Donate lang={lang} compact /><Subscribe lang={lang} /></div>
     <div class="prose-wrap"><Comments lang={lang} term={post.id} /></div>
@@ -66,20 +119,48 @@ const originalUrl = localize(`/posts/${post.id}/`, post.sourceLang);
 </Base>
 
 <style>
-  .head { padding: clamp(2.5rem, 7vw, 5rem) 0 2rem; }
-  .head h1 { margin: 0.4rem 0 0.6rem; }
+  .opener { display: grid; gap: 1rem; justify-items: start; max-width: 64rem; }
+  .opener h1 { margin: 0; font-size: clamp(2.8rem, 7.5vw, 6.5rem); line-height: 0.97; letter-spacing: -0.025em; }
+  .opener .dek { margin: 0.2rem 0 0.6rem; color: var(--ink-2); max-width: 40ch; }
+  .loc { margin: 0; color: inherit; }
+  .plain { padding: clamp(3.5rem, 9vw, 7rem) 0 clamp(2rem, 5vw, 3rem); border-bottom: 1px solid var(--line); }
+  .plain .dek { color: var(--ink-2); }
+
+  .standfirst { padding: clamp(2rem, 5vw, 3rem) 0 1.5rem; }
+  .standfirst .meta { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; margin: 0; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.72rem; }
+  .draft { background: var(--accent); color: #121a22; padding: 0 0.4rem; }
   .notice {
-    margin: 1rem 0 0; padding: 0.55rem 0.9rem; border-radius: 10px; background: var(--paper-2);
-    color: var(--ink-soft); font-size: 0.88rem; display: inline-block;
+    margin: 1.2rem 0 0; padding: 0.7rem 0.9rem; border-left: 2px solid var(--accent); background: var(--panel);
+    color: var(--ink-2); font-size: 0.95rem; font-style: italic;
   }
-  .notice a { white-space: nowrap; }
-  .cover { margin: 0 auto 3rem; }
-  .cover :global(img) { width: 100%; max-height: 80vh; object-fit: cover; border-radius: calc(var(--radius) + 4px); }
-  .where { margin: 3rem auto; }
-  .where h2 { font-size: 1.3rem; }
-  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 4rem auto 3rem; padding-top: 2rem; border-top: 1px solid var(--line); }
-  .pager a { display: grid; gap: 0.2rem; text-decoration: none; color: var(--ink); font-family: var(--serif); font-size: 1.1rem; font-weight: 600; }
-  .pager a:hover { color: var(--teal); }
-  .next { text-align: right; }
-  .stack { display: grid; gap: 1.25rem; }
+  .notice a { white-space: nowrap; font-style: normal; }
+
+  .essay { margin-top: clamp(3.5rem, 8vw, 6rem); }
+  .essay-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+  .essay-head .kicker { margin: 0; white-space: nowrap; }
+  .rule { flex: 1; height: 1px; background: var(--ink); }
+
+  .where { margin-top: clamp(4rem, 8vw, 6rem); display: grid; gap: 1.5rem; }
+  .where-head h2 { margin: 0.4rem 0 0; }
+  .where-head .kicker { margin: 0; }
+
+  .pager { display: grid; gap: 1.5rem; margin-top: clamp(4rem, 8vw, 6rem); padding-top: 2rem; border-top: 1px solid var(--ink); }
+  .turn { display: grid; grid-template-columns: 7rem 1fr; gap: 1.1rem; align-items: center; color: inherit; text-decoration: none; }
+  .turn-media { display: block; aspect-ratio: 1; overflow: hidden; background: var(--panel); border-radius: var(--radius); }
+  .turn-media :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 1000ms var(--ease-out); }
+  .turn:hover .turn-media :global(img) { transform: scale(1.05); }
+  .turn-ph { display: block; width: 100%; height: 100%; background: radial-gradient(120% 80% at 20% 0%, #2a4a5f, var(--deep)); }
+  .turn-copy { display: grid; gap: 0.3rem; }
+  .turn-copy .kicker { color: var(--muted); }
+  .turn-title { font-family: var(--display); font-size: clamp(1.3rem, 2.4vw, 1.8rem); line-height: 1.1; }
+  .turn:hover .turn-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.12em; }
+  @media (min-width: 800px) {
+    .pager { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+    .turn { grid-template-columns: 1fr; }
+    .turn-media { aspect-ratio: 16 / 9; }
+    .next { grid-column: 2; text-align: right; }
+    .next .turn-copy { justify-items: end; }
+  }
+
+  .stack { display: grid; gap: 1.25rem; margin-top: clamp(4rem, 8vw, 6rem); }
 </style>

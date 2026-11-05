@@ -44,9 +44,9 @@ const showGround = [...modes].some((m) => m !== 'flight' && m !== 'boat' && m !=
   const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
   const STYLE: Record<string, L.PolylineOptions> = {
-    flight: { color: '#0e5c57', weight: 2, dashArray: '2 7', lineCap: 'round', opacity: 0.85 },
-    boat: { color: '#2f6fa3', weight: 2.5, dashArray: '8 6', opacity: 0.9 },
-    ground: { color: '#c0532b', weight: 3, opacity: 0.9 },
+    flight: { color: '#121a22', weight: 2.4, dashArray: '0.1 7', lineCap: 'round', opacity: 0.9 },
+    boat: { color: '#2c6e8f', weight: 2.5, dashArray: '8 6', opacity: 0.95 },
+    ground: { color: '#121a22', weight: 2.6, opacity: 0.85 },
   };
 
   /** Gentle arc between two points, so flights read as flights. */
@@ -103,9 +103,9 @@ const showGround = [...modes].some((m) => m !== 'flight' && m !== 'boat' && m !=
       const story = p.kind === 'story';
       L.circleMarker([p.lat, p.lng], {
         radius: story ? (isFocus || isLast ? 8 : 6.5) : 4.5,
-        color: story ? '#fff' : '#0e5c57',
+        color: story ? (isFocus || isLast ? '#121a22' : '#fff') : '#121a22',
         weight: 2,
-        fillColor: isFocus ? '#c0532b' : story ? '#0e5c57' : '#fff',
+        fillColor: isFocus || (isLast && !focus) ? '#e2a11b' : story ? '#121a22' : '#fff',
         fillOpacity: 1,
       })
         .addTo(map)
@@ -135,24 +135,33 @@ const showGround = [...modes].some((m) => m !== 'flight' && m !== 'boat' && m !=
 <style>
   .route-figure { margin: 0; }
   .route-map {
+    /* Popups sit on white, so they always use the light-page ink, even inside a dark band. */
+    --ink: #121a22; --muted: #566270;
     height: var(--h);
     border-radius: var(--radius);
     border: 1px solid var(--line);
     overflow: hidden;
-    background: #e8e4da;
+    background: #dfe3dc;
     z-index: 0;
   }
-  .legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; margin-top: 0.7rem; font-size: 0.85rem; color: var(--muted); }
-  .legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
-  .legend i { display: inline-block; width: 1.6rem; height: 0; border-top: 3px solid #c0532b; }
-  .legend i.boat { border-top: 2.5px dashed #2f6fa3; }
-  .legend i.flight { border-top: 2.5px dotted #0e5c57; }
-  .legend .dot { display: inline-block; width: 0.75rem; height: 0.75rem; border-radius: 50%; }
-  .legend .dot.story { background: #0e5c57; box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--line); }
-  .legend .dot.stop { width: 0.6rem; height: 0.6rem; background: #fff; border: 2px solid #0e5c57; }
-  .route-map :global(.pop) { display: grid; gap: 0.15rem; font-family: var(--sans); }
-  .route-map :global(.pop a), .route-map :global(.pop strong) { font-family: var(--serif); font-size: 1.05rem; font-weight: 600; color: var(--ink); text-decoration: none; }
-  .route-map :global(.pop a:hover) { color: var(--clay); }
-  .route-map :global(.pop-loc) { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--clay); font-weight: 600; }
-  .route-map :global(.pop-date) { font-size: 0.8rem; color: var(--muted); }
+  /* Quiet the tiles so the route reads first. */
+  .route-map :global(.leaflet-tile-pane) { filter: saturate(0.55) contrast(1.03) brightness(1.02); }
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; margin-top: 0.9rem;
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .legend i { display: inline-block; width: 1.8rem; height: 0; border-top: 2px solid currentColor; }
+  .legend i.boat { border-top: 2px dashed #5b9bbd; }
+  .legend i.flight { border-top: 3px dotted currentColor; }
+  .legend .dot { display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 50%; }
+  .legend .dot.story { background: currentColor; }
+  .legend .dot.stop { width: 0.6rem; height: 0.6rem; border: 2px solid currentColor; }
+  .route-map :global(.leaflet-popup-content-wrapper) { border-radius: 4px; box-shadow: 0 10px 30px rgb(8 14 20 / 0.25); }
+  .route-map :global(.pop) { display: grid; gap: 0.2rem; font-family: var(--serif); color: var(--ink); }
+  .route-map :global(.pop a), .route-map :global(.pop strong) { font-family: var(--display); font-size: 1.15rem; font-weight: 500; color: var(--ink); text-decoration: none; line-height: 1.15; }
+  .route-map :global(.pop a:hover) { text-decoration: underline; }
+  .route-map :global(.pop-loc) { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  .route-map :global(.pop-date) { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+  .route-map :global(.leaflet-control-attribution) { font-family: var(--mono); font-size: 0.62rem; }
 </style>

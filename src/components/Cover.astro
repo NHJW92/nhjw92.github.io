@@ -1,0 +1,50 @@
+---
+// Full-bleed cover photo with type set over it. Used by the home cover story and
+// by story openers. Legibility: a bottom-weighted scrim plus a soft text shadow, so
+// any photo the CMS uploads stays readable.
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+
+interface Props { image: ImageMetadata; alt: string; tall?: boolean }
+const { image, alt, tall = true } = Astro.props;
+const widths = [640, 1024, 1600, 2200, 2800].filter((w) => w < image.width).concat(Math.min(image.width, 3200));
+---
+<section class:list={['cover', 'on-photo', { tall }]}>
+  <div class="photo">
+    <Picture
+      src={image}
+      alt={alt}
+      formats={['avif', 'webp']}
+      widths={widths}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+    />
+  </div>
+  <div class="scrim" aria-hidden="true"></div>
+  <div class="wrap inner">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .cover {
+    position: relative; isolation: isolate; overflow: hidden;
+    min-height: min(78svh, 52rem); display: grid; align-items: end;
+    background: var(--deep); color: #f4f5f0;
+    --ink: #f4f5f0; --ink-2: #dfe3dd; --muted: #cfd5d2;
+  }
+  .cover.tall { min-height: max(34rem, 100svh); }
+  .photo { position: absolute; inset: 0; z-index: -2; }
+  .photo :global(picture), .photo :global(img) { width: 100%; height: 100%; }
+  .photo :global(img) { object-fit: cover; animation: settle 2400ms var(--ease-out) both; }
+  @keyframes settle { from { transform: scale(1.06); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
+  .scrim {
+    position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      linear-gradient(to top, rgb(8 14 20 / 0.86) 0%, rgb(8 14 20 / 0.62) 28%, rgb(8 14 20 / 0.12) 58%, rgb(8 14 20 / 0) 72%),
+      linear-gradient(to right, rgb(8 14 20 / 0.35), rgb(8 14 20 / 0) 60%);
+  }
+  .inner { padding: 7rem 0 clamp(2.5rem, 6vw, 4.5rem); text-shadow: var(--tshadow); }
+  .inner :global(.btn) { text-shadow: none; }
+</style>

@@ -1,0 +1,71 @@
+---
+// The logbook dateline: stop number, a drawn glyph of how we got here (same line language
+// as the route map: dotted arc = flight, dashed wave = boat, solid line = overland),
+// and the coordinates. The signature of the site; used on covers, cards and story openers.
+import type { Leg } from '../lib/journey';
+import { pad2 } from '../lib/journey';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props { leg: Leg; lang: Lang; size?: 'lg' | 'sm'; date?: string }
+const { leg, lang, size = 'lg', date } = Astro.props;
+const s = t(lang);
+const modeLabel = s.travel[leg.mode];
+const legText = leg.mode === 'start' || !leg.from ? modeLabel : s.leg(modeLabel, leg.from);
+const kind = leg.mode === 'flight' ? 'flight' : leg.mode === 'boat' ? 'boat' : leg.mode === 'start' ? 'start' : 'ground';
+const uid = `dl-${Math.random().toString(36).slice(2, 8)}`;
+---
+<p class:list={['dateline', size]} data-reveal="fade">
+  <span class="no">{s.map.stop} <b>{pad2(leg.n)}</b></span>
+  <svg class:list={['glyph', kind]} viewBox="0 0 64 20" aria-hidden="true" focusable="false">
+    <defs>
+      <mask id={uid} maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="20">
+        <rect class="wipe" x="0" y="0" width="64" height="20" fill="#fff" />
+      </mask>
+    </defs>
+    <g mask={`url(#${uid})`}>
+      {kind === 'flight' && <path d="M4 16 Q32 -6 60 16" />}
+      {kind === 'boat' && <path d="M4 12 q7 -7 14 0 t14 0 t14 0 t14 0" />}
+      {kind === 'ground' && <path d="M4 10 H60" />}
+      {kind === 'start' && <path d="M4 10 H40" />}
+    </g>
+    <circle cx="4" cy={kind === 'flight' ? 16 : kind === 'boat' ? 12 : 10} r="2.6" class="from" />
+    <circle cx={kind === 'start' ? 40 : 60} cy={kind === 'flight' ? 16 : kind === 'boat' ? 12 : 10} r="3.4" class="to" />
+  </svg>
+  <span class="leg">{legText}</span>
+  <span class="sep" aria-hidden="true">·</span>
+  <span class="coords">{leg.coords}</span>
+  {date && <><span class="sep" aria-hidden="true">·</span><span class="date">{date}</span></>}
+</p>
+
+<style>
+  .dateline {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.7rem;
+    margin: 0;
+    font-family: var(--mono); font-size: 0.74rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+    color: currentColor;
+  }
+  .no { display: inline-flex; align-items: baseline; gap: 0.45rem; }
+  .no b {
+    font-family: var(--display); font-weight: 500; letter-spacing: 0; text-transform: none;
+    font-size: 2.6em; line-height: 0.8; font-variant-numeric: lining-nums;
+  }
+  .sm .no b { font-size: 1.9em; }
+  .glyph { width: 3.4rem; height: 1.1rem; overflow: visible; flex: none; }
+  .sm .glyph { width: 2.6rem; }
+  .glyph path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+  .glyph.flight path { stroke-dasharray: 0.1 4.2; stroke-width: 2.1; }
+  .glyph.boat path { stroke-dasharray: 4 3; }
+  .glyph .from { fill: none; stroke: currentColor; stroke-width: 1.4; }
+  .glyph .to { fill: var(--accent); stroke: none; }
+  .sep { opacity: 0.6; }
+  /* Cards: number, glyph and leg only; the coordinates live on the story page. */
+  .sm .coords, .sm .sep { display: none; }
+  /* Narrow screens wrap the line; drop the dots so no line ends on one. */
+  @media (max-width: 720px) { .sep { display: none; } .dateline { column-gap: 0.9rem; } }
+
+  /* The leg draws itself in when the dateline appears (transform only). */
+  .wipe { transform-box: fill-box; transform-origin: left center; transition: transform 1400ms var(--ease-out) 200ms; }
+  :global(.js) .dateline:not(.in) .wipe { transform: scaleX(0); }
+  :global(.js) .dateline .to { transition: opacity 400ms var(--ease-soft) 1300ms; }
+  :global(.js) .dateline:not(.in) .to { opacity: 0; }
+</style>

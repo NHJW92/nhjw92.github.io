@@ -14,16 +14,19 @@ const photos = await Promise.all(
     return { src, large: large.src, caption: item.caption ?? '' };
   }),
 );
+// Magazine spread: an odd count opens with one wide photo, the rest run in pairs,
+// so no row is ever left with a hole.
+const wide = (i: number) => photos.length % 2 === 1 && i === 0;
 ---
 {photos.length > 0 && (
   <section class="gallery" aria-label={s.label}>
     <div class="grid">
       {photos.map((p, i) => (
-        <figure>
+        <figure class:list={{ wide: wide(i) }} data-reveal>
           <a href={p.large} data-index={i} data-caption={p.caption}>
-            <Image src={p.src} alt={p.caption} widths={[360, 640, 900]} sizes="(min-width: 900px) 30vw, 50vw" loading="lazy" />
+            <Image src={p.src} alt={p.caption} widths={wide(i) ? [640, 1024, 1600, 2200] : [480, 720, 1100]} sizes={wide(i) ? '(min-width: 1280px) 1240px, 100vw' : '(min-width: 760px) 50vw, 100vw'} loading="lazy" />
           </a>
-          {p.caption && <figcaption>{p.caption}</figcaption>}
+          {p.caption && <figcaption><span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>{p.caption}</figcaption>}
         </figure>
       ))}
     </div>
@@ -72,27 +75,32 @@ const photos = await Promise.all(
 </script>
 
 <style>
-  .gallery { margin: 3rem 0; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr)); gap: 0.75rem; }
+  .gallery { margin: 0; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: clamp(1rem, 2.5vw, 2rem); }
+  @media (min-width: 760px) { .grid { grid-template-columns: 1fr 1fr; } .wide { grid-column: 1 / -1; } }
   figure { margin: 0; }
-  figure a { display: block; border-radius: 10px; overflow: hidden; aspect-ratio: 1; background: var(--paper-2); }
-  figure :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 300ms ease, opacity 150ms ease; }
+  figure a { display: block; overflow: hidden; aspect-ratio: 4 / 5; background: var(--panel); border-radius: var(--radius); cursor: zoom-in; }
+  .wide a { aspect-ratio: 16 / 9; }
+  @media (max-width: 759px) { figure a, .wide a { aspect-ratio: 3 / 2; } }
+  figure :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms var(--ease-out), opacity 200ms ease; }
   figure a:hover :global(img) { transform: scale(1.03); }
-  figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 0.4rem; line-height: 1.4; }
+  figcaption { display: flex; gap: 0.7rem; margin-top: 0.6rem; font-size: 0.95rem; font-style: italic; color: var(--ink-2); line-height: 1.4; }
+  .num { font: 500 0.7rem/1.9 var(--mono); font-style: normal; letter-spacing: 0.1em; color: var(--muted); }
   .lightbox {
     border: 0; padding: 0; background: transparent; max-width: 100vw; max-height: 100vh;
     width: 100vw; height: 100vh; margin: 0;
   }
   .lightbox[open] { display: grid; place-items: center; grid-template-rows: 1fr auto; }
-  .lightbox::backdrop { background: rgb(12 16 16 / 0.96); }
-  .lightbox img { max-width: 94vw; max-height: 84vh; object-fit: contain; border-radius: 6px; align-self: end; }
-  .lb-caption { color: #e9e4da; margin: 0.8rem 1rem 1.5rem; text-align: center; font-size: 0.95rem; min-height: 1.5em; }
+  .lightbox::backdrop { background: rgb(8 14 20 / 0.97); }
+  .lightbox img { max-width: 94vw; max-height: 84vh; object-fit: contain; align-self: end; }
+  .lb-caption { color: #e8ebe4; margin: 0.9rem 1rem 1.5rem; text-align: center; font-size: 1rem; font-style: italic; min-height: 1.5em; }
   .lightbox button {
-    position: fixed; background: rgb(255 255 255 / 0.12); color: #fff; border: 0; cursor: pointer;
-    width: 2.75rem; height: 2.75rem; border-radius: 999px; font-size: 1.6rem; line-height: 1;
-    transition: background-color 150ms ease;
+    position: fixed; background: rgb(255 255 255 / 0.1); color: #fff; border: 1px solid rgb(255 255 255 / 0.25); cursor: pointer;
+    width: 3rem; height: 3rem; border-radius: 999px; font-size: 1.5rem; line-height: 1;
+    transition: background-color 200ms ease;
   }
-  .lightbox button:hover { background: rgb(255 255 255 / 0.25); }
+  .lightbox button:hover { background: rgb(255 255 255 / 0.22); }
+  .lightbox button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .lb-close { top: 1rem; right: 1rem; }
   .lb-prev { left: 1rem; top: 50%; translate: 0 -50%; }
   .lb-next { right: 1rem; top: 50%; translate: 0 -50%; }
