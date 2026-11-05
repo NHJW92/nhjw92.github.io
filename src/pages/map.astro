@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import RouteMap from '../components/RouteMap.astro';
+import { getPosts, routePoints } from '../lib/posts';
+
+const points = routePoints(await getPosts());
+---
+<Base title="Route" description="Every stop on the trip, in order.">
+  <section class="wrap head">
+    <p class="eyebrow">{points.length} {points.length === 1 ? 'stop' : 'stops'} so far</p>
+    <h1>The route</h1>
+  </section>
+  <section class="wrap">
+    <RouteMap points={points} height="min(72vh, 44rem)" />
+    {points.length > 0 && (
+      <ol class="stops">
+        {points.map((p) => (
+          <li><a href={p.url}><span class="eyebrow">{p.location}</span><strong>{p.title}</strong><span class="meta">{p.date}</span></a></li>
+        ))}
+      </ol>
+    )}
+  </section>
+</Base>
+
+<style>
+  .head { padding: clamp(2.5rem, 6vw, 4rem) 0 1.5rem; }
+  .head h1 { margin: 0.3rem 0 0; }
+  .stops { list-style: none; padding: 0; margin: 2.5rem 0 0; counter-reset: stop; display: grid; gap: 0.25rem; }
+  .stops li { counter-increment: stop; }
+  .stops a {
+    display: grid; grid-template-columns: 2.5rem 1fr; column-gap: 0.75rem; padding: 0.9rem 0;
+    border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink);
+  }
+  .stops a::before { content: counter(stop); grid-row: span 3; font-family: var(--serif); font-size: 1.5rem; color: var(--clay); }
+  .stops strong { font-family: var(--serif); font-size: 1.15rem; font-weight: 600; }
+  .stops a:hover strong { color: var(--teal); }
+</style>

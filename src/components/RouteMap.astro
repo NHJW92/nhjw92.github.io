@@ -1,0 +1,87 @@
+---
+import type { MapPoint } from '../lib/posts';
+
+interface Props {
+  points: MapPoint[];
+  height?: string;
+  /** Show the route line connecting the stops in date order. */
+  route?: boolean;
+  /** Highlight a single point (used on post pages). */
+  focus?: { lat: number; lng: number };
+}
+const { points, height = '28rem', route = true, focus } = Astro.props;
+---
+<div class="route-map" style={`--h:${height}`} data-points={JSON.stringify(points)} data-route={String(route)} data-focus={focus ? JSON.stringify(focus) : ''}>
+  <noscript><p>The map needs JavaScript.</p></noscript>
+</div>
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+
+  type Point = { title: string; url: string; date: string; location: string; lat: number; lng: number };
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+
+  function init(el: HTMLElement) {
+    if (el.dataset.ready) return;
+    el.dataset.ready = '1';
+    const points: Point[] = JSON.parse(el.dataset.points || '[]');
+    const focus = el.dataset.focus ? (JSON.parse(el.dataset.focus) as { lat: number; lng: number }) : null;
+
+    const map = L.map(el, { scrollWheelZoom: false, attributionControl: true });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom: 18,
+      subdomains: 'abcd',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    }).addTo(map);
+
+    const latlngs = points.map((p) => [p.lat, p.lng] as [number, number]);
+    if (el.dataset.route === 'true' && latlngs.length > 1) {
+      L.polyline(latlngs, { color: '#c0532b', weight: 2.5, dashArray: '6 7', opacity: 0.9 }).addTo(map);
+    }
+    points.forEach((p, i) => {
+      const isLast = i === points.length - 1;
+      const isFocus = focus && focus.lat === p.lat && focus.lng === p.lng;
+      L.circleMarker([p.lat, p.lng], {
+        radius: isFocus || isLast ? 8 : 6,
+        color: '#fff',
+        weight: 2,
+        fillColor: isFocus ? '#c0532b' : '#0e5c57',
+        fillOpacity: 1,
+      })
+        .addTo(map)
+        .bindPopup(
+          `<div class="pop"><span class="pop-loc">${esc(p.location)}</span><a href="${p.url}">${esc(p.title)}</a><span class="pop-date">${esc(p.date)}</span></div>`,
+        );
+    });
+
+    if (focus) {
+      map.setView([focus.lat, focus.lng], 7);
+    } else if (latlngs.length) {
+      map.fitBounds(L.latLngBounds(latlngs).pad(0.25), { maxZoom: 8 });
+    } else {
+      // Indonesia overview when there are no posts with coordinates yet.
+      map.fitBounds([[-11, 95], [6, 141]]);
+    }
+    map.on('click', () => map.scrollWheelZoom.enable());
+    el.addEventListener('mouseleave', () => map.scrollWheelZoom.disable());
+  }
+
+  document.querySelectorAll<HTMLElement>('.route-map').forEach(init);
+</script>
+
+<style>
+  .route-map {
+    height: var(--h);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    background: #e8e4da;
+    z-index: 0;
+  }
+  .route-map :global(.pop) { display: grid; gap: 0.15rem; font-family: var(--sans); }
+  .route-map :global(.pop a) { font-family: var(--serif); font-size: 1.05rem; font-weight: 600; color: var(--ink); text-decoration: none; }
+  .route-map :global(.pop a:hover) { color: var(--clay); }
+  .route-map :global(.pop-loc) { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--clay); font-weight: 600; }
+  .route-map :global(.pop-date) { font-size: 0.8rem; color: var(--muted); }
+</style>

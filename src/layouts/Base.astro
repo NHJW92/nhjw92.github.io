@@ -1,0 +1,88 @@
+---
+import '../styles/global.css';
+import { SITE } from '../site.config';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+const { title, description = SITE.description, image } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE.title}` : SITE.title;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = image ? new URL(image, Astro.site).href : undefined;
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/', label: 'Stories' },
+  { href: '/map/', label: 'Route' },
+  { href: '/about/', label: 'About' },
+];
+---
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="theme-color" content="#f7f2e9" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a class="brand" href="/">{SITE.title}</a>
+        <nav aria-label="Main">
+          {nav.map((n) => (
+            <a href={n.href} aria-current={(n.href === '/' ? path === '/' : path.startsWith(n.href)) ? 'page' : undefined}>
+              {n.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap foot">
+        <span>© {new Date().getFullYear()} {SITE.author}</span>
+        <span><a href="/rss.xml">RSS</a></span>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    position: sticky; top: 0; z-index: 1000;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 3.75rem; }
+  .brand { font-family: var(--serif); font-weight: 650; font-size: 1.2rem; color: var(--ink); text-decoration: none; white-space: nowrap; }
+  nav { display: flex; gap: 0.25rem; }
+  nav a {
+    color: var(--ink-soft); text-decoration: none; font-size: 0.95rem; font-weight: 500;
+    padding: 0.4rem 0.7rem; border-radius: 999px; transition: background-color 150ms ease, color 150ms ease;
+  }
+  nav a:hover { background: var(--paper-2); color: var(--ink); }
+  nav a[aria-current='page'] { color: var(--teal); background: var(--paper-2); }
+  main { min-height: 70vh; }
+  .site-footer { border-top: 1px solid var(--line); margin-top: 5rem; }
+  .foot { display: flex; justify-content: space-between; padding: 1.75rem 0; color: var(--muted); font-size: 0.9rem; }
+  @media (max-width: 480px) {
+    .brand { font-size: 1.05rem; }
+    nav a { padding: 0.4rem 0.5rem; }
+  }
+</style>

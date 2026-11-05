@@ -1,0 +1,97 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { resolveImage } from '../lib/images';
+
+interface Props { items: { image: string; caption?: string | null }[] }
+const { items } = Astro.props;
+
+const photos = await Promise.all(
+  items.map(async (item) => {
+    const src = resolveImage(item.image)!;
+    const large = await getImage({ src, width: Math.min(src.width, 2000), format: 'webp', quality: 80 });
+    return { src, large: large.src, caption: item.caption ?? '' };
+  }),
+);
+---
+{photos.length > 0 && (
+  <section class="gallery" aria-label="Photo gallery">
+    <div class="grid">
+      {photos.map((p, i) => (
+        <figure>
+          <a href={p.large} data-index={i} data-caption={p.caption}>
+            <Image src={p.src} alt={p.caption} widths={[360, 640, 900]} sizes="(min-width: 900px) 30vw, 50vw" loading="lazy" />
+          </a>
+          {p.caption && <figcaption>{p.caption}</figcaption>}
+        </figure>
+      ))}
+    </div>
+    <dialog class="lightbox" aria-label="Photo viewer">
+      <img alt="" />
+      <p class="lb-caption"></p>
+      <button class="lb-close" aria-label="Close">×</button>
+      <button class="lb-prev" aria-label="Previous photo">‹</button>
+      <button class="lb-next" aria-label="Next photo">›</button>
+    </dialog>
+  </section>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('.gallery').forEach((g) => {
+    const links = [...g.querySelectorAll<HTMLAnchorElement>('a[data-index]')];
+    const dlg = g.querySelector<HTMLDialogElement>('dialog')!;
+    const img = dlg.querySelector('img')!;
+    const cap = dlg.querySelector<HTMLElement>('.lb-caption')!;
+    let idx = 0;
+    const show = (i: number) => {
+      idx = (i + links.length) % links.length;
+      img.src = links[idx].href;
+      img.alt = links[idx].dataset.caption || '';
+      cap.textContent = links[idx].dataset.caption || '';
+    };
+    links.forEach((a, i) => a.addEventListener('click', (e) => { e.preventDefault(); show(i); dlg.showModal(); }));
+    dlg.querySelector('.lb-close')!.addEventListener('click', () => dlg.close());
+    dlg.querySelector('.lb-prev')!.addEventListener('click', () => show(idx - 1));
+    dlg.querySelector('.lb-next')!.addEventListener('click', () => show(idx + 1));
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(idx - 1);
+      if (e.key === 'ArrowRight') show(idx + 1);
+    });
+    // Swipe on phones.
+    let x0: number | null = null;
+    dlg.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+    dlg.addEventListener('touchend', (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) show(idx + (dx < 0 ? 1 : -1));
+      x0 = null;
+    });
+  });
+</script>
+
+<style>
+  .gallery { margin: 3rem 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr)); gap: 0.75rem; }
+  figure { margin: 0; }
+  figure a { display: block; border-radius: 10px; overflow: hidden; aspect-ratio: 1; background: var(--paper-2); }
+  figure :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 300ms ease, opacity 150ms ease; }
+  figure a:hover :global(img) { transform: scale(1.03); }
+  figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 0.4rem; line-height: 1.4; }
+  .lightbox {
+    border: 0; padding: 0; background: transparent; max-width: 100vw; max-height: 100vh;
+    width: 100vw; height: 100vh; margin: 0;
+  }
+  .lightbox[open] { display: grid; place-items: center; grid-template-rows: 1fr auto; }
+  .lightbox::backdrop { background: rgb(12 16 16 / 0.96); }
+  .lightbox img { max-width: 94vw; max-height: 84vh; object-fit: contain; border-radius: 6px; align-self: end; }
+  .lb-caption { color: #e9e4da; margin: 0.8rem 1rem 1.5rem; text-align: center; font-size: 0.95rem; min-height: 1.5em; }
+  .lightbox button {
+    position: fixed; background: rgb(255 255 255 / 0.12); color: #fff; border: 0; cursor: pointer;
+    width: 2.75rem; height: 2.75rem; border-radius: 999px; font-size: 1.6rem; line-height: 1;
+    transition: background-color 150ms ease;
+  }
+  .lightbox button:hover { background: rgb(255 255 255 / 0.25); }
+  .lb-close { top: 1rem; right: 1rem; }
+  .lb-prev { left: 1rem; top: 50%; translate: 0 -50%; }
+  .lb-next { right: 1rem; top: 50%; translate: 0 -50%; }
+</style>

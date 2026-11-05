@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import Subscribe from '../components/Subscribe.astro';
+import { SITE } from '../site.config';
+---
+<Base title="About">
+  <section class="prose-wrap prose head">
+    <p class="eyebrow">About</p>
+    <h1>Hi, I'm {SITE.author}.</h1>
+    <p>
+      This is my journal from a trip through Indonesia. I post stories and photos as I go,
+      usually from a phone and a café with questionable Wi-Fi.
+    </p>
+    <p>
+      Edit this page in <code>src/pages/about.astro</code>, or swap this text for a few lines
+      about the trip: where you start, roughly where you're heading, and how long you'll be away.
+    </p>
+  </section>
+  <div class="prose-wrap"><Subscribe /></div>
+</Base>
+
+<style>
+  .head { padding: clamp(2.5rem, 7vw, 5rem) 0 2rem; }
+  .head h1 { margin: 0.4rem 0 1.2rem; }
+</style>

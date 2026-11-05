@@ -1,0 +1,73 @@
+# Pages CMS configuration (https://pagescms.org).
+# Log in at app.pagescms.org with GitHub, pick this repository, and you get a
+# phone-friendly editor that commits posts and photos straight to the repo.
+media:
+  input: src/assets/uploads
+  output: /uploads
+  extensions: [jpg, jpeg, png, webp]
+  rename: safe
+
+content:
+  - name: posts
+    label: Stories
+    type: collection
+    path: src/content/posts
+    filename: "{year}-{month}-{day}-{primary}.md"
+    view:
+      fields: [title, location, date, draft]
+      primary: title
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: date
+        label: Date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: location
+        label: Location (shown above the title)
+        type: string
+        required: true
+      - name: lat
+        label: Latitude (for the route map, e.g. -8.4964)
+        type: number
+      - name: lng
+        label: Longitude (for the route map, e.g. 119.8877)
+        type: number
+      - name: summary
+        label: Short summary (shown on the homepage and in emails)
+        type: text
+      - name: cover
+        label: Cover photo
+        type: image
+      - name: coverAlt
+        label: Cover photo description (for screen readers)
+        type: string
+      - name: gallery
+        label: Gallery
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{index}. {caption}"
+        fields:
+          - name: image
+            label: Photo
+            type: image
+          - name: caption
+            label: Caption
+            type: string
+      - name: draft
+        label: Draft (hide from the live site)
+        type: boolean
+        default: false
+      - name: body
+        label: Story
+        type: rich-text
