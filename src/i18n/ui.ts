@@ -93,8 +93,8 @@ export const ui: Record<Lang, Strings> = {
       rssLink: 'Volg via RSS',
     },
     donate: {
-      title: 'Skere travel engineers',
-      text: 'trakteer ons op een lekker kopje koffie',
+      title: 'De skere travel engineers',
+      text: 'Trakteer ons op een lekker bakje koffie!',
       amountLabel: 'Bedrag',
       other: 'Ander bedrag',
       idealSub: 'via bunq.me · ook Bancontact of kaart',
@@ -160,8 +160,8 @@ export const ui: Record<Lang, Strings> = {
       rssLink: 'Subscribe via RSS',
     },
     donate: {
-      title: 'Buy us a coffee',
-      text: 'Enjoying the stories? A small contribution buys us a cup of kopi somewhere along the way.',
+      title: 'The broke travel engineers',
+      text: 'Treat us to a lovely cup of coffee!',
       amountLabel: 'Amount',
       other: 'Other amount',
       idealSub: 'via bunq.me · also Bancontact or card',
@@ -227,8 +227,8 @@ export const ui: Record<Lang, Strings> = {
       rssLink: 'Per RSS folgen',
     },
     donate: {
-      title: 'Spendiert uns einen Kaffee',
-      text: 'Gefallen euch die Geschichten? Mit einem kleinen Beitrag trinken wir unterwegs eine Tasse Kopi auf euch.',
+      title: 'Die klammen Travel Engineers',
+      text: 'Spendiert uns eine leckere Tasse Kaffee!',
       amountLabel: 'Betrag',
       other: 'Anderer Betrag',
       idealSub: 'über bunq.me · auch Bancontact oder Karte',
