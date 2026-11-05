@@ -4,7 +4,7 @@ A static travel blog built with Astro and hosted for free on GitHub Pages. You c
 
 - **Stories** are Markdown files in `src/content/posts/`.
 - **Photos** go in `src/assets/uploads/`. The cover, gallery and inline photos are resized and converted to AVIF or WebP when the site is built, so upload the original phone photos.
-- **Route map**: give a post `lat`/`lng` and it becomes a stop. Stops are joined in date order.
+- **Route map**: posts with `lat`/`lng`, plus the stops in `src/data/route.yml`, joined in date order. The map uses OpenStreetMap tiles by default, which need no key. CARTO's tiles now require a free key: request one at https://carto.com/basemaps/apikey and set `map.cartoApiKey` in `src/site.config.ts`.
 - **Email signup** (Buttondown), **comments** (Giscus) and **RSS** (`/rss.xml`).
 
 ## One-time setup (about 20 minutes)

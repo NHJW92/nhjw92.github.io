@@ -1,5 +1,6 @@
 ---
 import type { MapPoint } from '../lib/posts';
+import { SITE } from '../site.config';
 
 interface Props {
   points: MapPoint[];
@@ -15,7 +16,7 @@ const showBoat = modes.has('boat');
 const showGround = [...modes].some((m) => m !== 'flight' && m !== 'boat' && m !== 'start');
 ---
 <figure class="route-figure">
-  <div class="route-map" style={`--h:${height}`} data-points={JSON.stringify(points)} data-focus={focus ? JSON.stringify(focus) : ''}>
+  <div class="route-map" style={`--h:${height}`} data-points={JSON.stringify(points)} data-focus={focus ? JSON.stringify(focus) : ''} data-carto-key={SITE.map.cartoApiKey}>
     <noscript><p>The map needs JavaScript.</p></noscript>
   </div>
   {legend && points.length > 1 && (
@@ -70,11 +71,19 @@ const showGround = [...modes].some((m) => m !== 'flight' && m !== 'boat' && m !=
     const focus = el.dataset.focus ? (JSON.parse(el.dataset.focus) as { lat: number; lng: number }) : null;
 
     const map = L.map(el, { scrollWheelZoom: false, worldCopyJump: true });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      maxZoom: 18,
-      subdomains: 'abcd',
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    }).addTo(map);
+    const cartoKey = el.dataset.cartoKey;
+    if (cartoKey) {
+      L.tileLayer(`https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${encodeURIComponent(cartoKey)}`, {
+        maxZoom: 19,
+        subdomains: 'abcd',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      }).addTo(map);
+    } else {
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+    }
 
     // Legs: each point's `travel` describes how you got there from the previous one.
     for (let i = 1; i < points.length; i++) {
