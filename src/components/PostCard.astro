@@ -1,11 +1,13 @@
 ---
 import { Image } from 'astro:assets';
 import { resolveImage } from '../lib/images';
-import { formatDate, postUrl, type Post } from '../lib/posts';
+import { postUrl, type Post } from '../lib/posts';
+import { formatDate, t } from '../i18n/ui';
 
 interface Props { post: Post; featured?: boolean }
 const { post, featured = false } = Astro.props;
 const cover = resolveImage(post.data.cover);
+const s = t(post.lang);
 ---
 <article class:list={['card', { featured }]}>
   <a href={postUrl(post)} class="card-link">
@@ -15,13 +17,13 @@ const cover = resolveImage(post.data.cover);
       ) : (
         <div class="placeholder" aria-hidden="true"></div>
       )}
-      {post.data.draft && <span class="draft">Draft</span>}
+      {post.data.draft && <span class="draft">{s.post.draft}</span>}
     </div>
     <div class="body">
       <span class="eyebrow">{post.data.location}</span>
       <h2>{post.data.title}</h2>
       {post.data.summary && <p>{post.data.summary}</p>}
-      <span class="meta"><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time></span>
+      <span class="meta"><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, post.lang)}</time></span>
     </div>
   </a>
 </article>

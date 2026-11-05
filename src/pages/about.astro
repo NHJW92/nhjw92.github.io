@@ -1,24 +1,4 @@
 ---
-import Base from '../layouts/Base.astro';
-import Subscribe from '../components/Subscribe.astro';
+import About from '../views/About.astro';
 ---
-<Base title="About">
-  <section class="prose-wrap prose head">
-    <p class="eyebrow">About</p>
-    <h1>Hi, we're Babet and Niels.</h1>
-    <p>
-      This is our journal from a trip through Indonesia. We post stories and photos as we go,
-      usually from a phone and a café with questionable Wi-Fi.
-    </p>
-    <p>
-      We set off from Ruurlo, took the train to Schiphol and flew via Abu Dhabi to Bali.
-      Follow the <a href="/map/">route</a> to see where we've been so far.
-    </p>
-  </section>
-  <div class="prose-wrap"><Subscribe /></div>
-</Base>
-
-<style>
-  .head { padding: clamp(2.5rem, 7vw, 5rem) 0 2rem; }
-  .head h1 { margin: 0.4rem 0 1.2rem; }
-</style>
+<About lang="nl" />

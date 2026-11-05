@@ -1,10 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
+import { LANGS, localize, t } from '../i18n/ui';
 ---
-<Base title="Not found">
+<Base lang="nl" title="404">
   <section class="prose-wrap prose" style="padding: 5rem 0;">
     <p class="eyebrow">404</p>
-    <h1>Lost somewhere in the archipelago.</h1>
-    <p>This page doesn't exist. <a href="/">Back to the stories</a>.</p>
+    {LANGS.map((l) => (
+      <div lang={l} class="nf">
+        <h2>{t(l).notFound.heading}</h2>
+        <p>{t(l).notFound.text} <a href={localize('/', l)}>{t(l).notFound.back}</a>.</p>
+      </div>
+    ))}
   </section>
 </Base>
+<style>.nf + .nf { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }</style>

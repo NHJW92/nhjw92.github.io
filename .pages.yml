@@ -31,6 +31,15 @@ content:
         required: true
         options:
           format: yyyy-MM-dd
+      - name: lang
+        label: Language you wrote this in (the other languages are translated automatically)
+        type: select
+        default: nl
+        options:
+          values:
+            - { name: nl, label: Nederlands }
+            - { name: en, label: English }
+            - { name: de, label: Deutsch }
       - name: location
         label: Location (shown above the title)
         type: string

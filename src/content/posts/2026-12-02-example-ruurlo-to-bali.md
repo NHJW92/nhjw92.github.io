@@ -13,6 +13,7 @@ gallery:
     caption: Example caption. Replace with a photo from the trip.
   - image: /uploads/example-arrival-2.jpg
     caption: Another example photo.
+lang: en
 draft: false
 ---
 

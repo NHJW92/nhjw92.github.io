@@ -1,0 +1,83 @@
+---
+import { render } from 'astro:content';
+import { Picture, getImage } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Gallery from '../components/Gallery.astro';
+import Subscribe from '../components/Subscribe.astro';
+import Comments from '../components/Comments.astro';
+import RouteMap from '../components/RouteMap.astro';
+import { resolveImage } from '../lib/images';
+import { postUrl, routePoints, type Post } from '../lib/posts';
+import { formatDate, localize, t } from '../i18n/ui';
+
+interface Props { post: Post; newer?: Post; older?: Post; all: Post[] }
+const { post, newer, older, all } = Astro.props;
+const lang = post.lang;
+const s = t(lang);
+const { Content } = await render(post.entry);
+const cover = resolveImage(post.data.cover);
+const ogImage = cover ? (await getImage({ src: cover, width: 1200, format: 'jpg' })).src : undefined;
+const hasCoords = typeof post.data.lat === 'number' && typeof post.data.lng === 'number';
+const sourceName = s.langNames[post.sourceLang];
+const originalUrl = localize(`/posts/${post.id}/`, post.sourceLang);
+---
+<Base lang={lang} title={post.data.title} description={post.data.summary ?? undefined} image={ogImage}>
+  <article>
+    <header class="prose-wrap head">
+      <p class="eyebrow">{post.data.location}</p>
+      <h1>{post.data.title}</h1>
+      <p class="meta"><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, lang)}</time>{post.data.draft && ` · ${s.post.draft}`}</p>
+      {post.status === 'translated' && (
+        <p class="notice">{s.post.machineTranslated(sourceName)} <a href={originalUrl} hreflang={post.sourceLang}>{t(post.sourceLang).langNames[post.sourceLang]} ↗</a></p>
+      )}
+      {post.status === 'missing' && <p class="notice">{s.post.notYetTranslated(sourceName)}</p>}
+    </header>
+
+    {cover && (
+      <figure class="cover wrap">
+        <Picture src={cover} alt={post.data.coverAlt ?? ''} formats={['avif', 'webp']} widths={[640, 1024, 1600, 2200]} sizes="(min-width: 1180px) 1152px, 100vw" loading="eager" fetchpriority="high" />
+      </figure>
+    )}
+
+    <div class="prose-wrap prose" lang={post.status === 'missing' ? post.sourceLang : undefined}>
+      <Content />
+    </div>
+
+    {post.data.gallery.length > 0 && (
+      <div class="wrap"><Gallery items={post.data.gallery} lang={lang} /></div>
+    )}
+
+    {hasCoords && (
+      <div class="prose-wrap where">
+        <h2>{s.post.whereTitle}</h2>
+        <RouteMap points={routePoints(all, lang)} height="18rem" focus={{ lat: post.data.lat!, lng: post.data.lng! }} lang={lang} />
+      </div>
+    )}
+
+    <nav class="prose-wrap pager">
+      {older ? <a href={postUrl(older)} class="prev"><span class="meta">{s.post.previous}</span>{older.data.title}</a> : <span></span>}
+      {newer ? <a href={postUrl(newer)} class="next"><span class="meta">{s.post.next}</span>{newer.data.title}</a> : <span></span>}
+    </nav>
+
+    <div class="prose-wrap"><Subscribe lang={lang} /></div>
+    <div class="prose-wrap"><Comments lang={lang} term={post.id} /></div>
+  </article>
+</Base>
+
+<style>
+  .head { padding: clamp(2.5rem, 7vw, 5rem) 0 2rem; }
+  .head h1 { margin: 0.4rem 0 0.6rem; }
+  .notice {
+    margin: 1rem 0 0; padding: 0.55rem 0.9rem; border-radius: 10px; background: var(--paper-2);
+    color: var(--ink-soft); font-size: 0.88rem; display: inline-block;
+  }
+  .notice a { white-space: nowrap; }
+  .cover { margin: 0 auto 3rem; }
+  .cover :global(img) { width: 100%; max-height: 80vh; object-fit: cover; border-radius: calc(var(--radius) + 4px); }
+  .where { margin: 3rem auto; }
+  .where h2 { font-size: 1.3rem; }
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 4rem auto 3rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+  .pager a { display: grid; gap: 0.2rem; text-decoration: none; color: var(--ink); font-family: var(--serif); font-size: 1.1rem; font-weight: 600; }
+  .pager a:hover { color: var(--teal); }
+  .next { text-align: right; }
+</style>

@@ -6,20 +6,45 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # to save new AI translations back to the repo
   pages: write
   id-token: write
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      TRANSLATE_MODEL: ${{ vars.TRANSLATE_MODEL }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Translate new or changed posts with AI
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          node scripts/translate.mjs
+
+      - name: Save translations to the repo
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        run: |
+          git add -A -- src/content/translations src/data/route-translations.json 2>/dev/null || git add -A -- src/data/route-translations.json
+          if git diff --cached --quiet; then
+            echo "No new translations."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Translate posts [skip ci]"
+            # Someone may have pushed meanwhile; rebase and retry once. The build below
+            # uses these translations either way.
+            git pull --rebase && git push || echo "::warning::Could not push translations; they will be regenerated next run."
+          fi
+
       - name: Build with Astro
         uses: withastro/action@v6
 

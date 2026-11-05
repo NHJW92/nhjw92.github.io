@@ -1,9 +1,11 @@
 ---
 import { Image, getImage } from 'astro:assets';
 import { resolveImage } from '../lib/images';
+import { t, type Lang } from '../i18n/ui';
 
-interface Props { items: { image: string; caption?: string | null }[] }
-const { items } = Astro.props;
+interface Props { items: { image: string; caption?: string | null }[]; lang: Lang }
+const { items, lang } = Astro.props;
+const s = t(lang).gallery;
 
 const photos = await Promise.all(
   items.map(async (item) => {
@@ -14,7 +16,7 @@ const photos = await Promise.all(
 );
 ---
 {photos.length > 0 && (
-  <section class="gallery" aria-label="Photo gallery">
+  <section class="gallery" aria-label={s.label}>
     <div class="grid">
       {photos.map((p, i) => (
         <figure>
@@ -25,12 +27,12 @@ const photos = await Promise.all(
         </figure>
       ))}
     </div>
-    <dialog class="lightbox" aria-label="Photo viewer">
+    <dialog class="lightbox" aria-label={s.viewer}>
       <img alt="" />
       <p class="lb-caption"></p>
-      <button class="lb-close" aria-label="Close">×</button>
-      <button class="lb-prev" aria-label="Previous photo">‹</button>
-      <button class="lb-next" aria-label="Next photo">›</button>
+      <button class="lb-close" aria-label={s.close}>×</button>
+      <button class="lb-prev" aria-label={s.prev}>‹</button>
+      <button class="lb-next" aria-label={s.next}>›</button>
     </dialog>
   </section>
 )}

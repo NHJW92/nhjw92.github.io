@@ -1,6 +1,7 @@
 ---
 import type { MapPoint } from '../lib/posts';
 import { SITE } from '../site.config';
+import { t, type Lang } from '../i18n/ui';
 
 interface Props {
   points: MapPoint[];
@@ -8,24 +9,26 @@ interface Props {
   /** Highlight a single point (used on post pages). */
   focus?: { lat: number; lng: number };
   legend?: boolean;
+  lang: Lang;
 }
-const { points, height = '28rem', focus, legend = true } = Astro.props;
+const { points, height = '28rem', focus, legend = true, lang } = Astro.props;
+const s = t(lang);
 const modes = new Set(points.slice(1).map((p) => p.travel));
 const showFlight = modes.has('flight');
 const showBoat = modes.has('boat');
 const showGround = [...modes].some((m) => m !== 'flight' && m !== 'boat' && m !== 'start');
 ---
 <figure class="route-figure">
-  <div class="route-map" style={`--h:${height}`} data-points={JSON.stringify(points)} data-focus={focus ? JSON.stringify(focus) : ''} data-carto-key={SITE.map.cartoApiKey}>
-    <noscript><p>The map needs JavaScript.</p></noscript>
+  <div class="route-map" style={`--h:${height}`} data-points={JSON.stringify(points)} data-focus={focus ? JSON.stringify(focus) : ''} data-carto-key={SITE.map.cartoApiKey} data-stop-label={s.map.stop}>
+    <noscript><p>{s.map.needsJs}</p></noscript>
   </div>
   {legend && points.length > 1 && (
     <figcaption class="legend">
-      {showGround && <span><i class="ground"></i>Overland</span>}
-      {showBoat && <span><i class="boat"></i>Boat</span>}
-      {showFlight && <span><i class="flight"></i>Flight</span>}
-      <span><b class="dot story"></b>Story</span>
-      {points.some((p) => p.kind === 'stop') && <span><b class="dot stop"></b>Stop</span>}
+      {showGround && <span><i class="ground"></i>{s.legend.overland}</span>}
+      {showBoat && <span><i class="boat"></i>{s.legend.boat}</span>}
+      {showFlight && <span><i class="flight"></i>{s.legend.flight}</span>}
+      <span><b class="dot story"></b>{s.legend.story}</span>
+      {points.some((p) => p.kind === 'stop') && <span><b class="dot stop"></b>{s.legend.stop}</span>}
     </figcaption>
   )}
 </figure>
@@ -109,7 +112,7 @@ const showGround = [...modes].some((m) => m !== 'flight' && m !== 'boat' && m !=
         .bindPopup(
           story
             ? `<div class="pop"><span class="pop-loc">${esc(p.location)}</span><a href="${p.url}">${esc(p.title)}</a><span class="pop-date">${esc(p.date)}</span></div>`
-            : `<div class="pop"><span class="pop-loc">Stop</span><strong>${esc(p.title)}</strong>${p.note ? `<span>${esc(p.note)}</span>` : ''}<span class="pop-date">${esc(p.date)}</span></div>`,
+            : `<div class="pop"><span class="pop-loc">${esc(el.dataset.stopLabel || 'Stop')}</span><strong>${esc(p.title)}</strong>${p.note ? `<span>${esc(p.note)}</span>` : ''}<span class="pop-date">${esc(p.date)}</span></div>`,
         );
     });
 

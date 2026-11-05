@@ -1,20 +1,25 @@
 ---
 import { SITE } from '../site.config';
+import { localize, t, type Lang } from '../i18n/ui';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const s = t(lang).subscribe;
 const user = SITE.buttondownUsername;
 ---
 <aside class="subscribe">
   <div>
-    <h2>Follow along</h2>
-    <p>Get an email when a new story goes up. No spam, unsubscribe any time.</p>
+    <h2>{s.title}</h2>
+    <p>{s.text}</p>
   </div>
   {user ? (
     <form action={`https://buttondown.com/api/emails/embed-subscribe/${user}`} method="post" target="_blank" class="form">
-      <label for="bd-email" class="visually-hidden">Email address</label>
+      <label for="bd-email" class="visually-hidden">{s.emailLabel}</label>
+      <input type="hidden" name="tag" value={lang} />
       <input type="email" name="email" id="bd-email" placeholder="you@example.com" required autocomplete="email" />
-      <button class="btn" type="submit">Subscribe</button>
+      <button class="btn" type="submit">{s.button}</button>
     </form>
   ) : (
-    <p class="fallback">Prefer a feed reader? <a href="/rss.xml">Subscribe via RSS</a>.</p>
+    <p class="fallback">{s.rssPrefix} <a href={localize('/rss.xml', lang)}>{s.rssLink}</a>.</p>
   )}
 </aside>
 

@@ -2,12 +2,15 @@
 // Comments are isolated in this component so the provider can be swapped
 // (e.g. for Cusdis or Hyvor Talk) without touching the post layout.
 import { SITE } from '../site.config';
+import { t, type Lang } from '../i18n/ui';
+interface Props { lang: Lang; term: string }
+const { lang, term } = Astro.props;
 const g = SITE.giscus;
 const enabled = Boolean(g.repo && g.repoId && g.categoryId);
 ---
 {enabled && (
   <section class="comments" aria-label="Comments">
-    <h2>Comments</h2>
+    <h2>{t(lang).comments}</h2>
     <script
       is:inline
       src="https://giscus.app/client.js"
@@ -15,13 +18,14 @@ const enabled = Boolean(g.repo && g.repoId && g.categoryId);
       data-repo-id={g.repoId}
       data-category={g.category}
       data-category-id={g.categoryId}
-      data-mapping="pathname"
+      data-mapping="specific"
+      data-term={term}
       data-strict="0"
       data-reactions-enabled="1"
       data-emit-metadata="0"
       data-input-position="top"
       data-theme="light"
-      data-lang="en"
+      data-lang={lang}
       data-loading="lazy"
       crossorigin="anonymous"
       async

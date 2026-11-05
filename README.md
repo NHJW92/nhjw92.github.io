@@ -64,6 +64,25 @@ Note: Giscus requires readers to sign in with GitHub to comment. If family membe
 
 Delete the three `sample-*` posts in `src/content/posts/` and the `sample-*.jpg` files in `src/assets/uploads/`, either through Pages CMS or with git.
 
+## Languages and AI translation
+
+The site exists in three languages: Dutch at `/`, English at `/en/` and German at `/de/`. A switcher in the header moves between them.
+
+- **Interface text** (menus, labels, the About page) lives in `src/i18n/ui.ts`, one block per language.
+- **Posts** are written once. Set the **Language** field (`lang: nl` or `lang: en`) to the language you wrote in. On every deploy, `scripts/translate.mjs` asks Claude to translate new or changed posts into the other two languages and saves them in `src/content/translations/<lang>/`. A post is only translated again when its text changes.
+- **Route stop notes** are translated the same way, into `src/data/route-translations.json`.
+- Until a translation exists, the post is shown in its original language with a short note.
+
+### Turning on AI translation
+
+1. Create an API key at https://console.anthropic.com (Settings → API keys) and add some credit. Translating a post costs a few cents at most.
+2. In the GitHub repo, open **Settings → Secrets and variables → Actions → New repository secret**. Name it `ANTHROPIC_API_KEY` and paste the key as the value.
+3. Push anything, or re-run the latest **Deploy to GitHub Pages** workflow.
+
+Without the secret, the site builds normally and nothing is translated. To use a different model, add a repository *variable* `TRANSLATE_MODEL` under the same Settings page.
+
+Translations are committed by `github-actions[bot]`, so run `git pull` before you edit locally. You can correct a translation by hand. Your edit stays until the original post changes, at which point the post is translated again.
+
 ## Local development
 
 ```bash

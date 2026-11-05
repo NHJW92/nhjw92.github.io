@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import RouteMap from '../components/RouteMap.astro';
+import Subscribe from '../components/Subscribe.astro';
+import { SITE } from '../site.config';
+import { getPosts, routePoints } from '../lib/posts';
+import { localize, t, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const s = t(lang);
+const posts = await getPosts(lang);
+const [latest, ...rest] = posts;
+const points = routePoints(posts, lang);
+const current = points.at(-1);
+---
+<Base lang={lang}>
+  <section class="hero wrap">
+    <p class="eyebrow">{current ? s.home.currentlyIn(current.location) : s.home.journal}</p>
+    <h1>{SITE.title}</h1>
+    <p class="tagline">{s.tagline}</p>
+  </section>
+
+  {latest ? (
+    <section class="wrap latest">
+      <PostCard post={latest} featured />
+    </section>
+  ) : (
+    <section class="wrap empty"><p>{s.home.empty}</p></section>
+  )}
+
+  <section class="wrap route">
+    <div class="route-head">
+      <h2>{s.home.routeTitle}</h2>
+      <a href={localize('/map/', lang)}>{s.home.fullMap}</a>
+    </div>
+    <RouteMap points={points} height="22rem" lang={lang} />
+  </section>
+
+  {rest.length > 0 && (
+    <section class="wrap">
+      <h2 class="section-title">{s.home.earlier}</h2>
+      <div class="grid">
+        {rest.map((p) => <PostCard post={p} />)}
+      </div>
+    </section>
+  )}
+
+  <section class="wrap sub"><Subscribe lang={lang} /></section>
+</Base>
+
+<style>
+  .hero { padding: clamp(3rem, 8vw, 6rem) 0 clamp(2rem, 5vw, 3.5rem); max-width: 46rem; margin-left: max(1.25rem, (100% - var(--max)) / 2); }
+  .hero h1 { margin: 0.4rem 0 0.8rem; }
+  .tagline { font-size: 1.2rem; color: var(--ink-soft); margin: 0; }
+  .latest { margin-bottom: 5rem; }
+  .empty { color: var(--muted); }
+  .route { margin-bottom: 5rem; }
+  .route-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; gap: 1rem; }
+  .route-head h2 { margin: 0; }
+  .section-title { margin: 0 0 1.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); gap: 2.5rem 1.75rem; }
+  .sub { margin-top: 5rem; }
+</style>
