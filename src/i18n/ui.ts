@@ -39,6 +39,7 @@ type Strings = {
   home: {
     currentlyIn: (place: string) => string; journal: string; empty: string; routeTitle: string; fullMap: string; earlier: string;
     coverStory: string; readStory: string; byline: string;
+    welcome: string; explore: string; storiesHint: string; routeHint: string; aboutHint: string;
     stats: { stops: string; stories: string; km: string };
   };
   /** "Flight from Abu Dhabi" */
@@ -74,6 +75,11 @@ export const ui: Record<Lang, Strings> = {
     leg: (mode, from) => `${mode} vanaf ${from}`,
     home: {
       coverStory: 'Nieuwste verhaal',
+      welcome: 'Wij zijn Babet en Niels. Reis met ons mee door Indonesië: ontdek onze verhalen, bekijk de foto’s en volg onze route van plek naar plek.',
+      explore: 'Ontdek onze reis',
+      storiesHint: 'Verhalen en foto’s onderweg',
+      routeHint: 'Volg onze reis op de kaart',
+      aboutHint: 'Maak kennis met Babet en Niels',
       readStory: 'Lees het verhaal',
       byline: 'Door Babet en Niels',
       stats: { stops: 'stops', stories: 'verhalen', km: 'km gereisd' },
@@ -151,6 +157,11 @@ export const ui: Record<Lang, Strings> = {
     leg: (mode, from) => `${mode} from ${from}`,
     home: {
       coverStory: 'Latest story',
+      welcome: 'We’re Babet and Niels. Join us as we travel through Indonesia: read our stories, browse the photos and follow our route from place to place.',
+      explore: 'Explore our journey',
+      storiesHint: 'Stories and photos from the road',
+      routeHint: 'Follow our journey on the map',
+      aboutHint: 'Meet Babet and Niels',
       readStory: 'Read the story',
       byline: 'By Babet and Niels',
       stats: { stops: 'stops', stories: 'stories', km: 'km travelled' },
@@ -228,6 +239,11 @@ export const ui: Record<Lang, Strings> = {
     leg: (mode, from) => `${mode} ab ${from}`,
     home: {
       coverStory: 'Neueste Geschichte',
+      welcome: 'Wir sind Babet und Niels. Begleitet uns durch Indonesien: Lest unsere Geschichten, entdeckt die Fotos und folgt unserer Route von Ort zu Ort.',
+      explore: 'Entdeckt unsere Reise',
+      storiesHint: 'Geschichten und Fotos von unterwegs',
+      routeHint: 'Verfolgt unsere Reise auf der Karte',
+      aboutHint: 'Lernt Babet und Niels kennen',
       readStory: 'Geschichte lesen',
       byline: 'Von Babet und Niels',
       stats: { stops: 'Halte', stories: 'Geschichten', km: 'km gereist' },

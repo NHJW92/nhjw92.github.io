@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Cover from '../components/Cover.astro';
-import Dateline from '../components/Dateline.astro';
+import LandingIntro from '../components/LandingIntro.astro';
 import PostCard from '../components/PostCard.astro';
 import RouteMap from '../components/RouteMap.astro';
 import Subscribe from '../components/Subscribe.astro';
@@ -16,17 +16,17 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const s = t(lang);
 const posts = await getPosts(lang);
-const [latest, ...rest] = posts;
+const firstStory = posts.at(-1);
 const points = routePoints(posts, lang);
 const current = points.at(-1);
 const legOf = (p: Post) => legFor(points, postUrl(p));
-const cover = resolveImage(latest?.data.cover);
-const latestLeg = latest ? legOf(latest) : undefined;
+const cover = resolveImage(firstStory?.data.cover);
 
-// Earlier stories: a few wide features, then a three-up grid that always fills its rows.
-const featureCount = rest.length ? ((rest.length - 1) % 3) + 1 : 0;
-const features = rest.slice(0, featureCount);
-const grid = rest.slice(featureCount);
+
+// All stories, newest first: wide features followed by a three-column grid.
+const featureCount = posts.length ? ((posts.length - 1) % 3) + 1 : 0;
+const features = posts.slice(0, featureCount);
+const grid = posts.slice(featureCount);
 
 // Logbook numbers
 const nf = new Intl.NumberFormat(LOCALES[lang]);
@@ -39,43 +39,34 @@ const stats = [
 const recent = points.map((p, i) => ({ ...p, n: i + 1 })).reverse().slice(0, 5);
 ---
 <Base lang={lang} overlay={Boolean(cover)}>
-  <h1 class="visually-hidden">{SITE.title}</h1>
-
-  {latest && cover && (
-    <Cover image={cover} alt={latest.data.coverAlt ?? ''}>
-      <div class="cover-copy">
-        <p class="flags"><span class="flag">{s.home.coverStory}</span>{current && <span class="now">{s.home.currentlyIn(current.location)}</span>}</p>
-        {latestLeg && <Dateline leg={latestLeg} lang={lang} />}
-        <h2 class="cover-title"><a href={postUrl(latest)}>{latest.data.title}</a></h2>
-        {latest.data.summary && <p class="dek">{latest.data.summary}</p>}
-        <a class="btn accent" href={postUrl(latest)}>{s.home.readStory} <span class="arrow" aria-hidden="true">→</span></a>
-      </div>
+  {cover ? (
+    <Cover image={cover} alt={firstStory?.data.coverAlt ?? ''}>
+      <LandingIntro lang={lang} location={current?.location} />
     </Cover>
-  )}
-
-  {latest && !cover && (
+  ) : (
     <section class="type-cover on-deep">
-      <div class="wrap cover-copy">
-        <p class="flags"><span class="flag">{s.home.coverStory}</span>{current && <span class="now">{s.home.currentlyIn(current.location)}</span>}</p>
-        {latestLeg && <Dateline leg={latestLeg} lang={lang} />}
-        <h2 class="cover-title"><a href={postUrl(latest)}>{latest.data.title}</a></h2>
-        {latest.data.summary && <p class="dek">{latest.data.summary}</p>}
-        <a class="btn accent" href={postUrl(latest)}>{s.home.readStory} <span class="arrow" aria-hidden="true">→</span></a>
-      </div>
+      <div class="wrap"><LandingIntro lang={lang} location={current?.location} /></div>
     </section>
   )}
-
-  {!latest && (
-    <section class="type-cover on-deep">
-      <div class="wrap cover-copy">
-        <p class="flags"><span class="now">{current ? s.home.currentlyIn(current.location) : s.home.journal}</span></p>
-        <p class="cover-title" aria-hidden="true">{SITE.title}</p>
-        <p class="dek">{s.home.empty}</p>
+  {posts.length > 0 ? (
+    <section id="stories" class="wrap stories" aria-labelledby="stories-title">
+      <header class="section-head" data-reveal>
+        <h2 id="stories-title">{s.nav.stories}</h2>
+      </header>
+      <div class="features">
+        {features.map((p, i) => <PostCard post={p} variant="feature" flip={i % 2 === 1} leg={legOf(p)} />)}
       </div>
+      {grid.length > 0 && (
+        <div class="grid">
+          {grid.map((p) => <PostCard post={p} leg={legOf(p)} />)}
+        </div>
+      )}
     </section>
+  ) : (
+    <section id="stories" class="wrap stories"><h2>{s.nav.stories}</h2><p>{s.home.empty}</p></section>
   )}
 
-  <section class:list={['wrap', 'letter', { ruled: rest.length > 0 }]} aria-label={s.home.journal}>
+  <section class:list={['wrap', 'letter', { ruled: posts.length > 0 }]} aria-label={s.home.journal}>
     <div class="note" data-reveal>
       <p class="kicker">{s.home.journal} · {s.edition}</p>
       <p class="statement">{s.tagline}</p>
@@ -87,22 +78,6 @@ const recent = points.map((p, i) => ({ ...p, n: i + 1 })).reverse().slice(0, 5);
       ))}
     </dl>
   </section>
-
-  {rest.length > 0 && (
-    <section class="wrap stories" aria-labelledby="earlier">
-      <header class="section-head" data-reveal>
-        <h2 id="earlier">{s.home.earlier}</h2>
-      </header>
-      <div class="features">
-        {features.map((p, i) => <PostCard post={p} variant="feature" flip={i % 2 === 1} leg={legOf(p)} />)}
-      </div>
-      {grid.length > 0 && (
-        <div class="grid">
-          {grid.map((p) => <PostCard post={p} leg={legOf(p)} />)}
-        </div>
-      )}
-    </section>
-  )}
 
   <section class="route on-deep" aria-labelledby="route-title">
     <div class="wrap route-in">
@@ -135,14 +110,6 @@ const recent = points.map((p, i) => ({ ...p, n: i + 1 })).reverse().slice(0, 5);
 </Base>
 
 <style>
-  /* Cover */
-  .cover-copy { display: grid; gap: 1.1rem; justify-items: start; max-width: 62rem; }
-  .flags { display: flex; flex-wrap: wrap; align-items: center; gap: 0.66rem 1rem; margin: 0; font-family: var(--label); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
-  .flag { background: var(--accent); color: #121a22; padding: 0.35rem 0.6rem; text-shadow: none; }
-  .cover-title { margin: 0.2rem 0 0; font-family: var(--display); font-weight: 500; font-size: clamp(2.6rem, 7vw, 6rem); line-height: 1; letter-spacing: -0.025em; text-wrap: balance; }
-  .cover-title a { color: inherit; text-decoration: none; }
-  .cover-title a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.1em; }
-  .cover-copy .dek { margin: 0 0 0.6rem; color: var(--ink-2); max-width: 40ch; }
   .type-cover { padding: clamp(5rem, 12vw, 9rem) 0 clamp(3rem, 8vw, 5rem); background: radial-gradient(120% 90% at 85% 0%, #1f3a4d 0%, var(--deep) 60%); }
 
   /* Editor's letter + logbook numbers */
@@ -158,7 +125,7 @@ const recent = points.map((p, i) => ({ ...p, n: i + 1 })).reverse().slice(0, 5);
   @media (min-width: 900px) { .letter { grid-template-columns: 1.3fr 1fr; align-items: end; gap: 4rem; } }
 
   /* Earlier stories */
-  .stories { padding-top: clamp(4rem, 8vw, 6rem); }
+  .stories { scroll-margin-top: 7rem; padding-top: clamp(4rem, 8vw, 6rem); }
   .section-head { display: flex; align-items: baseline; gap: 1.2rem; margin-bottom: clamp(2rem, 5vw, 3.5rem); }
   .section-head h2 { margin: 0; }
   .features { display: grid; gap: clamp(3.5rem, 8vw, 6rem); }

@@ -1,0 +1,42 @@
+---
+import { SITE } from '../site.config';
+import { localize, t, type Lang } from '../i18n/ui';
+interface Props { lang: Lang; location?: string }
+const { lang, location } = Astro.props;
+const s = t(lang);
+const links = [
+  { title: s.nav.stories, text: s.home.storiesHint, href: '#stories' },
+  { title: s.nav.route, text: s.home.routeHint, href: localize('/map/', lang) },
+  { title: s.nav.about, text: s.home.aboutHint, href: localize('/about/', lang) },
+];
+---
+<div class="landing-intro">
+  <p class="kicker">{s.home.journal} · {s.edition}{location && <span> · {s.home.currentlyIn(location)}</span>}</p>
+  <h1>{SITE.title}</h1>
+  <p class="welcome">{s.home.welcome}</p>
+  <nav class="quick-links" aria-label={s.home.explore}>
+    {links.map((link, i) => (
+      <a href={link.href}>
+        <span class="link-number" aria-hidden="true">0{i + 1}</span>
+        <span class="link-copy"><strong>{link.title}</strong><small>{link.text}</small></span>
+        <span class="arrow" aria-hidden="true">↗</span>
+      </a>
+    ))}
+  </nav>
+</div>
+<style>
+  .landing-intro { max-width: 64rem; }
+  .kicker { margin: 0 0 1rem; color: inherit; }
+  h1 { margin: 0; font-family: var(--display); font-weight: 500; font-size: clamp(3rem, 8vw, 7rem); line-height: 0.98; letter-spacing: -0.03em; text-wrap: balance; }
+  .welcome { max-width: 46ch; margin: 1.4rem 0 2.5rem; font-size: clamp(1.05rem, 2vw, 1.35rem); color: var(--ink-2); }
+  .quick-links { display: grid; gap: 0.8rem; text-shadow: none; }
+  .quick-links a { display: flex; align-items: center; gap: 1rem; padding: 1.1rem 1.2rem; min-width: 0; color: #f4f5f0; background: rgb(8 14 20 / 0.76); border: 1px solid rgb(244 245 240 / 0.45); text-decoration: none; transition: background 180ms ease, border-color 180ms ease; }
+  .quick-links a:hover { background: var(--deep); border-color: var(--accent); }
+  .quick-links a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+  .link-number { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); }
+  .link-copy { display: grid; gap: 0.25rem; }
+  strong { font-family: var(--label); font-size: 1.15rem; font-weight: 600; }
+  small { color: #dfe3dd; font-family: var(--label); font-size: 0.85rem; line-height: 1.4; }
+  .arrow { margin-left: auto; }
+  @media (min-width: 760px) { .quick-links { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+</style>
