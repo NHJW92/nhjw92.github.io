@@ -1,6 +1,6 @@
 // Central site settings. Edit these values; everything else reads from here.
 export const SITE = {
-  title: 'Niels in Indonesia',
+  title: 'Travel Engineers',
   tagline: 'Notes, photos and a slowly growing line across the archipelago.',
   description: 'A travel blog from a trip through Indonesia.',
   author: 'Niels',

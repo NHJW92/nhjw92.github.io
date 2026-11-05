@@ -41,6 +41,19 @@ content:
       - name: lng
         label: Longitude (for the route map, e.g. 119.8877)
         type: number
+      - name: travel
+        label: How did you get here? (styles the line on the map)
+        type: select
+        options:
+          values:
+            - { name: start, label: Start }
+            - { name: train, label: Train }
+            - { name: bus, label: Bus }
+            - { name: car, label: Car }
+            - { name: scooter, label: Scooter }
+            - { name: boat, label: Boat }
+            - { name: flight, label: Flight }
+            - { name: walk, label: On foot }
       - name: summary
         label: Short summary (shown on the homepage and in emails)
         type: text
@@ -71,3 +84,53 @@ content:
       - name: body
         label: Story
         type: rich-text
+
+  - name: route
+    label: Route stops
+    type: file
+    path: src/data/route.yml
+    format: yaml
+    fields:
+      - name: stops
+        label: Stops without a story (home, airports, transfers)
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{name} ({date})"
+        fields:
+          - name: name
+            label: Place
+            type: string
+            required: true
+          - name: note
+            label: Note (shown in the map popup)
+            type: string
+          - name: date
+            label: Date and time
+            type: date
+            required: true
+            options:
+              time: true
+              format: yyyy-MM-dd HH:mm
+          - name: lat
+            label: Latitude
+            type: number
+            required: true
+          - name: lng
+            label: Longitude
+            type: number
+            required: true
+          - name: travel
+            label: How did you get here?
+            type: select
+            options:
+              values:
+                - { name: start, label: Start }
+                - { name: train, label: Train }
+                - { name: bus, label: Bus }
+                - { name: car, label: Car }
+                - { name: scooter, label: Scooter }
+                - { name: boat, label: Boat }
+                - { name: flight, label: Flight }
+                - { name: walk, label: On foot }

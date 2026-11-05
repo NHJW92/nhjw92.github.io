@@ -1,4 +1,4 @@
-# Niels in Indonesia: travel blog
+# Travel Engineers: travel blog
 
 A static travel blog built with Astro and hosted for free on GitHub Pages. You can post from a phone through Pages CMS.
 

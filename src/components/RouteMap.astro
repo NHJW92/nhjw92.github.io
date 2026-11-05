@@ -4,23 +4,64 @@ import type { MapPoint } from '../lib/posts';
 interface Props {
   points: MapPoint[];
   height?: string;
-  /** Show the route line connecting the stops in date order. */
-  route?: boolean;
   /** Highlight a single point (used on post pages). */
   focus?: { lat: number; lng: number };
+  legend?: boolean;
 }
-const { points, height = '28rem', route = true, focus } = Astro.props;
+const { points, height = '28rem', focus, legend = true } = Astro.props;
+const modes = new Set(points.slice(1).map((p) => p.travel));
+const showFlight = modes.has('flight');
+const showBoat = modes.has('boat');
+const showGround = [...modes].some((m) => m !== 'flight' && m !== 'boat' && m !== 'start');
 ---
-<div class="route-map" style={`--h:${height}`} data-points={JSON.stringify(points)} data-route={String(route)} data-focus={focus ? JSON.stringify(focus) : ''}>
-  <noscript><p>The map needs JavaScript.</p></noscript>
-</div>
+<figure class="route-figure">
+  <div class="route-map" style={`--h:${height}`} data-points={JSON.stringify(points)} data-focus={focus ? JSON.stringify(focus) : ''}>
+    <noscript><p>The map needs JavaScript.</p></noscript>
+  </div>
+  {legend && points.length > 1 && (
+    <figcaption class="legend">
+      {showGround && <span><i class="ground"></i>Overland</span>}
+      {showBoat && <span><i class="boat"></i>Boat</span>}
+      {showFlight && <span><i class="flight"></i>Flight</span>}
+      <span><b class="dot story"></b>Story</span>
+      {points.some((p) => p.kind === 'stop') && <span><b class="dot stop"></b>Stop</span>}
+    </figcaption>
+  )}
+</figure>
 
 <script>
   import L from 'leaflet';
   import 'leaflet/dist/leaflet.css';
 
-  type Point = { title: string; url: string; date: string; location: string; lat: number; lng: number };
+  type Point = {
+    kind: 'story' | 'stop'; title: string; url?: string; date: string; location: string;
+    note?: string; lat: number; lng: number; travel: string;
+  };
   const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+
+  const STYLE: Record<string, L.PolylineOptions> = {
+    flight: { color: '#0e5c57', weight: 2, dashArray: '2 7', lineCap: 'round', opacity: 0.85 },
+    boat: { color: '#2f6fa3', weight: 2.5, dashArray: '8 6', opacity: 0.9 },
+    ground: { color: '#c0532b', weight: 3, opacity: 0.9 },
+  };
+
+  /** Gentle arc between two points, so flights read as flights. */
+  function arc(a: [number, number], b: [number, number], steps = 48): [number, number][] {
+    const [lat1, lng1] = a, [lat2, lng2] = b;
+    const dLat = lat2 - lat1, dLng = lng2 - lng1;
+    const dist = Math.hypot(dLat, dLng);
+    // Control point: midpoint pushed perpendicular (towards the pole side).
+    const k = 0.18 * dist;
+    const nx = -dLat / (dist || 1), ny = dLng / (dist || 1);
+    const sign = ny >= 0 ? 1 : -1;
+    const c: [number, number] = [(lat1 + lat2) / 2 + sign * ny * k, (lng1 + lng2) / 2 + sign * nx * k];
+    const out: [number, number][] = [];
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps, u = 1 - t;
+      out.push([u * u * lat1 + 2 * u * t * c[0] + t * t * lat2, u * u * lng1 + 2 * u * t * c[1] + t * t * lng2]);
+    }
+    return out;
+  }
 
   function init(el: HTMLElement) {
     if (el.dataset.ready) return;
@@ -28,39 +69,48 @@ const { points, height = '28rem', route = true, focus } = Astro.props;
     const points: Point[] = JSON.parse(el.dataset.points || '[]');
     const focus = el.dataset.focus ? (JSON.parse(el.dataset.focus) as { lat: number; lng: number }) : null;
 
-    const map = L.map(el, { scrollWheelZoom: false, attributionControl: true });
+    const map = L.map(el, { scrollWheelZoom: false, worldCopyJump: true });
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       maxZoom: 18,
       subdomains: 'abcd',
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
     }).addTo(map);
 
-    const latlngs = points.map((p) => [p.lat, p.lng] as [number, number]);
-    if (el.dataset.route === 'true' && latlngs.length > 1) {
-      L.polyline(latlngs, { color: '#c0532b', weight: 2.5, dashArray: '6 7', opacity: 0.9 }).addTo(map);
+    // Legs: each point's `travel` describes how you got there from the previous one.
+    for (let i = 1; i < points.length; i++) {
+      const a: [number, number] = [points[i - 1].lat, points[i - 1].lng];
+      const b: [number, number] = [points[i].lat, points[i].lng];
+      const mode = points[i].travel;
+      if (mode === 'flight') L.polyline(arc(a, b), STYLE.flight).addTo(map);
+      else L.polyline([a, b], mode === 'boat' ? STYLE.boat : STYLE.ground).addTo(map);
     }
+
     points.forEach((p, i) => {
       const isLast = i === points.length - 1;
-      const isFocus = focus && focus.lat === p.lat && focus.lng === p.lng;
+      const isFocus = !!focus && focus.lat === p.lat && focus.lng === p.lng;
+      const story = p.kind === 'story';
       L.circleMarker([p.lat, p.lng], {
-        radius: isFocus || isLast ? 8 : 6,
-        color: '#fff',
+        radius: story ? (isFocus || isLast ? 8 : 6.5) : 4.5,
+        color: story ? '#fff' : '#0e5c57',
         weight: 2,
-        fillColor: isFocus ? '#c0532b' : '#0e5c57',
+        fillColor: isFocus ? '#c0532b' : story ? '#0e5c57' : '#fff',
         fillOpacity: 1,
       })
         .addTo(map)
         .bindPopup(
-          `<div class="pop"><span class="pop-loc">${esc(p.location)}</span><a href="${p.url}">${esc(p.title)}</a><span class="pop-date">${esc(p.date)}</span></div>`,
+          story
+            ? `<div class="pop"><span class="pop-loc">${esc(p.location)}</span><a href="${p.url}">${esc(p.title)}</a><span class="pop-date">${esc(p.date)}</span></div>`
+            : `<div class="pop"><span class="pop-loc">Stop</span><strong>${esc(p.title)}</strong>${p.note ? `<span>${esc(p.note)}</span>` : ''}<span class="pop-date">${esc(p.date)}</span></div>`,
         );
     });
 
+    const latlngs = points.map((p) => [p.lat, p.lng] as [number, number]);
     if (focus) {
       map.setView([focus.lat, focus.lng], 7);
     } else if (latlngs.length) {
-      map.fitBounds(L.latLngBounds(latlngs).pad(0.25), { maxZoom: 8 });
+      map.fitBounds(L.latLngBounds(latlngs).pad(0.15), { maxZoom: 8 });
     } else {
-      // Indonesia overview when there are no posts with coordinates yet.
+      // Indonesia overview when there are no points yet.
       map.fitBounds([[-11, 95], [6, 141]]);
     }
     map.on('click', () => map.scrollWheelZoom.enable());
@@ -71,6 +121,7 @@ const { points, height = '28rem', route = true, focus } = Astro.props;
 </script>
 
 <style>
+  .route-figure { margin: 0; }
   .route-map {
     height: var(--h);
     border-radius: var(--radius);
@@ -79,8 +130,16 @@ const { points, height = '28rem', route = true, focus } = Astro.props;
     background: #e8e4da;
     z-index: 0;
   }
+  .legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; margin-top: 0.7rem; font-size: 0.85rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .legend i { display: inline-block; width: 1.6rem; height: 0; border-top: 3px solid #c0532b; }
+  .legend i.boat { border-top: 2.5px dashed #2f6fa3; }
+  .legend i.flight { border-top: 2.5px dotted #0e5c57; }
+  .legend .dot { display: inline-block; width: 0.75rem; height: 0.75rem; border-radius: 50%; }
+  .legend .dot.story { background: #0e5c57; box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--line); }
+  .legend .dot.stop { width: 0.6rem; height: 0.6rem; background: #fff; border: 2px solid #0e5c57; }
   .route-map :global(.pop) { display: grid; gap: 0.15rem; font-family: var(--sans); }
-  .route-map :global(.pop a) { font-family: var(--serif); font-size: 1.05rem; font-weight: 600; color: var(--ink); text-decoration: none; }
+  .route-map :global(.pop a), .route-map :global(.pop strong) { font-family: var(--serif); font-size: 1.05rem; font-weight: 600; color: var(--ink); text-decoration: none; }
   .route-map :global(.pop a:hover) { color: var(--clay); }
   .route-map :global(.pop-loc) { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--clay); font-weight: 600; }
   .route-map :global(.pop-date) { font-size: 0.8rem; color: var(--muted); }
