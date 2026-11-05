@@ -1,11 +1,13 @@
 ---
 title: "Example: From Ruurlo to Bali in one long day"
 date: 2026-11-08
+lang: en
 location: Denpasar, Bali
 lat: -8.6705
 lng: 115.2126
 travel: flight
-summary: An example first post. Train to Schiphol, a night flight via Abu Dhabi, and Bali the next afternoon. Replace it with the real story.
+summary: An example first post. Train to Schiphol, a night flight via Abu Dhabi,
+  and Bali the next afternoon. Replace it with the real story.
 cover: /uploads/example-arrival-cover.jpg
 coverAlt: Example placeholder image
 gallery:
@@ -13,10 +15,9 @@ gallery:
     caption: Example caption. Replace with a photo from the trip.
   - image: /uploads/example-arrival-2.jpg
     caption: Another example photo.
-lang: en
+  - image: /uploads/img7064.jpeg
 draft: false
 ---
-
 This is an **example post** to show how a trip appears on the site. Edit it once the real journey has happened, or delete it.
 
 The route on the map has four points:
@@ -31,3 +32,4 @@ Ruurlo, Schiphol and Abu Dhabi are *stops*. They're on the route but have no sto
 Each point records how you got there (train, flight, boat, scooter…). The map draws flights as dotted arcs, boats as dashed lines and overland legs as solid lines.
 
 > The dates are placeholders. Set them to the real departure day so the route stays in the right order.
+
