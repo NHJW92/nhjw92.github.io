@@ -1,7 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import { Image } from 'astro:assets';
-import portrait from '../assets/uploads/babet-en-niels-sharp.png';
 import Cover from '../components/Cover.astro';
 import Dateline from '../components/Dateline.astro';
 import PostCard from '../components/PostCard.astro';
@@ -40,15 +38,8 @@ const stats = [
 // Latest stop first; numbers still count from the start of the trip.
 const recent = points.map((p, i) => ({ ...p, n: i + 1 })).reverse().slice(0, 5);
 ---
-<Base lang={lang}>
-  <section class="intro wrap">
-    <div class="intro-copy">
-      <p class="kicker">{current ? s.home.currentlyIn(current.location) : s.home.journal}</p>
-      <h1>{SITE.title}</h1>
-      <p class="intro-tagline">{s.tagline}</p>
-    </div>
-    <Image class="intro-portrait" src={portrait} alt={s.home.portraitAlt} widths={[480, 768, 1024]} sizes="(min-width: 800px) 24rem, (min-width: 480px) 26rem, calc(100vw - 2.5rem)" loading="eager" fetchpriority="high" />
-  </section>
+<Base lang={lang} overlay={Boolean(cover)}>
+  <h1 class="visually-hidden">{SITE.title}</h1>
 
   {latest && cover && (
     <Cover image={cover} alt={latest.data.coverAlt ?? ''}>
@@ -144,13 +135,6 @@ const recent = points.map((p, i) => ({ ...p, n: i + 1 })).reverse().slice(0, 5);
 </Base>
 
 <style>
-  .intro { padding-block: clamp(2rem, 5vw, 4rem); display: grid; align-items: center; gap: 2rem; }
-  .intro-copy { max-width: 42rem; }
-  .intro h1 { margin: 0.4rem 0 0.8rem; }
-  .intro-tagline { font-size: 1.2rem; color: var(--ink-2); margin: 0; }
-  .intro-portrait { width: 100%; max-width: 26rem; height: auto; border-radius: var(--radius); justify-self: center; }
-  @media (min-width: 800px) { .intro { grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); gap: 3rem; } }
-
   /* Cover */
   .cover-copy { display: grid; gap: 1.1rem; justify-items: start; max-width: 62rem; }
   .flags { display: flex; flex-wrap: wrap; align-items: center; gap: 0.66rem 1rem; margin: 0; font-family: var(--label); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }

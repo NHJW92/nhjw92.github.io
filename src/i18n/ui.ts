@@ -38,7 +38,7 @@ type Strings = {
   colophon: string;
   home: {
     currentlyIn: (place: string) => string; journal: string; empty: string; routeTitle: string; fullMap: string; earlier: string;
-    coverStory: string; readStory: string; byline: string; portraitAlt: string;
+    coverStory: string; readStory: string; byline: string;
     stats: { stops: string; stories: string; km: string };
   };
   /** "Flight from Abu Dhabi" */
@@ -79,7 +79,6 @@ export const ui: Record<Lang, Strings> = {
       stats: { stops: 'stops', stories: 'verhalen', km: 'km gereisd' },
       currentlyIn: (p) => `Nu in ${p}`,
       journal: 'Reisdagboek',
-      portraitAlt: 'Babet en Niels lachen samen op een selfie.',
       empty: 'Het eerste verhaal komt eraan.',
       routeTitle: 'De route tot nu toe',
       fullMap: 'Hele kaart →',
@@ -157,7 +156,6 @@ export const ui: Record<Lang, Strings> = {
       stats: { stops: 'stops', stories: 'stories', km: 'km travelled' },
       currentlyIn: (p) => `Currently in ${p}`,
       journal: 'Travel journal',
-      portraitAlt: 'Babet and Niels smiling together in a selfie.',
       empty: 'The first story is on its way.',
       routeTitle: 'The route so far',
       fullMap: 'Full map →',
@@ -235,7 +233,6 @@ export const ui: Record<Lang, Strings> = {
       stats: { stops: 'Halte', stories: 'Geschichten', km: 'km gereist' },
       currentlyIn: (p) => `Gerade in ${p}`,
       journal: 'Reisetagebuch',
-      portraitAlt: 'Babet und Niels lächeln gemeinsam auf einem Selfie.',
       empty: 'Die erste Geschichte ist unterwegs.',
       routeTitle: 'Die bisherige Route',
       fullMap: 'Ganze Karte →',
