@@ -41,7 +41,7 @@ const uid = `dl-${Math.random().toString(36).slice(2, 8)}`;
   .dateline {
     display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.7rem;
     margin: 0;
-    font-family: var(--mono); font-size: 0.74rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+    font-family: var(--label); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
     color: currentColor;
   }
   .no { display: inline-flex; align-items: baseline; gap: 0.45rem; }
@@ -58,6 +58,7 @@ const uid = `dl-${Math.random().toString(36).slice(2, 8)}`;
   .glyph .from { fill: none; stroke: currentColor; stroke-width: 1.4; }
   .glyph .to { fill: var(--accent); stroke: none; }
   .sep { opacity: 0.6; }
+  .coords { font-family: var(--mono); font-weight: 500; letter-spacing: 0.02em; }
   /* Cards: number, glyph and leg only; the coordinates live on the story page. */
   .sm .coords, .sm .sep { display: none; }
   /* Narrow screens wrap the line; drop the dots so no line ends on one. */

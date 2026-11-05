@@ -1,14 +1,14 @@
 /*
  * Travel Engineers: a photo-first travel magazine.
- * Display: Bodoni Moda (big, editorial). Body: Newsreader (long reading). Labels: IBM Plex Mono
- * (the engineers' logbook: coordinates, legs, dates).
+ * Headlines: Newsreader (editorial, display optical size). Reading text: Literata (built for
+ * screens). Labels: Figtree. Coordinates only: IBM Plex Mono (the engineers' logbook).
  * Palette: volcanic ash canvas, batik-indigo ink, turmeric accent in rare doses, night-sea bands.
  */
-@import '@fontsource-variable/bodoni-moda/opsz.css';
-@import '@fontsource-variable/bodoni-moda/opsz-italic.css';
 @import '@fontsource-variable/newsreader/opsz.css';
 @import '@fontsource-variable/newsreader/opsz-italic.css';
-@import '@fontsource/ibm-plex-mono/latin-400.css';
+@import '@fontsource-variable/literata/opsz.css';
+@import '@fontsource-variable/literata/opsz-italic.css';
+@import '@fontsource-variable/figtree/wght.css';
 @import '@fontsource/ibm-plex-mono/latin-500.css';
 
 :root {
@@ -38,8 +38,9 @@
   --gutter: clamp(1.25rem, 4vw, 2.5rem);
   --radius: 4px;
 
-  --display: 'Bodoni Moda Variable', 'Bodoni 72', Didot, Georgia, serif;
-  --serif: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
+  --display: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
+  --serif: 'Literata Variable', Georgia, 'Times New Roman', serif;
+  --label: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -59,8 +60,8 @@ body {
   background: var(--canvas);
   color: var(--ink);
   font-family: var(--serif);
-  font-size: 1.125rem;
-  line-height: 1.6;
+  font-size: 1.0625rem;
+  line-height: 1.65;
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -88,7 +89,7 @@ p { text-wrap: pretty; }
 
 .skip {
   position: absolute; left: 1rem; top: -4rem; z-index: 3000;
-  background: var(--accent); color: var(--ink); padding: 0.6rem 1rem; font: 500 0.85rem var(--mono);
+  background: var(--accent); color: var(--ink); padding: 0.66rem 1rem; font: 600 0.85rem var(--label);
   text-decoration: none; transition: top 200ms var(--ease-out);
 }
 .skip:focus { top: 1rem; }
@@ -98,18 +99,18 @@ p { text-wrap: pretty; }
 
 /* Small labels: the logbook voice */
 .kicker, .eyebrow {
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-family: var(--label);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--muted);
 }
-.meta { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.04em; color: var(--muted); }
-.dek { font-family: var(--serif); font-style: italic; font-size: clamp(1.2rem, 2vw, 1.5rem); line-height: 1.4; max-width: 34ch; }
+.meta { font-family: var(--label); font-size: 0.84rem; letter-spacing: 0.04em; color: var(--muted); }
+.dek { font-family: var(--display); font-style: italic; font-size: clamp(1.2rem, 2vw, 1.5rem); line-height: 1.4; max-width: 34ch; }
 
 /* Long-form reading */
-.prose { font-size: 1.2rem; line-height: 1.7; }
+.prose { font-size: 1.125rem; line-height: 1.75; }
 .prose > * { margin: 0 0 1.3em; }
 .prose h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); margin: 2.2em 0 0.6em; }
 .prose h3 { margin: 1.8em 0 0.5em; }
@@ -117,8 +118,8 @@ p { text-wrap: pretty; }
 .prose a:hover { text-decoration-color: var(--ink); }
 .prose ol, .prose ul { padding-left: 1.2em; }
 .prose li { margin-bottom: 0.35em; }
-.prose li::marker { font-family: var(--mono); font-size: 0.8em; color: var(--muted); }
-.prose code { font-family: var(--mono); font-size: 0.82em; background: var(--panel); padding: 0.1em 0.35em; border-radius: 3px; }
+.prose li::marker { font-family: var(--label); font-size: 0.8em; color: var(--muted); }
+.prose code { font-family: var(--label); font-size: 0.82em; background: var(--panel); padding: 0.1em 0.35em; border-radius: 3px; }
 .prose hr { border: 0; height: 1.5rem; margin: 3rem 0; background: radial-gradient(circle, var(--line-strong) 1.5px, transparent 2px) center / 1.25rem 1.5rem repeat-x; max-width: 6rem; margin-inline: auto; }
 
 /* Drop cap on the opening paragraph */
@@ -134,8 +135,8 @@ p { text-wrap: pretty; }
 
 /* Pull quotes */
 .prose blockquote {
-  margin: 2.5em 0;
-  padding: 1.4em 0 0.4em;
+  margin: 2em 0 1.6em;
+  padding: 1.2em 0 0;
   border-top: 1px solid var(--ink);
   font-family: var(--display);
   font-style: italic;
@@ -143,7 +144,7 @@ p { text-wrap: pretty; }
   line-height: 1.2;
   color: var(--ink);
 }
-.prose blockquote > * { margin: 0 0 0.5em; }
+.prose blockquote > * { margin: 0; }
 .prose blockquote::before {
   content: '“'; display: block; font-size: 2.2em; line-height: 0.6; height: 0.4em; color: var(--accent);
 }
@@ -160,7 +161,7 @@ p { text-wrap: pretty; }
   display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
   min-height: 3rem; padding: 0.75rem 1.4rem;
   background: var(--ink); color: var(--canvas); border: 0; border-radius: 999px;
-  font: 500 0.82rem/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
+  font: 600 0.82rem/1.2 var(--label); letter-spacing: 0.08em; text-transform: uppercase;
   cursor: pointer; text-decoration: none;
   transition: background-color 200ms var(--ease-soft), color 200ms var(--ease-soft), transform 200ms var(--ease-out);
 }

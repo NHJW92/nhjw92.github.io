@@ -148,7 +148,7 @@ const showGround = [...modes].some((m) => m !== 'flight' && m !== 'boat' && m !=
   .route-map :global(.leaflet-tile-pane) { filter: saturate(0.55) contrast(1.03) brightness(1.02); }
   .legend {
     display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; margin-top: 0.9rem;
-    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    font-family: var(--label); font-size: 0.76rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted);
   }
   .legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
   .legend i { display: inline-block; width: 1.8rem; height: 0; border-top: 2px solid currentColor; }
@@ -161,7 +161,7 @@ const showGround = [...modes].some((m) => m !== 'flight' && m !== 'boat' && m !=
   .route-map :global(.pop) { display: grid; gap: 0.2rem; font-family: var(--serif); color: var(--ink); }
   .route-map :global(.pop a), .route-map :global(.pop strong) { font-family: var(--display); font-size: 1.15rem; font-weight: 500; color: var(--ink); text-decoration: none; line-height: 1.15; }
   .route-map :global(.pop a:hover) { text-decoration: underline; }
-  .route-map :global(.pop-loc) { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
-  .route-map :global(.pop-date) { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
-  .route-map :global(.leaflet-control-attribution) { font-family: var(--mono); font-size: 0.62rem; }
+  .route-map :global(.pop-loc) { font-family: var(--label); font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .route-map :global(.pop-date) { font-family: var(--label); font-size: 0.78rem; color: var(--muted); }
+  .route-map :global(.leaflet-control-attribution) { font-family: var(--label); font-size: 0.68rem; }
 </style>
