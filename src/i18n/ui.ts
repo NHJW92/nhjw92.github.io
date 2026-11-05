@@ -93,8 +93,8 @@ export const ui: Record<Lang, Strings> = {
       rssLink: 'Volg via RSS',
     },
     donate: {
-      title: 'Trakteer ons op een koffie',
-      text: 'Vind je het leuk om mee te lezen? Met een kleine bijdrage drinken we onderweg een kopje kopi op jou.',
+      title: 'Skere travel engineers',
+      text: 'trakteer ons op een lekker kopje koffie',
       amountLabel: 'Bedrag',
       other: 'Ander bedrag',
       idealSub: 'via bunq.me · ook Bancontact of kaart',
