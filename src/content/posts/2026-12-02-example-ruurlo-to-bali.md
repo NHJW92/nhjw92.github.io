@@ -15,7 +15,6 @@ gallery:
     caption: Example caption. Replace with a photo from the trip.
   - image: /uploads/example-arrival-2.jpg
     caption: Another example photo.
-  - {}
 draft: false
 ---
 This is an **example post** to show how a trip appears on the site. Edit it once the real journey has happened, or delete it.
