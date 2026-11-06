@@ -16,11 +16,10 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const s = t(lang);
 const posts = await getPosts(lang);
-const firstStory = posts.at(-1);
 const points = routePoints(posts, lang);
 const current = points.at(-1);
 const legOf = (p: Post) => legFor(points, postUrl(p));
-const cover = resolveImage(firstStory?.data.cover);
+const cover = resolveImage(SITE.landingCover);
 
 
 // All stories, newest first: wide features followed by a three-column grid.
@@ -40,7 +39,7 @@ const recent = points.map((p, i) => ({ ...p, n: i + 1 })).reverse().slice(0, 5);
 ---
 <Base lang={lang} overlay={Boolean(cover)}>
   {cover ? (
-    <Cover image={cover} alt={firstStory?.data.coverAlt ?? ''}>
+    <Cover image={cover} alt="">
       <LandingIntro lang={lang} location={current?.location} />
     </Cover>
   ) : (

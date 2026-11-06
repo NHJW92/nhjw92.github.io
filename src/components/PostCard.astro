@@ -19,7 +19,7 @@ const cover = resolveImage(post.data.cover);
 const s = t(post.lang);
 const feature = variant === 'feature';
 ---
-<article class:list={['story', variant, { flip }]} data-reveal>
+<article class:list={['story', variant, { flip }]}>
   <a href={postUrl(post)} class="link">
     <div class="media">
       {cover ? (

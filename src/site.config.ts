@@ -7,6 +7,8 @@ export const SITE = {
   // Must match where the site is served. For a repo named <username>.github.io:
   url: 'https://nhjw92.github.io',
   lang: 'en',
+  // Shared landing-page background, independent of story order and language.
+  landingCover: '/uploads/example-arrival-cover.jpg',
 
   // Map tiles. Leave cartoApiKey empty to use the standard OpenStreetMap tiles (no key
   // needed). For CARTO's softer "Voyager" style, request a free key at
