@@ -4,7 +4,7 @@ stops:
     date: 2026-11-08 09:30
     lat: 52.3105
     lng: 4.7683
-    travel: train
+    travel: car
   - name: Abu Dhabi
     note: Transfer at Zayed International.
     date: 2026-11-08 22:30
