@@ -7,20 +7,30 @@ import { t, type Lang } from '../i18n/ui';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const s = t(lang);
-// Media uploads are shared across languages, including photos without a story.
-const uploads = Object.keys(import.meta.glob('/src/assets/uploads/**/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP}'))
-  .filter((path) => !path.split('/').at(-1)!.startsWith('example-'))
-  .sort()
-  .map((path) => path.replace('/src/assets/uploads/', '/uploads/'));
-// Reuse translated captions where a photo has been added to a story.
-const captions = new Map<string, string>();
-for (const post of await getPosts(lang)) {
-  if (post.data.cover && post.data.coverAlt && !captions.has(post.data.cover)) captions.set(post.data.cover, post.data.coverAlt);
-  for (const photo of post.data.gallery) {
-    if (photo.caption && !captions.has(photo.image)) captions.set(photo.image, photo.caption);
+// Only photos actually used in published stories belong in the album.
+// getPosts is newest-first; a shared photo is shown once with its latest caption.
+const photos = new Map<string, { image: string; caption?: string; alt: string }>();
+const addPhoto = (path?: string | null, caption?: string | null) => {
+  if (!path) return;
+  const image = decodeURIComponent(path.trim());
+  if (!image.startsWith('/uploads/') || photos.has(image)) return;
+  photos.set(image, { image, caption: caption || undefined, alt: caption || s.photos.alt(photos.size + 1) });
+};
+for (const post of (await getPosts(lang)).filter((post) => !post.data.draft)) {
+  addPhoto(post.data.cover, post.data.coverAlt);
+  for (const photo of post.data.gallery) addPhoto(photo.image, photo.caption);
+  // Include uploaded images inserted directly into the story text, too.
+  const body = (post.entry.body ?? '').replace(/```[\s\S]*?```|~~~[\s\S]*?~~~/g, '');
+  for (const match of body.matchAll(/!\[([^\]]*)\]\(\s*(?:<([^>]+)>|([^\s)]+))(?:\s+["'][^\n]*?["'])?\s*\)/g)) {
+    addPhoto(match[2] || match[3], match[1]);
+  }
+  for (const match of body.matchAll(/<img\b[^>]*>/gi)) {
+    const src = match[0].match(/\bsrc\s*=\s*["']([^"']+)["']/i)?.[1];
+    const alt = match[0].match(/\balt\s*=\s*["']([^"']*)["']/i)?.[1];
+    addPhoto(src, alt);
   }
 }
-const items = uploads.map((image, i) => ({ image, caption: captions.get(image), alt: captions.get(image) || s.photos.alt(i + 1) }));
+const items = [...photos.values()];
 ---
 <Base lang={lang} title={s.nav.photos} description={s.photos.description}>
   <header class="wrap head">
