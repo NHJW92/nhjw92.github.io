@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import Gallery from '../components/Gallery.astro';
+import { getPosts } from '../lib/posts';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const s = t(lang);
+// Media uploads are shared across languages, including photos without a story.
+const uploads = Object.keys(import.meta.glob('/src/assets/uploads/**/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP}'))
+  .filter((path) => !path.split('/').at(-1)!.startsWith('example-'))
+  .sort()
+  .map((path) => path.replace('/src/assets/uploads/', '/uploads/'));
+// Reuse translated captions where a photo has been added to a story.
+const captions = new Map<string, string>();
+for (const post of await getPosts(lang)) {
+  if (post.data.cover && post.data.coverAlt && !captions.has(post.data.cover)) captions.set(post.data.cover, post.data.coverAlt);
+  for (const photo of post.data.gallery) {
+    if (photo.caption && !captions.has(photo.image)) captions.set(photo.image, photo.caption);
+  }
+}
+const items = uploads.map((image, i) => ({ image, caption: captions.get(image), alt: captions.get(image) || s.photos.alt(i + 1) }));
+---
+<Base lang={lang} title={s.nav.photos} description={s.photos.description}>
+  <header class="wrap head">
+    <p class="kicker">{s.home.journal} · {s.photos.count(items.length)}</p>
+    <h1>{s.nav.photos}</h1>
+    <p class="intro">{s.photos.description}</p>
+    {items.length > 0 && <p class="hint">{s.photos.hint}</p>}
+  </header>
+  <div class="wrap album">
+    {items.length > 0 ? <Gallery items={items} lang={lang} album /> : <p>{s.photos.empty}</p>}
+  </div>
+</Base>
+<style>
+  .head { padding: clamp(3rem, 7vw, 5rem) 0 2rem; }
+  .kicker { margin: 0; }
+  h1 { margin: 0.8rem 0 1.2rem; }
+  .intro { color: var(--ink-2); max-width: 45ch; font-size: 1.2rem; }
+  .hint { color: var(--muted); font-family: var(--label); font-size: 0.9rem; max-width: 65ch; }
+  .album { padding-top: 1.5rem; border-top: 1px solid var(--line); }
+</style>

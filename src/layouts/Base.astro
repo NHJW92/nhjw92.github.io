@@ -22,6 +22,7 @@ const { path } = splitPath(Astro.url.pathname);
 const nav = [
   { path: '/', label: s.nav.stories },
   { path: '/map/', label: s.nav.route },
+  { path: '/photos/', label: s.nav.photos },
   { path: '/about/', label: s.nav.about },
 ];
 const isCurrent = (p: string) => (p === '/' ? path === '/' || path.startsWith('/posts/') : path.startsWith(p));

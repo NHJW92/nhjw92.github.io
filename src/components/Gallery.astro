@@ -3,28 +3,28 @@ import { Image, getImage } from 'astro:assets';
 import { resolveImage } from '../lib/images';
 import { t, type Lang } from '../i18n/ui';
 
-interface Props { items: { image: string; caption?: string | null }[]; lang: Lang }
-const { items, lang } = Astro.props;
+interface Props { items: { image: string; caption?: string | null; alt?: string }[]; lang: Lang; album?: boolean }
+const { items, lang, album = false } = Astro.props;
 const s = t(lang).gallery;
 
 const photos = await Promise.all(
   items.map(async (item) => {
     const src = resolveImage(item.image)!;
     const large = await getImage({ src, width: Math.min(src.width, 2000), format: 'webp', quality: 80 });
-    return { src, large: large.src, caption: item.caption ?? '' };
+    return { src, large: large.src, caption: item.caption ?? '', alt: item.alt ?? item.caption ?? '' };
   }),
 );
 // Magazine spread: an odd count opens with one wide photo, the rest run in pairs,
 // so no row is ever left with a hole.
-const wide = (i: number) => photos.length % 2 === 1 && i === 0;
+const wide = (i: number) => !album && photos.length % 2 === 1 && i === 0;
 ---
 {photos.length > 0 && (
-  <section class="gallery" aria-label={s.label}>
+  <section class:list={['gallery', { album }]} aria-label={s.label}>
     <div class="grid">
       {photos.map((p, i) => (
-        <figure class:list={{ wide: wide(i) }} data-reveal>
-          <a href={p.large} data-index={i} data-caption={p.caption}>
-            <Image src={p.src} alt={p.caption} widths={wide(i) ? [640, 1024, 1600, 2200] : [480, 720, 1100]} sizes={wide(i) ? '(min-width: 1280px) 1240px, 100vw' : '(min-width: 760px) 50vw, 100vw'} loading="lazy" />
+        <figure class:list={{ wide: wide(i) }}>
+          <a href={p.large} data-index={i} data-caption={p.caption} data-alt={p.alt}>
+            <Image src={p.src} alt={p.alt} widths={wide(i) ? [640, 1024, 1600, 2200] : [480, 720, 1100]} sizes={wide(i) ? '(min-width: 1280px) 1240px, 100vw' : album ? '(min-width: 1100px) 33vw, (min-width: 600px) 50vw, 100vw' : '(min-width: 760px) 50vw, 100vw'} loading="lazy" />
           </a>
           {p.caption && <figcaption><span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>{p.caption}</figcaption>}
         </figure>
@@ -50,7 +50,7 @@ const wide = (i: number) => photos.length % 2 === 1 && i === 0;
     const show = (i: number) => {
       idx = (i + links.length) % links.length;
       img.src = links[idx].href;
-      img.alt = links[idx].dataset.caption || '';
+      img.alt = links[idx].dataset.alt || links[idx].dataset.caption || '';
       cap.textContent = links[idx].dataset.caption || '';
     };
     links.forEach((a, i) => a.addEventListener('click', (e) => { e.preventDefault(); show(i); dlg.showModal(); }));
@@ -76,6 +76,10 @@ const wide = (i: number) => photos.length % 2 === 1 && i === 0;
 
 <style>
   .gallery { margin: 0; }
+  .album .grid { gap: 1rem; }
+  .album figure a { aspect-ratio: 4 / 3; }
+  @media (min-width: 600px) { .album .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .album .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .grid { display: grid; grid-template-columns: 1fr; gap: clamp(1rem, 2.5vw, 2rem); }
   @media (min-width: 760px) { .grid { grid-template-columns: 1fr 1fr; } .wide { grid-column: 1 / -1; } }
   figure { margin: 0; }

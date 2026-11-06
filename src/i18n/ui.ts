@@ -31,7 +31,8 @@ export function formatDate(d: Date, lang: Lang) {
 type Strings = {
   tagline: string;
   description: string;
-  nav: { stories: string; route: string; about: string };
+  nav: { stories: string; route: string; about: string; photos: string };
+  photos: { description: string; empty: string; hint: string; alt: (n: number) => string; count: (n: number) => string };
   language: string;
   skip: string;
   edition: string;
@@ -67,7 +68,14 @@ export const ui: Record<Lang, Strings> = {
   nl: {
     tagline: 'Babet en Niels onderweg: verhalen, foto’s en een langzaam groeiende lijn door de archipel.',
     description: 'Babet en Niels reizen door Indonesië: verhalen, foto’s en de route tot nu toe.',
-    nav: { stories: 'Verhalen', route: 'Route', about: 'Over ons' },
+    nav: { stories: 'Verhalen', route: 'Route', about: 'Over ons', photos: 'Foto’s' },
+    photos: {
+      description: 'Onze reis in beeld. Alle reisfoto’s bij elkaar, zonder de verhalen ertussen.',
+      empty: 'De eerste reisfoto’s komen eraan.',
+      hint: 'Tik op een foto om deze te vergroten. Blader met de pijlen of swipe naar de volgende foto.',
+      alt: (n) => `Reisfoto ${n} van Babet en Niels`,
+      count: (n) => `${n} ${n === 1 ? 'foto' : 'foto’s'}`,
+    },
     language: 'Taal',
     skip: 'Naar de inhoud',
     edition: 'Indonesië',
@@ -149,7 +157,14 @@ export const ui: Record<Lang, Strings> = {
   en: {
     tagline: 'Babet and Niels on the road: notes, photos and a slowly growing line across the archipelago.',
     description: 'Babet and Niels travel through Indonesia: stories, photos and the route so far.',
-    nav: { stories: 'Stories', route: 'Route', about: 'About' },
+    nav: { stories: 'Stories', route: 'Route', about: 'About', photos: 'Photos' },
+    photos: {
+      description: 'Our journey in pictures. All our travel photos together, without the stories in between.',
+      empty: 'Our first travel photos are coming soon.',
+      hint: 'Tap a photo to enlarge it. Use the arrows or swipe to browse the photos.',
+      alt: (n) => `Travel photo ${n} by Babet and Niels`,
+      count: (n) => `${n} ${n === 1 ? 'photo' : 'photos'}`,
+    },
     language: 'Language',
     skip: 'Skip to content',
     edition: 'Indonesia',
@@ -231,7 +246,14 @@ export const ui: Record<Lang, Strings> = {
   de: {
     tagline: 'Babet und Niels unterwegs: Geschichten, Fotos und eine langsam wachsende Linie durch den Archipel.',
     description: 'Babet und Niels reisen durch Indonesien: Geschichten, Fotos und die bisherige Route.',
-    nav: { stories: 'Geschichten', route: 'Route', about: 'Über uns' },
+    nav: { stories: 'Geschichten', route: 'Route', about: 'Über uns', photos: 'Fotos' },
+    photos: {
+      description: 'Unsere Reise in Bildern. Alle Reisefotos an einem Ort, ohne die Geschichten dazwischen.',
+      empty: 'Unsere ersten Reisefotos kommen bald.',
+      hint: 'Tippt auf ein Foto, um es zu vergrößern. Blättert mit den Pfeilen oder wischt zum nächsten Foto.',
+      alt: (n) => `Reisefoto ${n} von Babet und Niels`,
+      count: (n) => `${n} ${n === 1 ? 'Foto' : 'Fotos'}`,
+    },
     language: 'Sprache',
     skip: 'Zum Inhalt',
     edition: 'Indonesien',
