@@ -1,15 +1,4 @@
-# Route stops that don't have their own story: home, airports, transfers.
-# Stories with coordinates are added to the map automatically; these fill in the
-# gaps. Everything is joined in date/time order.
-#
-# travel = how you got TO this stop: start, train, bus, car, scooter, boat, flight, walk
 stops:
-  - name: Ruurlo
-    note: Home. The trip starts here.
-    date: 2026-11-07 06:00
-    lat: 52.0883
-    lng: 6.4497
-    travel: start
   - name: Amsterdam Schiphol
     note: Train from Ruurlo via Zutphen.
     date: 2026-11-07 09:30
@@ -19,6 +8,6 @@ stops:
   - name: Abu Dhabi
     note: Transfer at Zayed International.
     date: 2026-11-07 22:30
-    lat: 24.4330
+    lat: 24.433
     lng: 54.6511
     travel: flight
