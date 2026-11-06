@@ -47,6 +47,10 @@ const recent = points.map((p, i) => ({ ...p, n: i + 1 })).reverse().slice(0, 5);
       <div class="wrap"><LandingIntro lang={lang} location={current?.location} /></div>
     </section>
   )}
+  <section class="wrap coffee">
+    <Donate lang={lang} />
+  </section>
+
   {posts.length > 0 ? (
     <section id="stories" class="wrap stories" aria-labelledby="stories-title">
       <header class="section-head" data-reveal>
@@ -103,12 +107,12 @@ const recent = points.map((p, i) => ({ ...p, n: i + 1 })).reverse().slice(0, 5);
   </section>
 
   <section class="wrap support">
-    <Donate lang={lang} compact />
     <Subscribe lang={lang} />
   </section>
 </Base>
 
 <style>
+  .coffee { padding-top: clamp(2.5rem, 6vw, 4rem); }
   .type-cover { padding: clamp(5rem, 12vw, 9rem) 0 clamp(3rem, 8vw, 5rem); background: radial-gradient(120% 90% at 85% 0%, #1f3a4d 0%, var(--deep) 60%); }
 
   /* Editor's letter + logbook numbers */
@@ -148,5 +152,4 @@ const recent = points.map((p, i) => ({ ...p, n: i + 1 })).reverse().slice(0, 5);
 
   /* Support */
   .support { display: grid; gap: 1.5rem; margin-top: clamp(4rem, 8vw, 6rem); }
-  @media (min-width: 1100px) { .support { grid-template-columns: 1.15fr 1fr; align-items: stretch; } }
 </style>
