@@ -13,5 +13,10 @@
     "nl": "Overstap op Zayed International.",
     "en": "Transfer at Zayed International.",
     "de": "Umstieg am Flughafen Zayed International."
+  },
+  "car": {
+    "nl": "Met de auto.",
+    "en": "By car.",
+    "de": "Mit dem Auto."
   }
 }
