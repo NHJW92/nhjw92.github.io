@@ -12,7 +12,7 @@ captions:
   - Erholung am Strand mit einem Smoothie von Boost Juice
   - Frühstück an Tag 2
 sourceLang: en
-sourceHash: e6478742ebf5b1e4
+sourceHash: 39613e052775eaae
 translatedBy: editorial translation
 ---
 

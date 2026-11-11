@@ -13,7 +13,7 @@ captions:
   - Bijkomen op het strand met een smoothie van Boost Juice
   - Ontbijt op dag 2
 sourceLang: en
-sourceHash: e6478742ebf5b1e4
+sourceHash: 39613e052775eaae
 translatedBy: editorial translation
 ---
 
