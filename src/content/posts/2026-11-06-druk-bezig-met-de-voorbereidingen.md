@@ -12,10 +12,14 @@ summary: "Nog twee dagen tot Bali! Terwijl ik mijn backpack probeer in te delen
   met de familie. De laatste voorbereidingen, een lekker diner en dan: op naar
   het avontuur!"
 cover: /uploads/img7146.jpeg
+coverAlt: "Gebreide trui is af! "
 gallery:
-  - image: /uploads/49043850-06a6-4b48-8ab4-e530e46f101a.jpeg
-  - image: /uploads/ac792bcd-de29-4565-bd3e-b1ad4b37c63e.jpeg
   - image: /uploads/img7143.png
+    caption: "Niels die adje kratje doet "
+  - image: /uploads/49043850-06a6-4b48-8ab4-e530e46f101a-1.jpeg
+    caption: "Niels is niet brak na Adje kratje "
+  - image: /uploads/ac792bcd-de29-4565-bd3e-b1ad4b37c63e-1.jpeg
+    caption: "Oma en Henk samen "
 draft: false
 ---
 Nog twee dagen en dan is het zover! Op 8 november vliegen we naar Bali, Indonesië. We zijn dus druk bezig met de laatste voorbereidingen, ieder op onze eigen manier.
