@@ -8,7 +8,7 @@ export const SITE = {
   url: 'https://nhjw92.github.io',
   lang: 'en',
   // Shared landing-page background, independent of story order and language.
-  landingCover: '/uploads/example-arrival-cover.jpg',
+  landingCover: '/uploads/indonesia-landing.jpg',
 
   // Map tiles. Leave cartoApiKey empty to use the standard OpenStreetMap tiles (no key
   // needed). For CARTO's softer "Voyager" style, request a free key at
