@@ -11,3 +11,8 @@ stops:
     lat: 24.433
     lng: 54.6511
     travel: flight
+  - name: "Bali airport "
+    date: 2026-11-09 22:00
+    lat: -8.7484
+    lng: 115.1671
+    travel: flight
