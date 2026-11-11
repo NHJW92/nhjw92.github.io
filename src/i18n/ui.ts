@@ -31,7 +31,7 @@ export function formatDate(d: Date, lang: Lang) {
 type Strings = {
   tagline: string;
   description: string;
-  nav: { stories: string; route: string; about: string; photos: string };
+  nav: { stories: string; route: string; stats: string; about: string; photos: string };
   photos: { description: string; empty: string; hint: string; alt: (n: number) => string; count: (n: number) => string };
   language: string;
   skip: string;
@@ -68,7 +68,7 @@ export const ui: Record<Lang, Strings> = {
   nl: {
     tagline: 'Babet en Niels onderweg: verhalen, foto’s en een langzaam groeiende lijn door de archipel.',
     description: 'Babet en Niels reizen door Indonesië: verhalen, foto’s en de route tot nu toe.',
-    nav: { stories: 'Verhalen', route: 'Route', about: 'Over ons', photos: 'Foto’s' },
+    nav: { stories: 'Verhalen', route: 'Route', stats: 'Statistieken', about: 'Over ons', photos: 'Foto’s' },
     photos: {
       description: 'Onze reis in beeld. Alle foto’s uit onze verhalen bij elkaar.',
       empty: 'Zodra we foto’s in een verhaal plaatsen, verschijnen ze hier ook.',
@@ -158,7 +158,7 @@ export const ui: Record<Lang, Strings> = {
   en: {
     tagline: 'Babet and Niels on the road: notes, photos and a slowly growing line across the archipelago.',
     description: 'Babet and Niels travel through Indonesia: stories, photos and the route so far.',
-    nav: { stories: 'Stories', route: 'Route', about: 'About', photos: 'Photos' },
+    nav: { stories: 'Stories', route: 'Route', stats: 'Statistics', about: 'About', photos: 'Photos' },
     photos: {
       description: 'Our journey in pictures. All the photos from our stories in one place.',
       empty: 'Photos will appear here as soon as we add them to a story.',
@@ -248,7 +248,7 @@ export const ui: Record<Lang, Strings> = {
   de: {
     tagline: 'Babet und Niels unterwegs: Geschichten, Fotos und eine langsam wachsende Linie durch den Archipel.',
     description: 'Babet und Niels reisen durch Indonesien: Geschichten, Fotos und die bisherige Route.',
-    nav: { stories: 'Geschichten', route: 'Route', about: 'Über uns', photos: 'Fotos' },
+    nav: { stories: 'Geschichten', route: 'Route', stats: 'Statistiken', about: 'Über uns', photos: 'Fotos' },
     photos: {
       description: 'Unsere Reise in Bildern. Alle Fotos aus unseren Geschichten an einem Ort.',
       empty: 'Sobald wir Fotos in einer Geschichte veröffentlichen, erscheinen sie auch hier.',

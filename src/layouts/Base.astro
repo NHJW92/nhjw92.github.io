@@ -22,6 +22,7 @@ const { path } = splitPath(Astro.url.pathname);
 const nav = [
   { path: '/', label: s.nav.stories },
   { path: '/map/', label: s.nav.route },
+  { path: '/stats/', label: s.nav.stats },
   { path: '/photos/', label: s.nav.photos },
   { path: '/about/', label: s.nav.about },
 ];
@@ -193,14 +194,14 @@ const isCurrent = (p: string) => (p === '/' ? path === '/' || path.startsWith('/
     .small { grid-column: 1 / -1; }
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 850px) {
     .bar { height: auto; flex-wrap: wrap; padding: 0.55rem 0 0.3rem; row-gap: 0; }
     .name { font-size: 1.2rem; }
     /* Phones: brand and languages share the top row, sections get the second. */
     .right { display: contents; }
     .brand { order: 1; }
     .langs { order: 2; margin-left: auto; margin-right: -0.4rem; padding-left: 0; border-left: 0; }
-    .main-nav { order: 3; width: calc(100% + 1rem); margin-left: -0.5rem; }
+    .main-nav { order: 3; width: calc(100% + 1rem); margin-left: -0.5rem; flex-wrap: wrap; }
     nav a { padding: 0.75rem 0.5rem; font-size: 0.76rem; letter-spacing: 0.05em; white-space: nowrap; }
     .main-nav a::after { left: 0.5rem; right: 0.5rem; }
   }
