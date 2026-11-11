@@ -38,7 +38,6 @@ const feature = variant === 'feature';
     <div class="body">
       {leg ? <Dateline leg={leg} lang={post.lang} size="sm" /> : <span class="kicker">{post.data.location}</span>}
       <h3>{post.data.title}</h3>
-      {post.data.summary && <p class="sum">{post.data.summary}</p>}
       <span class="meta">{leg && <>{post.data.location} · </>}<time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, post.lang)}</time></span>
     </div>
   </a>
@@ -60,12 +59,10 @@ const feature = variant === 'feature';
   }
   .body { display: grid; gap: 0.6rem; align-content: start; }
   h3 { margin: 0; font-size: clamp(1.5rem, 2.4vw, 1.9rem); line-height: 1.08; transition: opacity 200ms var(--ease-soft); }
-  .sum { margin: 0; color: var(--ink-2); font-size: 1.05rem; line-height: 1.5; max-width: 42ch; }
   .link:hover h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.12em; }
 
   .feature .media { aspect-ratio: 3 / 2; }
   .feature h3 { font-size: clamp(2rem, 4.2vw, 3.4rem); line-height: 1; }
-  .feature .sum { font-size: 1.2rem; font-style: italic; }
   @media (min-width: 960px) {
     .feature .link { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 4vw, 4rem); align-items: center; }
     .feature.flip .media { order: 2; }
