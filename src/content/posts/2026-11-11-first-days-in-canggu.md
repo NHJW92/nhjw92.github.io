@@ -14,11 +14,13 @@ gallery:
     caption: Start of the journey in ruurlo
   - image: /uploads/573a7aae-22c2-46bd-a0bd-324b43a67aae.jpeg
     caption: Saying goodbye to babets parents
-  - caption: "Coffee at the gate in schiphol, thanks to our first donation by Helma
+  - image: /uploads/img4920.jpeg
+    caption: "Coffee at the gate in schiphol, thanks to our first donation by Helma
       Roekevisch! "
   - image: /uploads/img4877.jpeg
     caption: "Dying in the airplane "
-  - caption: First breakfast in Canggu
+  - image: /uploads/img4883.jpeg
+    caption: First breakfast in Canggu
   - image: /uploads/img7172.jpeg
     caption: Recovering on the beach with some boost juice
   - image: /uploads/img4894.jpeg
