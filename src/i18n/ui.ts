@@ -39,7 +39,7 @@ type Strings = {
   colophon: string;
   home: {
     currentlyIn: (place: string) => string; journal: string; empty: string; routeTitle: string; fullMap: string; earlier: string;
-    coverStory: string; readStory: string; byline: string;
+    coverStory: string; readStory: string; byline: string; writtenBy: (author: string) => string;
     welcome: string; explore: string; storiesHint: string; routeHint: string; aboutHint: string;
     stats: { stops: string; stories: string; km: string };
   };
@@ -90,6 +90,7 @@ export const ui: Record<Lang, Strings> = {
       aboutHint: 'Maak kennis met Babet en Niels',
       readStory: 'Lees het verhaal',
       byline: 'Door Babet en Niels',
+      writtenBy: (author) => 'Geschreven door ' + author,
       stats: { stops: 'stops', stories: 'verhalen', km: 'km gereisd' },
       currentlyIn: (p) => `Nu in ${p}`,
       journal: 'Reisdagboek',
@@ -179,6 +180,7 @@ export const ui: Record<Lang, Strings> = {
       aboutHint: 'Meet Babet and Niels',
       readStory: 'Read the story',
       byline: 'By Babet and Niels',
+      writtenBy: (author) => 'Written by ' + author,
       stats: { stops: 'stops', stories: 'stories', km: 'km travelled' },
       currentlyIn: (p) => `Currently in ${p}`,
       journal: 'Travel journal',
@@ -268,6 +270,7 @@ export const ui: Record<Lang, Strings> = {
       aboutHint: 'Lernt Babet und Niels kennen',
       readStory: 'Geschichte lesen',
       byline: 'Von Babet und Niels',
+      writtenBy: (author) => 'Geschrieben von ' + author,
       stats: { stops: 'Halte', stories: 'Geschichten', km: 'km gereist' },
       currentlyIn: (p) => `Gerade in ${p}`,
       journal: 'Reisetagebuch',

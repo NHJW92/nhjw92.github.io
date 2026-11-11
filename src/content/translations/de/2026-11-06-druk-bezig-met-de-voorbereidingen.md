@@ -1,16 +1,16 @@
 ---
 title: Mitten in den Reisevorbereitungen!
 location: Ruurlo/Enschede
-summary: "Noch zwei Tage bis Bali! Während Babet versucht, ihren Rucksack zu packen, und Niels sich von Grolsch verabschiedet, freuen wir uns auf ein gemütliches Essen mit der Familie. Letzte Vorbereitungen, leckeres Essen und dann: Auf ins Abenteuer!"
+summary: "Noch zwei Tage bis Bali! Während ich versuche, meinen Rucksack zu packen, und Niels sich von Grolsch verabschiedet, freuen wir uns auf ein gemütliches Essen mit der Familie. Letzte Vorbereitungen, leckeres Essen und dann: Auf ins Abenteuer!"
 sourceLang: nl
-sourceHash: 8d9c2688aba4869c
+sourceHash: 158ceb11fca2b9ad
 translatedBy: editorial translation
 ---
 Noch zwei Tage, dann ist es so weit! Am 8. November fliegen wir nach Bali, Indonesien. Wir stecken also mitten in den letzten Vorbereitungen, jeder auf seine eigene Art.
 
-Babet ist vor allem damit beschäftigt, bei ihren Eltern aufzuräumen. Dort stehen inzwischen nicht nur ihre eigenen Sachen, sondern auch die von Niels. Er hat einen Untermieter für sein Zimmer in Enschede gefunden und brauchte deshalb einen Platz für sein ganzes Hab und Gut. Zum Glück gibt es am Rikkelder einen großen Dachboden, auf dem alles Platz hat!
+Ich bin vor allem damit beschäftigt, bei meinen Eltern aufzuräumen. Dort stehen inzwischen nicht nur meine Sachen, sondern auch die von Niels. Er hat einen Untermieter für sein Zimmer in Enschede gefunden und brauchte deshalb einen Platz für sein ganzes Hab und Gut. Zum Glück gibt es am Rikkelder einen großen Dachboden, auf dem alles Platz hat!
 
-Neben dem Aufräumen ist Babet mit Packen beschäftigt, prüft, ob wir alles haben, und sammelt letzte Tipps für unterwegs. Und dann ist da noch die wichtigste Knobelei: Welche Kleidung kommt mit? So ein Rucksack sieht zwar groß aus, aber selbst in einen mit 55 + 10 Litern passt überraschend wenig…
+Neben dem Aufräumen packe ich, prüfe, ob wir alles haben, und sammle letzte Tipps für unterwegs. Und dann ist da noch die wichtigste Knobelei: Welche Kleidung kommt mit? So ein Rucksack sieht zwar groß aus, aber selbst in einen mit 55 + 10 Litern passt überraschend wenig…
 
 Natürlich hat sich auch Niels vorbereitet. Am Dienstag waren seine Shirts, Hosen, Unterwäsche und Socken schon im Rucksack. Die Technik war ausgesucht und die eSIM organisiert. Kurz gesagt: fast startklar.
 

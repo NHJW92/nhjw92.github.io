@@ -54,7 +54,7 @@ const pager = [
 
     <div class="prose-wrap standfirst">
       <p class="meta">
-        <span>{s.home.byline}</span>
+        <span>{post.data.author ? s.home.writtenBy(post.data.author) : s.home.byline}</span>
         <span aria-hidden="true">·</span>
         <time datetime={post.data.date.toISOString()}>{date}</time>
         <span aria-hidden="true">·</span>

@@ -38,6 +38,7 @@ const feature = variant === 'feature';
     <div class="body">
       {leg ? <Dateline leg={leg} lang={post.lang} size="sm" /> : <span class="kicker">{post.data.location}</span>}
       <h3>{post.data.title}</h3>
+      {post.data.author && <span class="meta">{s.home.writtenBy(post.data.author)}</span>}
       <span class="meta">{leg && <>{post.data.location} · </>}<time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, post.lang)}</time></span>
     </div>
   </a>

@@ -11,6 +11,7 @@ const posts = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
+    author: z.string().trim().optional().nullable(),
     // Language this post is written in. The other languages are translated by AI.
     lang: LANG.optional().nullable().transform((l) => l ?? 'nl'),
     location: z.string(),

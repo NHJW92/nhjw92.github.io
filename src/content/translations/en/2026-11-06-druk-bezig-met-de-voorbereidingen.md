@@ -1,16 +1,16 @@
 ---
 title: Busy getting ready!
 location: Ruurlo/Enschede
-summary: "Two days until Bali! While Babet tries to organise her backpack and Niels says goodbye to Grolsch, we’re looking forward to a lovely family dinner. Final preparations, good food and then: let the adventure begin!"
+summary: "Two days until Bali! While I try to organise my backpack and Niels says goodbye to Grolsch, we’re looking forward to a lovely family dinner. Final preparations, good food and then: let the adventure begin!"
 sourceLang: nl
-sourceHash: 8d9c2688aba4869c
+sourceHash: 158ceb11fca2b9ad
 translatedBy: editorial translation
 ---
 Just two days to go! On 8 November, we’re flying to Bali, Indonesia. We’re busy with the final preparations, each in our own way.
 
-Babet is mainly busy tidying up at her parents’ house. These days, it’s home to both her belongings and Niels’s. He’s found someone to sublet his room in Enschede, so he needed somewhere to store everything he owns. Luckily, there’s a big attic at the Rikkelder with room for it all!
+I’m mainly busy tidying up at my parents’ house. These days, it’s home to both my belongings and Niels’s. He’s found someone to sublet his room in Enschede, so he needed somewhere to store everything he owns. Luckily, there’s a big attic at the Rikkelder with room for it all!
 
-Besides tidying up, Babet is packing, checking we have everything we need and collecting last-minute travel tips. Then there’s the biggest puzzle: which clothes are coming along? A backpack might look big, but even one with 55 + 10 litres of space holds surprisingly little…
+Besides tidying up, I’m packing, checking we have everything we need and collecting last-minute travel tips. Then there’s the biggest puzzle: which clothes are coming along? A backpack might look big, but even one with 55 + 10 litres of space holds surprisingly little…
 
 Of course, Niels has been preparing too. By Tuesday, his shirts, trousers, underwear and socks were already in his backpack. The tech was sorted and the eSIM arranged. In short: almost ready to go.
 

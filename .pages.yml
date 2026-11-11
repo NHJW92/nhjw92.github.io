@@ -21,6 +21,9 @@ content:
         sort: date
         order: desc
     fields:
+      - name: author
+        label: Author (who wrote this story?)
+        type: string
       - name: title
         label: Title
         type: string
