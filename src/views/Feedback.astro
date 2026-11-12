@@ -201,8 +201,8 @@ const config = JSON.stringify({
         if (!res.ok) return say(s.error, 'error');
         store.set('comment-name', nameInput.value.trim());
         bodyInput.value = '';
-        if (data.status === 'published' && data.comment) { items.push(data.comment); render(); }
-        say(s.pending, 'ok');
+        if (data.status === 'published' && data.comment) { items.push(data.comment); render(); say(s.published, 'ok'); }
+        else say(s.pending, 'ok');
       } catch {
         say(s.error, 'error');
       } finally {

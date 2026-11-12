@@ -65,7 +65,7 @@ type Strings = {
   feedback: {
     title: string; heading: string; intro: string; kindLabel: string; bug: string; idea: string;
     nameLabel: string; bodyLabel: string; submit: string; sending: string; note: string;
-    pending: string; error: string; rateLimited: string; empty: string; loadError: string;
+    pending: string; published: string; error: string; rateLimited: string; empty: string; loadError: string;
     openTitle: string; doneTitle: string; done: string; upvote: string; downvote: string; score: (n: number) => string;
   };
   thanks: { title: string; heading: string; text: string[]; listTitle: string; empty: string; cta: string };
@@ -193,8 +193,9 @@ export const ui: Record<Lang, Strings> = {
       bodyLabel: 'Wat is er mis, of wat is je idee?',
       submit: 'Versturen',
       sending: 'Versturen…',
-      note: 'Zichtbaar voor iedereen nadat we het hebben goedgekeurd.',
+      note: 'Je naam en melding zijn voor iedereen zichtbaar.',
       pending: 'Bedankt! Je melding verschijnt zodra we hem hebben goedgekeurd.',
+      published: 'Bedankt voor je melding!',
       error: 'Er ging iets mis. Probeer het later nog eens.',
       rateLimited: 'Je hebt net al een paar dingen gestuurd. Probeer het over een paar minuten nog eens.',
       empty: 'Nog geen meldingen. Alles werkt perfect… toch?',
@@ -357,8 +358,9 @@ export const ui: Record<Lang, Strings> = {
       bodyLabel: 'What’s wrong, or what’s your idea?',
       submit: 'Send',
       sending: 'Sending…',
-      note: 'Visible to everyone once we’ve approved it.',
+      note: 'Your name and report are visible to everyone.',
       pending: 'Thanks! Your report will appear once we’ve approved it.',
+      published: 'Thanks for your report!',
       error: 'Something went wrong. Please try again later.',
       rateLimited: 'You’ve just sent a few things. Please try again in a few minutes.',
       empty: 'Nothing reported yet. Everything works perfectly… right?',
@@ -521,8 +523,9 @@ export const ui: Record<Lang, Strings> = {
       bodyLabel: 'Was ist kaputt, oder was ist deine Idee?',
       submit: 'Senden',
       sending: 'Wird gesendet…',
-      note: 'Für alle sichtbar, sobald wir es freigegeben haben.',
+      note: 'Name und Meldung sind für alle sichtbar.',
       pending: 'Danke! Deine Meldung erscheint, sobald wir sie freigegeben haben.',
+      published: 'Danke für deine Meldung!',
       error: 'Etwas ist schiefgelaufen. Versuch es später noch einmal.',
       rateLimited: 'Du hast gerade schon ein paar Dinge geschickt. Versuch es in ein paar Minuten noch einmal.',
       empty: 'Noch keine Meldungen. Alles funktioniert perfekt… oder?',

@@ -9,7 +9,7 @@ preview_urls = false
 # Sites allowed to post comments (comma-separated, no trailing slash).
 ALLOWED_ORIGINS = "https://nhjw92.github.io,http://localhost:4321"
 # "true" publishes comments immediately; "false" waits for approval on /admin.
-AUTO_APPROVE = "false"
+AUTO_APPROVE = "true"
 # Optional: an ntfy.sh topic for a phone notification on each new comment.
 # Pick a long, unguessable name and subscribe to it in the ntfy app. Leave "" to turn off.
 NTFY_TOPIC = ""

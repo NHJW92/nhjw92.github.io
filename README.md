@@ -134,7 +134,8 @@ Buy the domain, then add it under **Settings → Pages → Custom domain** and s
 
 Story comments and the feedback page (bugs and ideas, with votes) use a small
 Cloudflare Worker in `comments-worker/` with a free D1 database. Nobody needs an
-account to comment: they type any name. New comments wait for your approval.
+account to comment: they type any name. New comments appear right away; you delete
+unwanted ones on the admin page.
 
 ### One-time setup (about 10 minutes)
 
@@ -159,10 +160,10 @@ section, the feedback page and its footer link appear once that's set.
 
 ### Daily use
 
-- Approve, delete and mark feedback as done at `<worker address>/admin` (user `admin`, your password).
+- Delete comments, approve held ones and mark feedback as done at `<worker address>/admin` (user `admin`, your password).
 - Optional phone notifications: set `NTFY_TOPIC` in `wrangler.toml` to a long, secret name,
   subscribe to it in the [ntfy](https://ntfy.sh) app, and run `npx wrangler deploy` again.
-- To publish comments without approval, set `AUTO_APPROVE = "true"` and deploy again.
+- To review comments before they appear instead, set `AUTO_APPROVE = "false"` and deploy again.
 
 ## Donors and fun statistics
 
