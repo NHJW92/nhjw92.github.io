@@ -1,0 +1,22 @@
+# Comment backend for the travel blog. See "Comments" in the README for setup.
+name = "travel-engineers-comments"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+# Sites allowed to post comments (comma-separated, no trailing slash).
+ALLOWED_ORIGINS = "https://nhjw92.github.io,http://localhost:4321"
+# "true" publishes comments immediately; "false" waits for approval on /admin.
+AUTO_APPROVE = "false"
+# Optional: an ntfy.sh topic for a phone notification on each new comment.
+# Pick a long, unguessable name and subscribe to it in the ntfy app. Leave "" to turn off.
+NTFY_TOPIC = ""
+
+[[d1_databases]]
+binding = "DB"
+database_name = "blog-comments"
+# Paste the id printed by `npx wrangler d1 create blog-comments` here.
+database_id = "REPLACE_WITH_DATABASE_ID"
+
+# Secrets (set with `npx wrangler secret put <NAME>`, never stored in this file):
+#   ADMIN_PASSWORD  password for the approval page at /admin (user name: admin)

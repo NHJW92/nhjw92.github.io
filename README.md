@@ -129,3 +129,46 @@ Put the image files in `src/assets/uploads/`. A missing image fails the build wi
 ## Custom domain later
 
 Buy the domain, then add it under **Settings → Pages → Custom domain** and set the `url` in `site.config.ts`. GitHub shows the DNS records to create.
+
+## Comments and feedback
+
+Story comments and the feedback page (bugs and ideas, with votes) use a small
+Cloudflare Worker in `comments-worker/` with a free D1 database. Nobody needs an
+account to comment: they type any name. New comments wait for your approval.
+
+### One-time setup (about 10 minutes)
+
+You need [Node.js](https://nodejs.org) (LTS) and a free Cloudflare account. In a terminal:
+
+```
+cd comments-worker
+npx wrangler login
+npx wrangler d1 create blog-comments
+```
+
+Copy the `database_id` it prints into `comments-worker/wrangler.toml` (or let Wrangler add it when it asks). Then:
+
+```
+npx wrangler secret put ADMIN_PASSWORD
+npx wrangler deploy
+```
+
+`deploy` prints the Worker's address, e.g. `https://travel-engineers-comments.<you>.workers.dev`.
+Paste it into `src/site.config.ts` → `comments.endpoint`, commit and push. The comment
+section, the feedback page and its footer link appear once that's set.
+
+### Daily use
+
+- Approve, delete and mark feedback as done at `<worker address>/admin` (user `admin`, your password).
+- Optional phone notifications: set `NTFY_TOPIC` in `wrangler.toml` to a long, secret name,
+  subscribe to it in the [ntfy](https://ntfy.sh) app, and run `npx wrangler deploy` again.
+- To publish comments without approval, set `AUTO_APPROVE = "true"` and deploy again.
+
+## Donors and fun statistics
+
+- **Donors** (thank-you page): Pages CMS → *Donors*. Add a name and the date; the newest is shown on top.
+  Only add people who are happy to be named.
+- **Fun statistics** ("Thank you, Bali, for…"): Pages CMS → *Fun statistics*. Update the numbers, or switch
+  on one of the prepared counters with *Show on the site*.
+- The statistics page works out the island from each story's or stop's coordinates. Fill in *Island or region*
+  to override it. Time per place is counted from each story's date, so use the day you arrived.

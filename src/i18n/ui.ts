@@ -31,7 +31,7 @@ export function formatDate(d: Date, lang: Lang) {
 type Strings = {
   tagline: string;
   description: string;
-  nav: { stories: string; route: string; stats: string; about: string; photos: string };
+  nav: { stories: string; route: string; stats: string; about: string; photos: string; feedback: string; thanks: string };
   photos: { description: string; empty: string; hint: string; alt: (n: number) => string; count: (n: number) => string };
   language: string;
   skip: string;
@@ -54,11 +54,28 @@ type Strings = {
   legend: { overland: string; boat: string; flight: string; story: string; stop: string };
   travel: Record<TravelMode, string>;
   subscribe: { title: string; text: string; button: string; emailLabel: string; rssPrefix: string; rssLink: string };
-  comments: string;
-  donate: { title: string; text: string; amountLabel: string; other: string; idealSub: string; lightningTitle: (eur: string, sats: string) => string; lightningOpen: string; lightningCopy: string; lightningCopied: string; lightningLoading: string; lightningFallback: string; close: string; note: string };
+  comments: {
+    title: string; nameLabel: string; bodyLabel: string; submit: string; sending: string; note: string;
+    pending: string; published: string; error: string; rateLimited: string; empty: string; loadError: string;
+  };
+  donate: { title: string; text: string; amountLabel: string; other: string; idealSub: string; lightningTitle: (eur: string, sats: string) => string; lightningOpen: string; lightningCopy: string; lightningCopied: string; lightningLoading: string; lightningFallback: string; close: string; note: string; thanksLink: string };
   gallery: { label: string; viewer: string; close: string; prev: string; next: string };
   about: { title: string; heading: string; paragraphs: string[] };
   notFound: { title: string; heading: string; text: string; back: string };
+  feedback: {
+    title: string; heading: string; intro: string; kindLabel: string; bug: string; idea: string;
+    nameLabel: string; bodyLabel: string; submit: string; sending: string; note: string;
+    pending: string; error: string; rateLimited: string; empty: string; loadError: string;
+    openTitle: string; doneTitle: string; done: string; upvote: string; downvote: string; score: (n: number) => string;
+  };
+  thanks: { title: string; heading: string; text: string[]; listTitle: string; empty: string; cta: string };
+  statsPage: {
+    description: string; numbersTitle: string; daysOnRoad: string; flights: string; boats: string; photos: string; donors: string;
+    thanksTitle: (place: string) => string; thanksNote: string; everywhere: string;
+    timelineTitle: string; timelineHint: string; play: string; pause: string; day: (n: number, total: number) => string; arrivedIn: (place: string) => string;
+    placesTitle: string; placesHint: string; islandsTitle: string; transit: string; now: string;
+    days: (n: number) => string; hours: (n: number) => string;
+  };
   rssItem: (place: string) => string;
   /** Language names as written in this language, for "translated from …". */
   langNames: Record<Lang, string>;
@@ -68,7 +85,7 @@ export const ui: Record<Lang, Strings> = {
   nl: {
     tagline: 'Babet en Niels onderweg: verhalen, foto’s en een langzaam groeiende lijn door de archipel.',
     description: 'Babet en Niels reizen door Indonesië: verhalen, foto’s en de route tot nu toe.',
-    nav: { stories: 'Verhalen', route: 'Route', stats: 'Statistieken', about: 'Over ons', photos: 'Foto’s' },
+    nav: { stories: 'Verhalen', route: 'Route', stats: 'Statistieken', about: 'Over ons', photos: 'Foto’s', feedback: 'Feedback', thanks: 'Bedankt' },
     photos: {
       description: 'Onze reis in beeld. Alle foto’s uit onze verhalen bij elkaar.',
       empty: 'Zodra we foto’s in een verhaal plaatsen, verschijnen ze hier ook.',
@@ -140,8 +157,22 @@ export const ui: Record<Lang, Strings> = {
       lightningFallback: 'Scan of kopieer ons Lightning-adres en kies het bedrag in je wallet.',
       close: 'Sluiten',
       note: 'Je gaat naar een beveiligde betaalpagina en kiest daar of controleert het bedrag.',
+      thanksLink: 'Bekijk wie ons al trakteerde',
     },
-    comments: 'Reacties',
+    comments: {
+      title: 'Reacties',
+      nameLabel: 'Je naam',
+      bodyLabel: 'Je reactie',
+      submit: 'Plaats reactie',
+      sending: 'Versturen…',
+      note: 'Je naam en reactie zijn voor iedereen zichtbaar.',
+      pending: 'Bedankt! Je reactie verschijnt zodra we hem hebben goedgekeurd.',
+      published: 'Bedankt voor je reactie!',
+      error: 'Er ging iets mis. Probeer het later nog eens.',
+      rateLimited: 'Je hebt net al een paar reacties geplaatst. Probeer het over een paar minuten nog eens.',
+      empty: 'Nog geen reacties. Schrijf de eerste!',
+      loadError: 'De reacties konden niet worden geladen.',
+    },
     gallery: { label: 'Fotogalerij', viewer: 'Fotoviewer', close: 'Sluiten', prev: 'Vorige foto', next: 'Volgende foto' },
     about: {
       title: 'Over ons',
@@ -151,6 +182,66 @@ export const ui: Record<Lang, Strings> = {
         'We vertrokken uit Ruurlo, namen de trein naar Schiphol en vlogen via Abu Dhabi naar Bali. Volg de <a href="{route}">route</a> om te zien waar we tot nu toe zijn geweest.',
       ],
     },
+    feedback: {
+      title: 'Feedback',
+      heading: 'Bugs en ideeën',
+      intro: 'Zie je iets dat niet werkt, of heb je een idee om de site beter te maken? Laat het hier achter. Stem op wat jij het belangrijkst vindt, dan weten wij wat we als eerste moeten oppakken.',
+      kindLabel: 'Soort',
+      bug: 'Bug',
+      idea: 'Idee',
+      nameLabel: 'Je naam',
+      bodyLabel: 'Wat is er mis, of wat is je idee?',
+      submit: 'Versturen',
+      sending: 'Versturen…',
+      note: 'Zichtbaar voor iedereen nadat we het hebben goedgekeurd.',
+      pending: 'Bedankt! Je melding verschijnt zodra we hem hebben goedgekeurd.',
+      error: 'Er ging iets mis. Probeer het later nog eens.',
+      rateLimited: 'Je hebt net al een paar dingen gestuurd. Probeer het over een paar minuten nog eens.',
+      empty: 'Nog geen meldingen. Alles werkt perfect… toch?',
+      loadError: 'De meldingen konden niet worden geladen.',
+      openTitle: 'Open',
+      doneTitle: 'Opgelost',
+      done: 'Opgelost',
+      upvote: 'Stem omhoog',
+      downvote: 'Stem omlaag',
+      score: (n) => `${n > 0 ? '+' : ''}${n} ${Math.abs(n) === 1 ? 'stem' : 'stemmen'}`,
+    },
+    thanks: {
+      title: 'Bedankt',
+      heading: 'Dankjewel!',
+      text: [
+        'Iedereen die ons onderweg op een bakje koffie (of een Bintang) trakteert: heel erg bedankt. Het betekent veel dat jullie meelezen én meeleven.',
+        'Hieronder staan de namen van iedereen die ons al heeft getrakteerd, de nieuwste bovenaan.',
+      ],
+      listTitle: 'Getrakteerd door',
+      empty: 'Nog niemand… word jij de eerste?',
+      cta: 'Trakteer ons ook op een koffie',
+    },
+    statsPage: {
+      description: 'De reis in cijfers: waar we waren, hoe lang, en wat er onderweg gebeurde.',
+      numbersTitle: 'In cijfers',
+      daysOnRoad: 'dagen onderweg',
+      flights: 'vluchten',
+      boats: 'boottochten',
+      photos: 'foto’s gedeeld',
+      donors: 'keer getrakteerd',
+      thanksTitle: (p) => `Dankjewel, ${p}, voor…`,
+      thanksNote: 'Echte cijfers. Niets overdreven, niets weggelaten.',
+      everywhere: 'Indonesië',
+      timelineTitle: 'De reis, dag voor dag',
+      timelineHint: 'Sleep de schuif of druk op afspelen.',
+      play: 'Afspelen',
+      pause: 'Pauze',
+      day: (n, t) => `Dag ${n} van ${t}`,
+      arrivedIn: (p) => `In ${p}`,
+      placesTitle: 'Hoe lang waar',
+      placesHint: 'Tijd per stop, van aankomst tot vertrek.',
+      islandsTitle: 'Per eiland',
+      transit: 'Onderweg',
+      now: 'nu',
+      days: (n) => `${n} ${n === 1 ? 'dag' : 'dagen'}`,
+      hours: (n) => `${n} uur`,
+    },
     notFound: { title: 'Niet gevonden', heading: 'Verdwaald ergens in de archipel.', text: 'Deze pagina bestaat niet.', back: 'Terug naar de verhalen' },
     rssItem: (p) => `Nieuw verhaal uit ${p}`,
     langNames: { nl: 'Nederlands', en: 'Engels', de: 'Duits' },
@@ -158,7 +249,7 @@ export const ui: Record<Lang, Strings> = {
   en: {
     tagline: 'Babet and Niels on the road: notes, photos and a slowly growing line across the archipelago.',
     description: 'Babet and Niels travel through Indonesia: stories, photos and the route so far.',
-    nav: { stories: 'Stories', route: 'Route', stats: 'Statistics', about: 'About', photos: 'Photos' },
+    nav: { stories: 'Stories', route: 'Route', stats: 'Statistics', about: 'About', photos: 'Photos', feedback: 'Feedback', thanks: 'Thanks' },
     photos: {
       description: 'Our journey in pictures. All the photos from our stories in one place.',
       empty: 'Photos will appear here as soon as we add them to a story.',
@@ -230,8 +321,22 @@ export const ui: Record<Lang, Strings> = {
       lightningFallback: 'Scan or copy our Lightning address and choose the amount in your wallet.',
       close: 'Close',
       note: 'You’ll go to a secure payment page where you can choose or check the amount.',
+      thanksLink: 'See who has treated us so far',
     },
-    comments: 'Comments',
+    comments: {
+      title: 'Comments',
+      nameLabel: 'Your name',
+      bodyLabel: 'Your comment',
+      submit: 'Post comment',
+      sending: 'Sending…',
+      note: 'Your name and comment are visible to everyone.',
+      pending: 'Thanks! Your comment will appear once we’ve approved it.',
+      published: 'Thanks for your comment!',
+      error: 'Something went wrong. Please try again later.',
+      rateLimited: 'You’ve just posted a few comments. Please try again in a few minutes.',
+      empty: 'No comments yet. Be the first!',
+      loadError: 'The comments couldn’t be loaded.',
+    },
     gallery: { label: 'Photo gallery', viewer: 'Photo viewer', close: 'Close', prev: 'Previous photo', next: 'Next photo' },
     about: {
       title: 'About',
@@ -241,6 +346,66 @@ export const ui: Record<Lang, Strings> = {
         'We set off from Ruurlo, took the train to Schiphol and flew via Abu Dhabi to Bali. Follow the <a href="{route}">route</a> to see where we’ve been so far.',
       ],
     },
+    feedback: {
+      title: 'Feedback',
+      heading: 'Bugs and ideas',
+      intro: 'Spotted something broken, or have an idea to make the site better? Leave it here. Vote on what matters most to you, so we know what to fix first.',
+      kindLabel: 'Type',
+      bug: 'Bug',
+      idea: 'Idea',
+      nameLabel: 'Your name',
+      bodyLabel: 'What’s wrong, or what’s your idea?',
+      submit: 'Send',
+      sending: 'Sending…',
+      note: 'Visible to everyone once we’ve approved it.',
+      pending: 'Thanks! Your report will appear once we’ve approved it.',
+      error: 'Something went wrong. Please try again later.',
+      rateLimited: 'You’ve just sent a few things. Please try again in a few minutes.',
+      empty: 'Nothing reported yet. Everything works perfectly… right?',
+      loadError: 'The reports couldn’t be loaded.',
+      openTitle: 'Open',
+      doneTitle: 'Fixed',
+      done: 'Fixed',
+      upvote: 'Vote up',
+      downvote: 'Vote down',
+      score: (n) => `${n > 0 ? '+' : ''}${n} ${Math.abs(n) === 1 ? 'vote' : 'votes'}`,
+    },
+    thanks: {
+      title: 'Thanks',
+      heading: 'Thank you!',
+      text: [
+        'To everyone who buys us a coffee (or a Bintang) along the way: thank you so much. It means a lot that you’re reading along and cheering us on.',
+        'Below are the names of everyone who has treated us so far, newest first.',
+      ],
+      listTitle: 'Treated by',
+      empty: 'Nobody yet… will you be the first?',
+      cta: 'Buy us a coffee too',
+    },
+    statsPage: {
+      description: 'The trip in numbers: where we were, for how long, and what happened along the way.',
+      numbersTitle: 'In numbers',
+      daysOnRoad: 'days on the road',
+      flights: 'flights',
+      boats: 'boat trips',
+      photos: 'photos shared',
+      donors: 'coffees bought for us',
+      thanksTitle: (p) => `Thank you, ${p}, for…`,
+      thanksNote: 'Real numbers. Nothing exaggerated, nothing left out.',
+      everywhere: 'Indonesia',
+      timelineTitle: 'The trip, day by day',
+      timelineHint: 'Drag the slider or press play.',
+      play: 'Play',
+      pause: 'Pause',
+      day: (n, t) => `Day ${n} of ${t}`,
+      arrivedIn: (p) => `In ${p}`,
+      placesTitle: 'How long where',
+      placesHint: 'Time per stop, from arrival to departure.',
+      islandsTitle: 'Per island',
+      transit: 'In transit',
+      now: 'now',
+      days: (n) => `${n} ${n === 1 ? 'day' : 'days'}`,
+      hours: (n) => `${n} ${n === 1 ? 'hour' : 'hours'}`,
+    },
     notFound: { title: 'Not found', heading: 'Lost somewhere in the archipelago.', text: 'This page doesn’t exist.', back: 'Back to the stories' },
     rssItem: (p) => `New story from ${p}`,
     langNames: { nl: 'Dutch', en: 'English', de: 'German' },
@@ -248,7 +413,7 @@ export const ui: Record<Lang, Strings> = {
   de: {
     tagline: 'Babet und Niels unterwegs: Geschichten, Fotos und eine langsam wachsende Linie durch den Archipel.',
     description: 'Babet und Niels reisen durch Indonesien: Geschichten, Fotos und die bisherige Route.',
-    nav: { stories: 'Geschichten', route: 'Route', stats: 'Statistiken', about: 'Über uns', photos: 'Fotos' },
+    nav: { stories: 'Geschichten', route: 'Route', stats: 'Statistiken', about: 'Über uns', photos: 'Fotos', feedback: 'Feedback', thanks: 'Danke' },
     photos: {
       description: 'Unsere Reise in Bildern. Alle Fotos aus unseren Geschichten an einem Ort.',
       empty: 'Sobald wir Fotos in einer Geschichte veröffentlichen, erscheinen sie auch hier.',
@@ -307,7 +472,7 @@ export const ui: Record<Lang, Strings> = {
       rssLink: 'Per RSS folgen',
     },
     donate: {
-      title: 'Die klammen Travel Engineers',
+      title: 'Travel Engineers – völlig pleite',
       text: 'Spendiert uns eine leckere Tasse Kaffee!',
       amountLabel: 'Betrag',
       other: 'Anderer Betrag',
@@ -320,8 +485,22 @@ export const ui: Record<Lang, Strings> = {
       lightningFallback: 'Scannt oder kopiert unsere Lightning-Adresse und wählt den Betrag in eurer Wallet.',
       close: 'Schließen',
       note: 'Ihr landet auf einer sicheren Zahlungsseite und wählt oder prüft dort den Betrag.',
+      thanksLink: 'Schau, wer uns schon eingeladen hat',
     },
-    comments: 'Kommentare',
+    comments: {
+      title: 'Kommentare',
+      nameLabel: 'Dein Name',
+      bodyLabel: 'Dein Kommentar',
+      submit: 'Kommentar senden',
+      sending: 'Wird gesendet…',
+      note: 'Name und Kommentar sind für alle sichtbar.',
+      pending: 'Danke! Dein Kommentar erscheint, sobald wir ihn freigegeben haben.',
+      published: 'Danke für deinen Kommentar!',
+      error: 'Etwas ist schiefgelaufen. Versuch es später noch einmal.',
+      rateLimited: 'Du hast gerade schon ein paar Kommentare geschrieben. Versuch es in ein paar Minuten noch einmal.',
+      empty: 'Noch keine Kommentare. Schreib den ersten!',
+      loadError: 'Die Kommentare konnten nicht geladen werden.',
+    },
     gallery: { label: 'Fotogalerie', viewer: 'Fotoansicht', close: 'Schließen', prev: 'Vorheriges Foto', next: 'Nächstes Foto' },
     about: {
       title: 'Über uns',
@@ -330,6 +509,66 @@ export const ui: Record<Lang, Strings> = {
         'Das ist unser Tagebuch von einer Reise durch Indonesien. Unterwegs veröffentlichen wir Geschichten und Fotos, meistens vom Handy aus einem Café mit wackeligem WLAN.',
         'Los ging es in Ruurlo, mit dem Zug nach Schiphol und dann über Abu Dhabi nach Bali. Auf der <a href="{route}">Route</a> seht ihr, wo wir bisher waren.',
       ],
+    },
+    feedback: {
+      title: 'Feedback',
+      heading: 'Bugs und Ideen',
+      intro: 'Hast du etwas entdeckt, das nicht funktioniert, oder eine Idee, wie die Seite besser wird? Schreib es hier. Stimm ab, was dir am wichtigsten ist, dann wissen wir, was wir zuerst angehen.',
+      kindLabel: 'Art',
+      bug: 'Bug',
+      idea: 'Idee',
+      nameLabel: 'Dein Name',
+      bodyLabel: 'Was ist kaputt, oder was ist deine Idee?',
+      submit: 'Senden',
+      sending: 'Wird gesendet…',
+      note: 'Für alle sichtbar, sobald wir es freigegeben haben.',
+      pending: 'Danke! Deine Meldung erscheint, sobald wir sie freigegeben haben.',
+      error: 'Etwas ist schiefgelaufen. Versuch es später noch einmal.',
+      rateLimited: 'Du hast gerade schon ein paar Dinge geschickt. Versuch es in ein paar Minuten noch einmal.',
+      empty: 'Noch keine Meldungen. Alles funktioniert perfekt… oder?',
+      loadError: 'Die Meldungen konnten nicht geladen werden.',
+      openTitle: 'Offen',
+      doneTitle: 'Erledigt',
+      done: 'Erledigt',
+      upvote: 'Dafür stimmen',
+      downvote: 'Dagegen stimmen',
+      score: (n) => `${n > 0 ? '+' : ''}${n} ${Math.abs(n) === 1 ? 'Stimme' : 'Stimmen'}`,
+    },
+    thanks: {
+      title: 'Danke',
+      heading: 'Dankeschön!',
+      text: [
+        'An alle, die uns unterwegs auf einen Kaffee (oder ein Bintang) einladen: vielen, vielen Dank. Es bedeutet uns viel, dass ihr mitlest und mitfiebert.',
+        'Hier stehen die Namen aller, die uns schon eingeladen haben, die neuesten zuerst.',
+      ],
+      listTitle: 'Eingeladen von',
+      empty: 'Noch niemand… wirst du der oder die Erste?',
+      cta: 'Lad uns auch auf einen Kaffee ein',
+    },
+    statsPage: {
+      description: 'Die Reise in Zahlen: wo wir waren, wie lange, und was unterwegs passiert ist.',
+      numbersTitle: 'In Zahlen',
+      daysOnRoad: 'Tage unterwegs',
+      flights: 'Flüge',
+      boats: 'Bootsfahrten',
+      photos: 'Fotos geteilt',
+      donors: 'Kaffees spendiert',
+      thanksTitle: (p) => `Danke, ${p}, für…`,
+      thanksNote: 'Echte Zahlen. Nichts übertrieben, nichts weggelassen.',
+      everywhere: 'Indonesien',
+      timelineTitle: 'Die Reise, Tag für Tag',
+      timelineHint: 'Zieh den Regler oder drück auf Abspielen.',
+      play: 'Abspielen',
+      pause: 'Pause',
+      day: (n, t) => `Tag ${n} von ${t}`,
+      arrivedIn: (p) => `In ${p}`,
+      placesTitle: 'Wie lange wo',
+      placesHint: 'Zeit pro Halt, von der Ankunft bis zur Abreise.',
+      islandsTitle: 'Pro Insel',
+      transit: 'Unterwegs',
+      now: 'jetzt',
+      days: (n) => `${n} ${n === 1 ? 'Tag' : 'Tage'}`,
+      hours: (n) => `${n} ${n === 1 ? 'Stunde' : 'Stunden'}`,
     },
     notFound: { title: 'Nicht gefunden', heading: 'Irgendwo im Archipel verlaufen.', text: 'Diese Seite gibt es nicht.', back: 'Zurück zu den Geschichten' },
     rssItem: (p) => `Neue Geschichte aus ${p}`,

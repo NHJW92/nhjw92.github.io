@@ -66,6 +66,9 @@ content:
             - { name: boat, label: Boat }
             - { name: flight, label: Flight }
             - { name: walk, label: On foot }
+      - name: island
+        label: Island or region (optional, for the statistics page; filled in automatically from the coordinates)
+        type: string
       - name: summary
         label: Short summary (shown on the homepage and in emails)
         type: text
@@ -146,3 +149,67 @@ content:
                 - { name: boat, label: Boat }
                 - { name: flight, label: Flight }
                 - { name: walk, label: On foot }
+          - name: island
+            label: Island or region (optional, worked out from the coordinates)
+            type: string
+
+  - name: donors
+    label: Donors (thank-you page)
+    type: file
+    path: src/data/donors.yml
+    format: yaml
+    fields:
+      - name: donors
+        label: People who bought us a coffee (only add people who are happy to be named)
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{name} ({date})"
+        fields:
+          - name: name
+            label: Name
+            type: string
+            required: true
+          - name: date
+            label: Date of the donation (newest is shown first)
+            type: date
+            required: true
+            options:
+              format: yyyy-MM-dd
+
+  - name: counters
+    label: Fun statistics
+    type: file
+    path: src/data/stats.yml
+    format: yaml
+    fields:
+      - name: counters
+        label: Counters ("Thank you, Bali, for… 2 nasi goreng")
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{value} {label} ({place})"
+        fields:
+          - name: label
+            label: What (Dutch, e.g. "nasi/mie goreng gegeten")
+            type: string
+            required: true
+          - name: label_en
+            label: What (English, optional)
+            type: string
+          - name: label_de
+            label: What (German, optional)
+            type: string
+          - name: value
+            label: Number
+            type: number
+            required: true
+          - name: place
+            label: Island or region (e.g. Bali; empty = whole trip)
+            type: string
+          - name: show
+            label: Show on the site
+            type: boolean
+            default: true

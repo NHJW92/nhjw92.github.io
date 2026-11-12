@@ -5,6 +5,7 @@ import routeYaml from '../data/route.yml?raw';
 import routeTranslations from '../data/route-translations.json';
 import { TRAVEL_MODES, type TravelMode } from './travel';
 import { formatDate, localize, type Lang } from '../i18n/ui';
+import { islandFor } from './places';
 
 type SourceEntry = CollectionEntry<'posts'>;
 type TranslationEntry = CollectionEntry<'translations'>;
@@ -74,6 +75,10 @@ export type MapPoint = {
   lng: number;
   /** How the traveller arrived at this point; styles the leg leading here. */
   travel: TravelMode;
+  /** Arrival time (ms since epoch). */
+  at: number;
+  /** Island or region, undefined outside Indonesia. */
+  island?: string;
 };
 
 const stopSchema = z.object({
@@ -86,6 +91,7 @@ const stopSchema = z.object({
         lat: z.coerce.number(),
         lng: z.coerce.number(),
         travel: z.enum(TRAVEL_MODES).optional().nullable(),
+        island: z.string().optional().nullable(),
       }),
     )
     .nullable()
@@ -117,6 +123,8 @@ export function routePoints(posts: Post[], lang: Lang): MapPoint[] {
         lat: p.data.lat as number,
         lng: p.data.lng as number,
         travel: (p.data.travel ?? 'car') as TravelMode,
+        at: p.data.date.valueOf(),
+        island: islandFor(p.data.lat as number, p.data.lng as number, p.data.island),
       },
     }));
   const stops = routeStops().map((s) => ({
@@ -130,6 +138,8 @@ export function routePoints(posts: Post[], lang: Lang): MapPoint[] {
       lat: s.lat,
       lng: s.lng,
       travel: (s.travel ?? 'car') as TravelMode,
+      at: s.date.valueOf(),
+      island: islandFor(s.lat, s.lng, s.island),
     },
   }));
   return [...stories, ...stops].sort((a, b) => a.at - b.at).map((x) => x.point);

@@ -1,0 +1,287 @@
+---
+// Bug reports and improvement ideas, with up/down votes. Uses the comment Worker
+// (comments-worker/) with post = "feedback"; approve and mark items done on its /admin page.
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site.config';
+import { LOCALES, t, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const s = t(lang).feedback;
+const endpoint = (SITE.comments.endpoint as string).replace(/\/$/, '');
+const scoreWords = { one: s.score(1).replace(/^\+1 /, ''), many: s.score(2).replace(/^\+2 /, '') };
+const config = JSON.stringify({
+  endpoint, lang, locale: LOCALES[lang],
+  s: { ...s, score: undefined, scoreOne: scoreWords.one, scoreMany: scoreWords.many },
+});
+---
+<Base lang={lang} title={s.title}>
+  <header class="wrap head">
+    <p class="kicker">{s.title}</p>
+    <h1>{s.heading}</h1>
+    <p class="intro">{s.intro}</p>
+  </header>
+
+  {endpoint ? (
+    <div class="wrap layout" data-feedback={config}>
+      <section class="board" aria-labelledby="open-title">
+        <h2 id="open-title">{s.openTitle}</h2>
+        <ol class="items" data-open aria-live="polite"></ol>
+        <p class="empty" data-empty hidden>{s.empty}</p>
+        <details class="fixed" data-done-wrap hidden>
+          <summary><h2>{s.doneTitle} <span data-done-count></span></h2></summary>
+          <ol class="items" data-done></ol>
+        </details>
+      </section>
+
+      <form class="form" novalidate>
+        <fieldset class="kind">
+          <legend>{s.kindLabel}</legend>
+          <label><input type="radio" name="kind" value="bug" checked /> <span>{s.bug}</span></label>
+          <label><input type="radio" name="kind" value="idea" /> <span>{s.idea}</span></label>
+        </fieldset>
+        <div class="field">
+          <label for="f-name">{s.nameLabel}</label>
+          <input id="f-name" name="name" type="text" maxlength="60" autocomplete="name" required />
+        </div>
+        <div class="field">
+          <label for="f-body">{s.bodyLabel}</label>
+          <textarea id="f-body" name="body" rows="5" maxlength="2000" required></textarea>
+        </div>
+        <div class="hp" aria-hidden="true">
+          <label for="f-website">Website</label>
+          <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        <button class="btn accent" type="submit">{s.submit}</button>
+        <p class="note">{s.note}</p>
+        <p class="status" role="status"></p>
+      </form>
+    </div>
+  ) : (
+    <p class="wrap empty">{s.loadError}</p>
+  )}
+</Base>
+
+<script>
+  type Item = { id: number; name: string; body: string; created_at: number; kind: 'bug' | 'idea'; done: number; score: number };
+
+  const root = document.querySelector<HTMLElement>('[data-feedback]');
+  if (root) {
+    const cfg = JSON.parse(root.dataset.feedback!);
+    const s = cfg.s;
+    const openList = root.querySelector<HTMLOListElement>('[data-open]')!;
+    const doneList = root.querySelector<HTMLOListElement>('[data-done]')!;
+    const doneWrap = root.querySelector<HTMLElement>('[data-done-wrap]')!;
+    const doneCount = root.querySelector<HTMLElement>('[data-done-count]')!;
+    const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+    const form = root.querySelector<HTMLFormElement>('.form')!;
+    const status = form.querySelector<HTMLElement>('.status')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+    const bodyInput = form.elements.namedItem('body') as HTMLTextAreaElement;
+    const opened = Date.now();
+    const fmt = new Intl.DateTimeFormat(cfg.locale, { day: 'numeric', month: 'long', year: 'numeric' });
+
+    const store = {
+      get(key: string) { try { return localStorage.getItem(key); } catch { return null; } },
+      set(key: string, v: string) { try { localStorage.setItem(key, v); } catch {} },
+    };
+    let voter = store.get('feedback-voter');
+    if (!voter) {
+      voter = (crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`).replace(/[^a-z0-9-]/gi, '');
+      store.set('feedback-voter', voter);
+    }
+    const myVotes: Record<string, number> = JSON.parse(store.get('feedback-votes') || '{}');
+    nameInput.value = store.get('comment-name') || '';
+
+    let items: Item[] = [];
+    const scoreText = (n: number) => `${n > 0 ? '+' : ''}${n} ${Math.abs(n) === 1 ? s.scoreOne : s.scoreMany}`;
+
+    const arrow = (dir: 'up' | 'down') =>
+      `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${dir === 'up' ? 'M8 3 14 11H2z' : 'M8 13 2 5h12z'}"/></svg>`;
+
+    function card(it: Item) {
+      const li = document.createElement('li');
+      li.className = 'item';
+      li.dataset.kind = it.kind;
+      const mine = myVotes[it.id] ?? 0;
+
+      const votes = document.createElement('div');
+      votes.className = 'votes';
+      if (!it.done) {
+        const up = document.createElement('button');
+        up.type = 'button'; up.className = 'vote'; up.innerHTML = arrow('up');
+        up.setAttribute('aria-label', s.upvote); up.setAttribute('aria-pressed', String(mine === 1));
+        up.addEventListener('click', () => vote(it, mine === 1 ? 0 : 1));
+        const down = document.createElement('button');
+        down.type = 'button'; down.className = 'vote'; down.innerHTML = arrow('down');
+        down.setAttribute('aria-label', s.downvote); down.setAttribute('aria-pressed', String(mine === -1));
+        down.addEventListener('click', () => vote(it, mine === -1 ? 0 : -1));
+        const score = document.createElement('span');
+        score.className = 'score'; score.textContent = String(it.score);
+        score.setAttribute('aria-label', scoreText(it.score));
+        votes.append(up, score, down);
+      }
+
+      const main = document.createElement('div');
+      main.className = 'main';
+      const meta = document.createElement('p');
+      meta.className = 'meta';
+      const tag = document.createElement('span');
+      tag.className = `tag ${it.done ? 'done' : it.kind}`;
+      tag.textContent = it.done ? s.done : it.kind === 'bug' ? s.bug : s.idea;
+      const who = document.createElement('strong');
+      who.textContent = it.name;
+      meta.append(tag, ' ', who, ` · ${fmt.format(it.created_at)}`);
+      const body = document.createElement('p');
+      body.className = 'text';
+      body.textContent = it.body;
+      main.append(meta, body);
+
+      li.append(votes, main);
+      return li;
+    }
+
+    function render() {
+      const open = items.filter((i) => !i.done).sort((a, b) => b.score - a.score || b.created_at - a.created_at);
+      const done = items.filter((i) => i.done).sort((a, b) => b.created_at - a.created_at);
+      openList.replaceChildren(...open.map(card));
+      doneList.replaceChildren(...done.map(card));
+      empty.hidden = open.length > 0;
+      doneWrap.hidden = done.length === 0;
+      doneCount.textContent = `(${done.length})`;
+    }
+
+    async function vote(it: Item, value: number) {
+      const prev = myVotes[it.id] ?? 0;
+      // Optimistic: update right away, correct with the server's count.
+      it.score += value - prev;
+      myVotes[it.id] = value;
+      render();
+      try {
+        const res = await fetch(`${cfg.endpoint}/vote`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: it.id, value, voter }),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        const d = await res.json();
+        it.score = d.score;
+      } catch {
+        it.score -= value - prev;
+        myVotes[it.id] = prev;
+      }
+      store.set('feedback-votes', JSON.stringify(myVotes));
+      render();
+    }
+
+    fetch(`${cfg.endpoint}/comments?post=feedback`, { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d: { comments: Item[] }) => { items = d.comments; render(); })
+      .catch(() => { empty.hidden = false; empty.textContent = s.loadError; });
+
+    const say = (msg: string, kind = '') => { status.textContent = msg; status.dataset.kind = kind; };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      button.disabled = true; button.textContent = s.sending; say('');
+      try {
+        const res = await fetch(`${cfg.endpoint}/comments`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            post: 'feedback', lang: cfg.lang,
+            kind: (form.elements.namedItem('kind') as RadioNodeList).value,
+            name: nameInput.value, body: bodyInput.value,
+            website: (form.elements.namedItem('website') as HTMLInputElement).value,
+            elapsed: Date.now() - opened,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 429) return say(s.rateLimited, 'error');
+        if (!res.ok) return say(s.error, 'error');
+        store.set('comment-name', nameInput.value.trim());
+        bodyInput.value = '';
+        if (data.status === 'published' && data.comment) { items.push(data.comment); render(); }
+        say(s.pending, 'ok');
+      } catch {
+        say(s.error, 'error');
+      } finally {
+        button.disabled = false; button.textContent = s.submit;
+      }
+    });
+  }
+</script>
+
+<style>
+  .head { padding: clamp(3.5rem, 9vw, 7rem) 0 clamp(2rem, 5vw, 3rem); border-bottom: 1px solid var(--line); margin-bottom: clamp(2rem, 5vw, 3rem); }
+  .head h1 { margin: 0.8rem 0 1rem; }
+  .head .kicker { margin: 0; }
+  .intro { margin: 0; max-width: 52ch; font-size: clamp(1.05rem, 2vw, 1.2rem); color: var(--ink-2); }
+
+  .layout { display: grid; gap: clamp(2rem, 5vw, 3.5rem); align-items: start; }
+  @media (min-width: 960px) { .layout { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } .form { position: sticky; top: 6rem; } }
+
+  .board h2 { margin: 0 0 1rem; font-size: clamp(1.4rem, 2.6vw, 1.9rem); }
+  .items { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+  .items :global(.item) {
+    display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;
+    padding: 1rem 1.1rem; background: var(--panel); border-radius: var(--radius);
+  }
+  .items :global(.votes) { display: grid; justify-items: center; gap: 0.15rem; min-width: 2.4rem; }
+  .items :global(.vote) {
+    display: grid; place-items: center; width: 2.25rem; height: 2rem; padding: 0; cursor: pointer;
+    border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--canvas); color: var(--muted);
+    transition: background 150ms ease, color 150ms ease, transform 120ms ease;
+  }
+  .items :global(.vote svg) { width: 0.85rem; height: 0.85rem; fill: currentColor; }
+  .items :global(.vote:hover) { color: var(--ink); border-color: var(--ink); }
+  .items :global(.vote:active) { transform: scale(0.92); }
+  .items :global(.vote[aria-pressed='true']) { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+  .items :global(.vote:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .items :global(.score) { font: 600 1rem var(--label); font-variant-numeric: tabular-nums; }
+  .items :global(.meta) { margin: 0 0 0.35rem; font: 0.88rem var(--label); color: var(--muted); }
+  .items :global(.meta strong) { color: var(--ink); font-weight: 600; }
+  .items :global(.text) { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .items :global(.tag) {
+    display: inline-block; padding: 0.1rem 0.45rem; border-radius: 3px; vertical-align: 0.05em;
+    font: 700 0.7rem var(--label); letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .items :global(.tag.bug) { background: #f3d6d2; color: #7a1d14; }
+  .items :global(.tag.idea) { background: #d5e6ee; color: #1d4b63; }
+  .items :global(.tag.done) { background: #d6eacf; color: #24561a; }
+  .fixed { margin-top: 2.5rem; }
+  .fixed summary { cursor: pointer; list-style: none; }
+  .fixed summary::-webkit-details-marker { display: none; }
+  .fixed summary h2 { display: inline; }
+  .fixed summary::after { content: ' ▾'; color: var(--muted); }
+  .fixed[open] summary::after { content: ' ▴'; }
+  .fixed .items { margin-top: 1rem; opacity: 0.85; }
+  .empty { color: var(--muted); font-style: italic; }
+
+  .form { display: grid; gap: 1rem; padding: clamp(1.25rem, 3vw, 1.75rem); background: var(--panel); border-radius: var(--radius); }
+  .kind { display: flex; gap: 0.5rem; margin: 0; padding: 0; border: 0; }
+  .kind legend { font: 600 0.9rem var(--label); margin-bottom: 0.4rem; padding: 0; }
+  .kind label { cursor: pointer; }
+  .kind input { position: absolute; opacity: 0; }
+  .kind span {
+    display: inline-block; padding: 0.45rem 1rem; border-radius: 999px; border: 1px solid var(--line-strong);
+    font: 600 0.9rem var(--label);
+  }
+  .kind input:checked + span { background: var(--ink); color: var(--canvas); border-color: var(--ink); }
+  .kind input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .field { display: grid; gap: 0.35rem; }
+  .field label { font: 600 0.9rem var(--label); }
+  input[type='text'], textarea {
+    width: 100%; padding: 0.7rem 0.9rem; border: 1px solid var(--line-strong); border-radius: var(--radius);
+    background: var(--canvas); color: var(--ink); font: 1rem/1.5 var(--serif);
+  }
+  textarea { resize: vertical; min-height: 8rem; }
+  input[type='text']:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .form .btn { justify-self: start; }
+  .form .btn:disabled { opacity: 0.6; cursor: progress; }
+  .note { margin: 0; font: 0.85rem var(--label); color: var(--muted); }
+  .status { margin: 0; font: 600 0.95rem var(--label); }
+  .status:empty { display: none; }
+  .status[data-kind='error'] { color: #9b1c1c; }
+</style>

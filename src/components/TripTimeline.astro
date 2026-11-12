@@ -1,0 +1,147 @@
+---
+// Replays the route on a map: a slider (and play button) moves through time and
+// shows every leg and stop reached by that moment.
+import type { MapPoint } from '../lib/posts';
+import { SITE } from '../site.config';
+import { LOCALES, t, type Lang } from '../i18n/ui';
+
+interface Props { points: MapPoint[]; lang: Lang }
+const { points, lang } = Astro.props;
+const s = t(lang).statsPage;
+const data = points.map((p) => ({ lat: p.lat, lng: p.lng, at: p.at, travel: p.travel, location: p.location, kind: p.kind }));
+const strings = { play: s.play, pause: s.pause, day: s.day(111111, 222222), arrived: s.arrivedIn('{p}'), locale: LOCALES[lang] };
+---
+<div class="timeline" data-timeline={JSON.stringify(data)} data-strings={JSON.stringify(strings)} data-carto-key={SITE.map.cartoApiKey}>
+  <div class="tl-map"></div>
+  <div class="tl-controls">
+    <button type="button" class="tl-play btn accent" aria-pressed="false">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path class="i-play" d="M4 2.5v11l9-5.5z" /><path class="i-pause" d="M4 2.5h3v11H4zM9 2.5h3v11H9z" /></svg>
+      <span>{s.play}</span>
+    </button>
+    <input class="tl-range" type="range" min="0" max="1" step="1" value="1" aria-label={s.timelineTitle} />
+  </div>
+  <p class="tl-caption" aria-live="polite"><strong class="tl-day"></strong> <span class="tl-where"></span> <span class="tl-date"></span></p>
+</div>
+
+<script>
+  import L from 'leaflet';
+  import 'leaflet/dist/leaflet.css';
+
+  type P = { lat: number; lng: number; at: number; travel: string; location: string; kind: string };
+  const HOUR = 3600_000;
+  const STYLE: Record<string, L.PolylineOptions> = {
+    flight: { color: '#121a22', weight: 2.4, dashArray: '0.1 7', lineCap: 'round', opacity: 0.9 },
+    boat: { color: '#2c6e8f', weight: 2.5, dashArray: '8 6', opacity: 0.95 },
+    ground: { color: '#121a22', weight: 2.6, opacity: 0.85 },
+  };
+  function arc(a: [number, number], b: [number, number], steps = 40): [number, number][] {
+    const [lat1, lng1] = a, [lat2, lng2] = b;
+    const dLat = lat2 - lat1, dLng = lng2 - lng1, dist = Math.hypot(dLat, dLng), k = 0.18 * dist;
+    const nx = -dLat / (dist || 1), ny = dLng / (dist || 1), sign = ny >= 0 ? 1 : -1;
+    const c = [(lat1 + lat2) / 2 + sign * ny * k, (lng1 + lng2) / 2 + sign * nx * k];
+    return Array.from({ length: steps + 1 }, (_, i) => {
+      const t = i / steps, u = 1 - t;
+      return [u * u * lat1 + 2 * u * t * c[0] + t * t * lat2, u * u * lng1 + 2 * u * t * c[1] + t * t * lng2] as [number, number];
+    });
+  }
+
+  for (const el of document.querySelectorAll<HTMLElement>('[data-timeline]')) {
+    const pts: P[] = JSON.parse(el.dataset.timeline!);
+    const str = JSON.parse(el.dataset.strings!);
+    if (pts.length < 2) { el.hidden = true; continue; }
+
+    const map = L.map(el.querySelector<HTMLElement>('.tl-map')!, { scrollWheelZoom: false, zoomSnap: 0.25 });
+    const key = el.dataset.cartoKey;
+    L.tileLayer(
+      key ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${encodeURIComponent(key)}` : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      { maxZoom: 19, subdomains: 'abcd', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' + (key ? ' &copy; <a href="https://carto.com/attributions">CARTO</a>' : '') },
+    ).addTo(map);
+    const layer = L.layerGroup().addTo(map);
+
+    // The trip starts when we leave home (the first point after a 'start' point).
+    const first = pts[0].travel === 'start' && pts.length > 1 ? 1 : 0;
+    const t0 = pts[first].at;
+    const tEnd = Math.max(Date.now(), pts.at(-1)!.at);
+    const totalH = Math.ceil((tEnd - t0) / HOUR);
+    const totalDays = Math.max(1, Math.ceil(totalH / 24));
+
+    const range = el.querySelector<HTMLInputElement>('.tl-range')!;
+    range.max = String(totalH);
+    range.value = String(totalH);
+    const play = el.querySelector<HTMLButtonElement>('.tl-play')!;
+    const playLabel = play.querySelector('span')!;
+    const day = el.querySelector<HTMLElement>('.tl-day')!;
+    const where = el.querySelector<HTMLElement>('.tl-where')!;
+    const date = el.querySelector<HTMLElement>('.tl-date')!;
+    const fmt = new Intl.DateTimeFormat(str.locale, { day: 'numeric', month: 'long' });
+
+    let shownCount = -1;
+    function draw(hours: number) {
+      const now = t0 + hours * HOUR;
+      // Home is always on the map; other points appear when we arrive.
+      const reached = pts.filter((p, i) => i <= first || p.at <= now);
+      const current = reached.at(-1)!;
+      const n = Math.min(totalDays, Math.floor(hours / 24) + 1);
+      day.textContent = str.day.replace('111111', String(n)).replace('222222', String(totalDays));
+      where.textContent = '· ' + str.arrived.replace('{p}', current.location);
+      date.textContent = '· ' + fmt.format(now);
+      if (reached.length === shownCount) return;
+      shownCount = reached.length;
+
+      layer.clearLayers();
+      for (let i = 1; i < reached.length; i++) {
+        const a: [number, number] = [reached[i - 1].lat, reached[i - 1].lng];
+        const b: [number, number] = [reached[i].lat, reached[i].lng];
+        const mode = reached[i].travel;
+        L.polyline(mode === 'flight' ? arc(a, b) : [a, b], mode === 'flight' ? STYLE.flight : mode === 'boat' ? STYLE.boat : STYLE.ground).addTo(layer);
+      }
+      reached.forEach((p, i) => {
+        const last = i === reached.length - 1;
+        L.circleMarker([p.lat, p.lng], {
+          radius: last ? 8 : p.kind === 'story' ? 5.5 : 4,
+          color: '#121a22', weight: 2,
+          fillColor: last ? '#e2a11b' : p.kind === 'story' ? '#121a22' : '#fff', fillOpacity: 1,
+        }).addTo(layer);
+      });
+      // Frame the last few stops, so a hop across the world zooms out and a local trip zooms in.
+      const recent = reached.slice(-3).map((p) => [p.lat, p.lng] as [number, number]);
+      map.flyToBounds(L.latLngBounds(recent).pad(0.35), { maxZoom: 9, duration: 0.8 });
+    }
+
+    let timer: number | undefined;
+    const setPlaying = (on: boolean) => {
+      play.setAttribute('aria-pressed', String(on));
+      playLabel.textContent = on ? str.pause : str.play;
+      if (timer) { clearInterval(timer); timer = undefined; }
+      if (!on) return;
+      if (Number(range.value) >= totalH) range.value = '0';
+      // Whole trip in about 12 seconds, at least an hour per tick.
+      const step = Math.max(1, Math.ceil(totalH / 120));
+      timer = window.setInterval(() => {
+        const v = Math.min(totalH, Number(range.value) + step);
+        range.value = String(v);
+        draw(v);
+        if (v >= totalH) setPlaying(false);
+      }, 100);
+    };
+    play.addEventListener('click', () => setPlaying(!timer));
+    range.addEventListener('input', () => { setPlaying(false); draw(Number(range.value)); });
+
+    map.fitBounds(L.latLngBounds(pts.map((p) => [p.lat, p.lng] as [number, number])).pad(0.15));
+    draw(totalH);
+  }
+</script>
+
+<style>
+  .timeline { display: grid; gap: 0.9rem; }
+  .tl-map { height: clamp(20rem, 55vh, 32rem); border-radius: var(--radius); border: 1px solid var(--line); background: #dfe3dc; z-index: 0; }
+  .tl-map :global(.leaflet-tile-pane) { filter: saturate(0.55) contrast(1.03) brightness(1.02); }
+  .tl-controls { display: flex; align-items: center; gap: 1rem; }
+  .tl-play { display: inline-flex; align-items: center; gap: 0.5rem; flex: none; }
+  .tl-play svg { width: 0.9rem; height: 0.9rem; fill: currentColor; }
+  .tl-play .i-pause, .tl-play[aria-pressed='true'] .i-play { display: none; }
+  .tl-play[aria-pressed='true'] .i-pause { display: inline; }
+  .tl-range { flex: 1; min-width: 0; accent-color: var(--accent); height: 2rem; cursor: pointer; }
+  .tl-caption { margin: 0; font: 1rem var(--label); color: var(--muted); }
+  .tl-caption strong { color: var(--ink); font-weight: 600; }
+</style>

@@ -20,6 +20,8 @@ const posts = defineCollection({
     lng: z.coerce.number().optional().nullable(),
     // How you got here; styles the line leading to this stop on the map.
     travel: z.enum(TRAVEL_MODES).optional().nullable(),
+    // Island or region for the statistics page; worked out from the coordinates when empty.
+    island: z.string().trim().optional().nullable(),
     summary: z.string().optional().nullable(),
     cover: z.string().optional().nullable(),
     coverAlt: z.string().optional().nullable(),

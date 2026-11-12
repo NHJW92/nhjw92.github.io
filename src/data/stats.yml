@@ -1,0 +1,46 @@
+# Fun counters for the statistics page ("Thank you, Bali, for…").
+# Keep them real. Set `show: false` to hide a counter until it's worth showing.
+# `place` groups counters per island or region; leave it empty for the whole trip.
+counters:
+  - label: nasi/mie goreng gegeten
+    label_en: nasi/mie goreng eaten
+    label_de: Nasi/Mie Goreng gegessen
+    value: 2
+    place: Bali
+    show: true
+  - label: keer Bali belly
+    label_en: bout of Bali belly
+    label_de: Mal Bali Belly
+    value: 1
+    place: Bali
+    show: true
+  - label: Bintangs gedronken
+    label_en: Bintangs drunk
+    label_de: Bintang getrunken
+    value: 0
+    place: Bali
+    show: false
+  - label: kokosnoten leeggedronken
+    label_en: coconuts finished
+    label_de: Kokosnüsse ausgetrunken
+    value: 0
+    place: Bali
+    show: false
+  - label: zonsondergangen gezien
+    label_en: sunsets watched
+    label_de: Sonnenuntergänge gesehen
+    value: 0
+    place: Bali
+    show: false
+  - label: muggenbeten
+    label_en: mosquito bites
+    label_de: Mückenstiche
+    value: 0
+    place: Bali
+    show: false
+  - label: keer verdwaald
+    label_en: times we got lost
+    label_de: Mal verlaufen
+    value: 0
+    place: Bali
+    show: false

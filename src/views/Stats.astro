@@ -1,47 +1,294 @@
 ---
 import Base from '../layouts/Base.astro';
+import TripTimeline from '../components/TripTimeline.astro';
 import { getPosts, routePoints } from '../lib/posts';
 import { routeKm } from '../lib/journey';
+import { getCounters, getDonors } from '../lib/extras';
 import { t, LOCALES, type Lang } from '../i18n/ui';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
-const s = t(lang);
+const all = t(lang);
+const s = all.statsPage;
 const posts = await getPosts(lang);
 const points = routePoints(posts, lang);
 const nf = new Intl.NumberFormat(LOCALES[lang]);
-const stats = [
-  { value: points.length, label: s.home.stats.stops },
-  { value: posts.length, label: s.home.stats.stories },
-  { value: routeKm(points), label: s.home.stats.km },
-];
----
 
-<Base lang={lang} title={s.nav.stats}>
-  <section class="wrap journal" aria-labelledby="stats-title">
+// The trip starts when we leave home: skip a leading 'start' point.
+const first = points[0]?.travel === 'start' && points.length > 1 ? 1 : 0;
+const trip = points.slice(first);
+const departure = trip[0]?.at ?? Date.now();
+const DAY = 86_400_000;
+const photos = new Set(posts.flatMap((p) => [p.data.cover, ...p.data.gallery.map((g) => g.image)].filter(Boolean))).size;
+
+const numbers = [
+  { value: Math.max(1, Math.ceil((Date.now() - departure) / DAY)), label: s.daysOnRoad, live: true },
+  { value: routeKm(points), label: all.home.stats.km },
+  { value: trip.length, label: all.home.stats.stops },
+  { value: posts.length, label: all.home.stats.stories },
+  { value: trip.filter((p) => p.travel === 'flight').length, label: s.flights },
+  { value: trip.filter((p) => p.travel === 'boat').length, label: s.boats },
+  { value: photos, label: s.photos },
+  { value: getDonors().length, label: s.donors },
+].filter((n, i) => i < 4 || n.value > 0);
+
+// "Thank you, Bali, for…": counters grouped per place, the most recent place first.
+const counters = getCounters(lang);
+const placeOrder = [...new Set([...trip.map((p) => p.island).filter(Boolean).reverse(), ...counters.map((c) => c.place)])];
+const groups = [...new Set(counters.map((c) => c.place))]
+  .sort((a, b) => placeOrder.indexOf(a) - placeOrder.indexOf(b))
+  .map((place) => ({ place: place ?? s.everywhere, items: counters.filter((c) => c.place === place) }));
+
+// Stays: from arriving at a point until arriving at the next one (the last one runs until now).
+const stays = trip.map((p, i) => ({ location: p.location, island: p.island ?? null, from: p.at, to: trip[i + 1]?.at ?? null }));
+const chartStrings = {
+  locale: LOCALES[lang], transit: s.transit, now: s.now,
+  day: s.days(1), days: s.days(2), hour: s.hours(1), hours: s.hours(2),
+};
+---
+<Base lang={lang} title={all.nav.stats} description={s.description}>
+  <section class="wrap intro" aria-labelledby="stats-title">
     <header>
-      <p class="kicker">{s.home.journal} · {s.edition}</p>
-      <h1 id="stats-title">{s.nav.stats}</h1>
-      <p class="statement">{s.tagline}</p>
-      <p class="byline">{s.home.byline}</p>
+      <p class="kicker">{all.home.journal} · {all.edition}</p>
+      <h1 id="stats-title">{all.nav.stats}</h1>
+      <p class="statement">{s.description}</p>
+      <p class="byline">{all.home.byline}</p>
     </header>
-    <dl class="stats">
-      {stats.map(({ label, value }) => (
-        <div><dt>{label}</dt><dd>{nf.format(value)}</dd></div>
+    <dl class="numbers" aria-label={s.numbersTitle}>
+      {numbers.map(({ label, value, live }) => (
+        <div><dt>{label}</dt><dd data-count={value} data-live-days={live ? departure : undefined}>{nf.format(value)}</dd></div>
       ))}
     </dl>
   </section>
+
+  {groups.length > 0 && (
+    <section class="thanks on-deep" aria-labelledby="thanks-title" data-thanks>
+      <div class="wrap">
+        {groups.length > 1 && (
+          <div class="tabs" role="tablist" aria-label={s.numbersTitle}>
+            {groups.map((g, i) => (
+              <button type="button" role="tab" id={`tab-${i}`} aria-controls={`panel-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>{g.place}</button>
+            ))}
+          </div>
+        )}
+        {groups.map((g, i) => (
+          <div class="panel" id={`panel-${i}`} role={groups.length > 1 ? 'tabpanel' : undefined} aria-labelledby={groups.length > 1 ? `tab-${i}` : undefined} hidden={i > 0}>
+            <h2 id={i === 0 ? 'thanks-title' : undefined}>{s.thanksTitle(g.place)}</h2>
+            <ul class="counters">
+              {g.items.map((c) => (
+                <li><span class="n" data-count={c.value}>{nf.format(c.value)}</span><span class="what">{c.label}</span></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        <p class="honest">{s.thanksNote}</p>
+      </div>
+    </section>
+  )}
+
+  <section class="wrap block" aria-labelledby="timeline-title">
+    <header class="block-head">
+      <h2 id="timeline-title">{s.timelineTitle}</h2>
+      <p>{s.timelineHint}</p>
+    </header>
+    <TripTimeline points={points} lang={lang} />
+  </section>
+
+  <section class="wrap block" aria-labelledby="places-title">
+    <header class="block-head">
+      <h2 id="places-title">{s.placesTitle}</h2>
+      <p>{s.placesHint}</p>
+    </header>
+    <div class="charts" data-stays={JSON.stringify(stays)} data-strings={JSON.stringify(chartStrings)}>
+      <figure>
+        <figcaption>{s.islandsTitle}</figcaption>
+        <ol class="bars" data-islands></ol>
+      </figure>
+      <figure>
+        <figcaption>{all.nav.route}</figcaption>
+        <ol class="bars" data-places></ol>
+      </figure>
+    </div>
+  </section>
 </Base>
 
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Days on the road keeps counting after the last build.
+  document.querySelectorAll<HTMLElement>('[data-live-days]').forEach((el) => {
+    const days = Math.max(1, Math.ceil((Date.now() - Number(el.dataset.liveDays)) / 86_400_000));
+    el.dataset.count = String(days);
+    el.textContent = days.toLocaleString(document.documentElement.lang);
+  });
+
+  // Count up when a number scrolls into view.
+  const countUp = (el: HTMLElement) => {
+    const target = Number(el.dataset.count);
+    if (reduce || !target) return;
+    const t0 = performance.now(), dur = Math.min(1600, 500 + target * 40);
+    const tick = (now: number) => {
+      const k = Math.min(1, (now - t0) / dur), eased = 1 - (1 - k) ** 3;
+      el.textContent = Math.round(target * eased).toLocaleString(document.documentElement.lang);
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+    if (e.isIntersecting) { countUp(e.target as HTMLElement); io.unobserve(e.target); }
+  }), { threshold: 0.6 });
+  document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => io.observe(el));
+
+  // Tabs for the "thank you" places.
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-thanks] [role=tab]')];
+  const select = (tab: HTMLButtonElement) => {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      const panel = document.getElementById(t.getAttribute('aria-controls')!)!;
+      panel.hidden = !on;
+      if (on) panel.querySelectorAll<HTMLElement>('[data-count]').forEach(countUp);
+    });
+  };
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      const next = tabs[(i + d + tabs.length) % tabs.length];
+      next.focus(); select(next);
+    });
+  });
+
+  // Time per stop and per island, as bars.
+  type Stay = { location: string; island: string | null; from: number; to: number | null };
+  const charts = document.querySelector<HTMLElement>('[data-stays]');
+  if (charts) {
+    const stays: Stay[] = JSON.parse(charts.dataset.stays!);
+    const str = JSON.parse(charts.dataset.strings!);
+    const now = Date.now();
+    const H = 3_600_000;
+    const dur = (s: Stay) => Math.max(0, (s.to ?? now) - s.from);
+    const label = (ms: number) => {
+      const h = ms / H;
+      if (Math.round(h) < 24) { const n = Math.max(1, Math.round(h)); return `${n} ${n === 1 ? str.hour.replace(/^1 /, '') : str.hours.replace(/^2 /, '')}`; }
+      const d = Math.round((h / 24) * 2) / 2;
+      const txt = d.toLocaleString(str.locale);
+      return `${txt} ${d === 1 ? str.day.replace(/^1 /, '') : str.days.replace(/^2 /, '')}`;
+    };
+    const fmt = new Intl.DateTimeFormat(str.locale, { day: 'numeric', month: 'short' });
+
+    const bars = (list: HTMLElement, rows: { name: string; ms: number; detail: string; current?: boolean }[]) => {
+      const max = Math.max(...rows.map((r) => r.ms), 1);
+      list.replaceChildren(...rows.map((r) => {
+        const li = document.createElement('li');
+        if (r.current) li.className = 'current';
+        li.title = r.detail;
+        li.tabIndex = 0;
+        const name = document.createElement('span'); name.className = 'name'; name.textContent = r.name;
+        const val = document.createElement('span'); val.className = 'val'; val.textContent = label(r.ms);
+        const track = document.createElement('span'); track.className = 'track';
+        const fill = document.createElement('span'); fill.className = 'fill';
+        fill.style.setProperty('--w', `${Math.max(1.5, (r.ms / max) * 100)}%`);
+        const tip = document.createElement('span'); tip.className = 'tip'; tip.textContent = r.detail;
+        track.append(fill);
+        li.append(name, val, track, tip);
+        return li;
+      }));
+    };
+
+    const places = stays.map((s, i) => ({
+      name: s.location,
+      ms: dur(s),
+      current: i === stays.length - 1,
+      detail: `${fmt.format(s.from)} – ${s.to ? fmt.format(s.to) : str.now}${s.island ? ` · ${s.island}` : ''}`,
+    }));
+    bars(charts.querySelector('[data-places]')!, places);
+
+    const byIsland = new Map<string, { ms: number; first: number; last: number }>();
+    for (const s of stays) {
+      const key = s.island ?? str.transit;
+      const g = byIsland.get(key) ?? { ms: 0, first: s.from, last: s.to ?? now };
+      g.ms += dur(s); g.first = Math.min(g.first, s.from); g.last = Math.max(g.last, s.to ?? now);
+      byIsland.set(key, g);
+    }
+    const currentIsland = stays.at(-1)?.island ?? str.transit;
+    bars(
+      charts.querySelector('[data-islands]')!,
+      [...byIsland.entries()].sort((a, b) => b[1].ms - a[1].ms).map(([name, g]) => ({
+        name, ms: g.ms, current: name === currentIsland,
+        detail: `${fmt.format(g.first)} – ${g.last >= now - 60_000 ? str.now : fmt.format(g.last)}`,
+      })),
+    );
+
+    // Grow the bars when they scroll into view.
+    const grow = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('in'); grow.unobserve(e.target); }
+    }), { threshold: 0.3 });
+    charts.querySelectorAll('.bars').forEach((b) => grow.observe(b));
+  }
+</script>
+
 <style>
-  .journal { display: grid; gap: 2.5rem; padding-top: clamp(3rem, 8vw, 6rem); }
+  .intro { display: grid; gap: 2.5rem; padding-top: clamp(3rem, 8vw, 6rem); }
   .kicker { margin: 0; }
   h1 { margin: 0.6rem 0 1.2rem; }
-  .statement { margin: 0; font-family: var(--display); font-style: italic; font-size: clamp(1.5rem, 3vw, 2.4rem); line-height: 1.15; max-width: 26ch; text-wrap: balance; }
+  .statement { margin: 0; font-family: var(--display); font-style: italic; font-size: clamp(1.4rem, 2.8vw, 2.2rem); line-height: 1.15; max-width: 26ch; text-wrap: balance; }
   .byline { margin: 1.4rem 0 0; font-family: var(--label); font-size: 0.84rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); gap: 1.5rem; margin: 0; align-self: end; }
-  .stats div { display: flex; flex-direction: column-reverse; gap: 0.4rem; border-top: 1px solid var(--ink); padding-top: 0.8rem; }
-  .stats dt { font-family: var(--label); font-size: 0.76rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
-  .stats dd { margin: 0; font-family: var(--display); font-size: clamp(1.9rem, 4vw, 3.4rem); line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
-  @media (min-width: 900px) { .journal { grid-template-columns: 1.3fr 1fr; gap: 4rem; } }
+  .numbers { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 1.5rem 1.25rem; margin: 0; align-self: end; }
+  .numbers div { display: flex; flex-direction: column-reverse; gap: 0.4rem; border-top: 1px solid var(--ink); padding-top: 0.8rem; }
+  .numbers dt { font-family: var(--label); font-size: 0.76rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+  .numbers dd { margin: 0; font-family: var(--display); font-size: clamp(1.9rem, 4vw, 3.2rem); line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
+  @media (min-width: 960px) { .intro { grid-template-columns: 1fr 1.2fr; gap: 4rem; } }
+
+  /* Thank you, Bali */
+  .thanks { margin-top: clamp(4rem, 8vw, 6rem); padding: clamp(3.5rem, 8vw, 6rem) 0; background: radial-gradient(120% 90% at 85% 0%, #1f3a4d 0%, var(--deep) 60%); }
+  .thanks h2 { margin: 0 0 clamp(2rem, 5vw, 3rem); font-size: clamp(2.2rem, 6vw, 4.5rem); line-height: 1; letter-spacing: -0.02em; font-style: italic; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+  .tabs button {
+    padding: 0.45rem 1.1rem; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--on-deep-muted); background: transparent; color: var(--on-deep); font: 600 0.9rem var(--label);
+  }
+  .tabs button[aria-selected='true'] { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+  .tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .counters { list-style: none; margin: 0; padding: 0; display: grid; gap: 2rem 2.5rem; grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); }
+  .counters li { display: grid; gap: 0.35rem; border-top: 1px solid rgb(232 235 228 / 0.25); padding-top: 1rem; }
+  .counters .n { font-family: var(--display); font-size: clamp(3.5rem, 9vw, 6rem); line-height: 0.9; color: var(--accent); font-variant-numeric: lining-nums tabular-nums; }
+  .counters .what { font-family: var(--display); font-size: clamp(1.15rem, 2vw, 1.4rem); line-height: 1.2; color: var(--on-deep); }
+  .honest { margin: clamp(2.5rem, 5vw, 3.5rem) 0 0; font: 0.85rem var(--label); letter-spacing: 0.07em; text-transform: uppercase; color: var(--on-deep-muted); }
+
+  .block { margin-top: clamp(4rem, 8vw, 6rem); }
+  .block-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 1.5rem; margin-bottom: 1.5rem; }
+  .block-head h2 { margin: 0; }
+  .block-head p { margin: 0; color: var(--muted); font-family: var(--label); font-size: 0.95rem; }
+
+  /* Bars */
+  .charts { display: grid; gap: 2.5rem 4rem; }
+  @media (min-width: 900px) { .charts { grid-template-columns: 1fr 1.4fr; } }
+  figure { margin: 0; }
+  figcaption { margin-bottom: 1rem; font-family: var(--label); font-size: 0.76rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+  .bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+  .bars :global(li) {
+    position: relative; display: grid; grid-template-columns: 1fr auto; gap: 0.3rem 1rem; outline: none;
+  }
+  .bars :global(.name) { font-family: var(--display); font-size: 1.15rem; line-height: 1.2; }
+  .bars :global(.val) { font: 600 0.9rem var(--label); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .bars :global(.track) { grid-column: 1 / -1; height: 0.6rem; border-radius: 999px; background: var(--panel); overflow: hidden; }
+  .bars :global(.fill) {
+    display: block; height: 100%; width: 0; border-radius: inherit; background: var(--ink);
+    transition: width 900ms var(--ease-out);
+  }
+  .bars:global(.in) :global(.fill) { width: var(--w); }
+  .bars :global(li.current .fill) { background: var(--accent); }
+  .bars :global(li:hover .fill), .bars :global(li:focus-visible .fill) { background: var(--sea); }
+  .bars :global(li.current:hover .fill), .bars :global(li.current:focus-visible .fill) { background: var(--accent-hover); }
+  .bars :global(.tip) {
+    position: absolute; right: 0; top: -2.1rem; z-index: 2; padding: 0.3rem 0.6rem; border-radius: var(--radius);
+    background: var(--deep); color: var(--on-deep); font: 0.8rem var(--label); white-space: nowrap;
+    opacity: 0; transform: translateY(4px); pointer-events: none; transition: opacity 150ms ease, transform 150ms ease;
+  }
+  .bars :global(li:hover .tip), .bars :global(li:focus-visible .tip) { opacity: 1; transform: none; }
+  .bars :global(li:focus-visible) { box-shadow: 0 0 0 2px var(--accent); border-radius: 2px; }
+  @media (prefers-reduced-motion: reduce) { .bars :global(.fill) { transition: none; } }
 </style>

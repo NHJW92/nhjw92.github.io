@@ -1,0 +1,7 @@
+---
+import Thanks from '../../views/Thanks.astro';
+import type { Lang } from '../../i18n/ui';
+export const getStaticPaths = () => [{ params: { lang: 'en' } }, { params: { lang: 'de' } }];
+const lang = Astro.params.lang as Lang;
+---
+<Thanks lang={lang} />

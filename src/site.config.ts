@@ -35,12 +35,10 @@ export const SITE = {
   // Put your Buttondown username here to show the signup form; leave '' to hide it.
   buttondownUsername: 'TravelEngineers',
 
-  // Comments via Giscus (https://giscus.app). Fill all four values from giscus.app
-  // to enable comments; leave repo as '' to hide them.
-  giscus: {
-    repo: '', // 'NHJW92/nhjw92.github.io' once Discussions are enabled
-    repoId: '',
-    category: 'Announcements',
-    categoryId: '',
+  // Comments: a small Cloudflare Worker in comments-worker/ (see "Comments" in the README).
+  // Paste the Worker's URL here, e.g. 'https://travel-engineers-comments.<you>.workers.dev'.
+  // Leave '' to hide the comment section.
+  comments: {
+    endpoint: '',
   },
 } as const;

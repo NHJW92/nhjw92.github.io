@@ -1,0 +1,56 @@
+---
+import Base from '../layouts/Base.astro';
+import Donate from '../components/Donate.astro';
+import { getDonors } from '../lib/extras';
+import { SITE } from '../site.config';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const s = t(lang).thanks;
+// Add names in Pages CMS → Donors. Newest donation first.
+const donors = getDonors();
+---
+<Base lang={lang} title={s.title}>
+  <header class="wrap head">
+    <p class="kicker">{s.title} · {SITE.author}</p>
+    <h1>{s.heading}</h1>
+  </header>
+  <section class="prose-wrap prose">
+    {s.text.map((p) => <p>{p}</p>)}
+  </section>
+
+  <section class="prose-wrap names" aria-labelledby="donors-title">
+    <h2 id="donors-title" class="kicker">{s.listTitle}</h2>
+    {donors.length ? (
+      <ol>
+        {donors.map((d, i) => <li class:list={{ latest: i === 0 }} data-reveal>{d.name}</li>)}
+      </ol>
+    ) : (
+      <p class="empty">{s.empty}</p>
+    )}
+  </section>
+
+  <div class="prose-wrap cta" id="donate"><Donate lang={lang} compact thanksLink={false} /></div>
+</Base>
+
+<style>
+  .head { padding: clamp(3.5rem, 9vw, 7rem) 0 clamp(2rem, 5vw, 3rem); border-bottom: 1px solid var(--line); margin-bottom: clamp(2rem, 5vw, 3rem); }
+  .head h1 { margin: 0.8rem 0 0; }
+  .head .kicker { margin: 0; }
+  .names { margin-top: clamp(2.5rem, 6vw, 4rem); }
+  .names h2 { margin: 0 0 1.25rem; }
+  ol { list-style: none; margin: 0; padding: 0; display: grid; }
+  li {
+    padding: 0.85rem 0; border-top: 1px solid var(--line);
+    font-family: var(--display); font-size: clamp(1.5rem, 3.2vw, 2.1rem); line-height: 1.15;
+  }
+  li:last-child { border-bottom: 1px solid var(--line); }
+  li.latest { font-size: clamp(2rem, 5vw, 3.2rem); padding: 1.1rem 0; }
+  li.latest::before {
+    content: ''; display: inline-block; width: 0.55em; height: 0.55em; margin-right: 0.45em;
+    border-radius: 50%; background: var(--accent); vertical-align: 0.08em;
+  }
+  .empty { font-style: italic; color: var(--muted); }
+  .cta { margin-top: clamp(3rem, 6vw, 4.5rem); }
+</style>

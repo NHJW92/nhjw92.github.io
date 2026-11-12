@@ -87,6 +87,8 @@ const isCurrent = (p: string) => (p === '/' ? path === '/' || path.startsWith('/
         </div>
         <nav aria-label="Footer" class="foot-nav">
           {nav.map((n) => <a href={localize(n.path, lang)}>{n.label}</a>)}
+          <a href={localize('/thanks/', lang)}>{s.nav.thanks}</a>
+          {SITE.comments.endpoint && <a href={localize('/feedback/', lang)}>{s.nav.feedback}</a>}
           <a href={localize('/rss.xml', lang)}>RSS</a>
         </nav>
         <p class="small">© {new Date().getFullYear()} {SITE.author}</p>

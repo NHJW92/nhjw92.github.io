@@ -1,0 +1,7 @@
+---
+import Feedback from '../../views/Feedback.astro';
+import type { Lang } from '../../i18n/ui';
+export const getStaticPaths = () => [{ params: { lang: 'en' } }, { params: { lang: 'de' } }];
+const lang = Astro.params.lang as Lang;
+---
+<Feedback lang={lang} />

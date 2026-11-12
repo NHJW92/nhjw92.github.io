@@ -1,38 +1,158 @@
 ---
-// Comments are isolated in this component so the provider can be swapped
-// (e.g. for Cusdis or Hyvor Talk) without touching the post layout.
+// Comment section for a story. Comments live in a small Cloudflare Worker
+// (comments-worker/), so they appear without rebuilding the site. One thread per
+// story, shared by all three languages.
 import { SITE } from '../site.config';
-import { t, type Lang } from '../i18n/ui';
+import { LOCALES, t, type Lang } from '../i18n/ui';
 interface Props { lang: Lang; term: string }
 const { lang, term } = Astro.props;
-const g = SITE.giscus;
-const enabled = Boolean(g.repo && g.repoId && g.categoryId);
+const s = t(lang).comments;
+const endpoint = (SITE.comments.endpoint as string).replace(/\/$/, '');
+const config = JSON.stringify({ endpoint, post: term, lang, locale: LOCALES[lang], s });
 ---
-{enabled && (
-  <section class="comments" aria-label="Comments">
-    <h2>{t(lang).comments}</h2>
-    <script
-      is:inline
-      src="https://giscus.app/client.js"
-      data-repo={g.repo}
-      data-repo-id={g.repoId}
-      data-category={g.category}
-      data-category-id={g.categoryId}
-      data-mapping="specific"
-      data-term={term}
-      data-strict="0"
-      data-reactions-enabled="1"
-      data-emit-metadata="0"
-      data-input-position="top"
-      data-theme="light"
-      data-lang={lang}
-      data-loading="lazy"
-      crossorigin="anonymous"
-      async
-    ></script>
+{endpoint && (
+  <section class="comments" id="comments" aria-labelledby="comments-title" data-comments={config}>
+    <h2 id="comments-title">{s.title}</h2>
+
+    <ol class="list" aria-live="polite"></ol>
+    <p class="empty" hidden>{s.empty}</p>
+
+    <form class="form" novalidate>
+      <div class="field">
+        <label for="c-name">{s.nameLabel}</label>
+        <input id="c-name" name="name" type="text" maxlength="60" autocomplete="name" required />
+      </div>
+      <div class="field">
+        <label for="c-body">{s.bodyLabel}</label>
+        <textarea id="c-body" name="body" rows="4" maxlength="2000" required></textarea>
+      </div>
+      <!-- Left empty by people; bots fill it in. -->
+      <div class="hp" aria-hidden="true">
+        <label for="c-website">Website</label>
+        <input id="c-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+      <div class="row">
+        <button class="btn accent" type="submit">{s.submit}</button>
+        <p class="note">{s.note}</p>
+      </div>
+      <p class="status" role="status"></p>
+    </form>
   </section>
 )}
 
+<script>
+  type Comment = { id: number; name: string; body: string; created_at: number };
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-comments]')) {
+    const cfg = JSON.parse(root.dataset.comments!);
+    const s = cfg.s;
+    const list = root.querySelector<HTMLOListElement>('.list')!;
+    const empty = root.querySelector<HTMLElement>('.empty')!;
+    const form = root.querySelector<HTMLFormElement>('.form')!;
+    const status = root.querySelector<HTMLElement>('.status')!;
+    const button = form.querySelector<HTMLButtonElement>('button')!;
+    const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+    const bodyInput = form.elements.namedItem('body') as HTMLTextAreaElement;
+    const opened = Date.now();
+    const fmt = new Intl.DateTimeFormat(cfg.locale, { day: 'numeric', month: 'long', year: 'numeric' });
+
+    try { nameInput.value = localStorage.getItem('comment-name') || ''; } catch {}
+
+    const render = (c: Comment) => {
+      const li = document.createElement('li');
+      const head = document.createElement('p');
+      head.className = 'who';
+      const name = document.createElement('strong');
+      name.textContent = c.name;
+      const time = document.createElement('time');
+      time.dateTime = new Date(c.created_at).toISOString();
+      time.textContent = fmt.format(c.created_at);
+      head.append(name, ' · ', time);
+      const body = document.createElement('p');
+      body.className = 'text';
+      body.textContent = c.body;
+      li.append(head, body);
+      list.append(li);
+      empty.hidden = true;
+    };
+
+    const say = (msg: string, kind: 'ok' | 'error' | '' = '') => {
+      status.textContent = msg;
+      status.dataset.kind = kind;
+    };
+
+    fetch(`${cfg.endpoint}/comments?post=${encodeURIComponent(cfg.post)}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d: { comments: Comment[] }) => {
+        d.comments.forEach(render);
+        empty.hidden = d.comments.length > 0;
+      })
+      .catch(() => { empty.hidden = false; empty.textContent = s.loadError; });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      button.disabled = true;
+      button.textContent = s.sending;
+      say('');
+      try {
+        const res = await fetch(`${cfg.endpoint}/comments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            post: cfg.post,
+            lang: cfg.lang,
+            name: nameInput.value,
+            body: bodyInput.value,
+            website: (form.elements.namedItem('website') as HTMLInputElement).value,
+            elapsed: Date.now() - opened,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 429) return say(s.rateLimited, 'error');
+        if (!res.ok) return say(s.error, 'error');
+        try { localStorage.setItem('comment-name', nameInput.value.trim()); } catch {}
+        bodyInput.value = '';
+        if (data.status === 'published' && data.comment) {
+          render(data.comment);
+          say(s.published, 'ok');
+        } else {
+          say(s.pending, 'ok');
+        }
+      } catch {
+        say(s.error, 'error');
+      } finally {
+        button.disabled = false;
+        button.textContent = s.submit;
+      }
+    });
+  }
+</script>
+
 <style>
-  .comments { margin-top: 3.5rem; }
+  .comments { margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1px solid var(--line); scroll-margin-top: 6rem; }
+  h2 { margin: 0 0 1.5rem; }
+  .list { list-style: none; margin: 0 0 2rem; padding: 0; display: grid; gap: 1.5rem; }
+  .list :global(li) { padding-left: 1rem; border-left: 2px solid var(--accent); }
+  .list :global(.who) { margin: 0 0 0.25rem; font: 0.9rem var(--label); color: var(--muted); }
+  .list :global(.who strong) { color: var(--ink); font-weight: 600; }
+  .list :global(.text) { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .empty { margin: 0 0 2rem; color: var(--muted); font-style: italic; }
+
+  .form { display: grid; gap: 1rem; padding: clamp(1.25rem, 3vw, 1.75rem); background: var(--panel); border-radius: var(--radius); }
+  .field { display: grid; gap: 0.35rem; }
+  label { font: 600 0.9rem var(--label); }
+  input, textarea {
+    width: 100%; padding: 0.7rem 0.9rem; border: 1px solid var(--line-strong); border-radius: var(--radius);
+    background: var(--canvas); color: var(--ink); font: 1rem/1.5 var(--serif);
+  }
+  textarea { resize: vertical; min-height: 7rem; }
+  input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; }
+  .btn:disabled { opacity: 0.6; cursor: progress; }
+  .note { margin: 0; font: 0.85rem var(--label); color: var(--muted); }
+  .status { margin: 0; font: 600 0.95rem var(--label); }
+  .status:empty { display: none; }
+  .status[data-kind='error'] { color: #9b1c1c; }
 </style>
