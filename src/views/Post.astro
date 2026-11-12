@@ -91,6 +91,13 @@ const pager = [
       </section>
     )}
 
+    <div class="prose-wrap"><Comments lang={lang} term={post.id} /></div>
+
+    <section class="wrap support" aria-label={s.donate.title}>
+      <Donate lang={lang} compact />
+      <Subscribe lang={lang} />
+    </section>
+
     {pager.length > 0 && (
       <nav class="wrap pager" aria-label={s.nav.stories}>
         {pager.map(({ post: p, label, cls }) => {
@@ -111,8 +118,6 @@ const pager = [
       </nav>
     )}
 
-    <div class="prose-wrap stack"><Donate lang={lang} compact /><Subscribe lang={lang} /></div>
-    <div class="prose-wrap"><Comments lang={lang} term={post.id} /></div>
   </article>
 </Base>
 
@@ -158,5 +163,8 @@ const pager = [
     .next .turn-copy { justify-items: end; }
   }
 
-  .stack { display: grid; gap: 1.25rem; margin-top: clamp(4rem, 8vw, 6rem); }
+  /* Support band: coffee and follow, side by side on wide screens. */
+  .support { display: grid; gap: 1.25rem; margin-top: clamp(4rem, 8vw, 6rem); }
+  .support > :global(*) { margin: 0; }
+  @media (min-width: 900px) { .support { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: stretch; } }
 </style>
