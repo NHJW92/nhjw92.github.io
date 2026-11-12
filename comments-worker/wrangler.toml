@@ -16,7 +16,7 @@ NTFY_TOPIC = ""
 binding = "DB"
 database_name = "blog-comments"
 # Paste the id printed by `npx wrangler d1 create blog-comments` here.
-database_id = "REPLACE_WITH_DATABASE_ID"
+database_id = "6d5b260a-a7d8-4c9f-8f27-52ad4548037a"
 
 # Secrets (set with `npx wrangler secret put <NAME>`, never stored in this file):
 #   ADMIN_PASSWORD  password for the approval page at /admin (user name: admin)
