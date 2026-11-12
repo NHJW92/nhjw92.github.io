@@ -39,6 +39,6 @@ export const SITE = {
   // Paste the Worker's URL here, e.g. 'https://travel-engineers-comments.<you>.workers.dev'.
   // Leave '' to hide the comment section.
   comments: {
-    endpoint: '',
+    endpoint: 'https://travel-engineers-comments.n-h-j-willemsen.workers.dev',
   },
 } as const;

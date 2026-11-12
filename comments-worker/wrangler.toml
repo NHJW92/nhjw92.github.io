@@ -2,6 +2,8 @@
 name = "travel-engineers-comments"
 main = "src/index.js"
 compatibility_date = "2026-11-01"
+workers_dev = true
+preview_urls = false
 
 [vars]
 # Sites allowed to post comments (comma-separated, no trailing slash).
