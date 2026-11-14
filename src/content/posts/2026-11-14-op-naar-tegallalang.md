@@ -32,7 +32,7 @@ Vanochtend hebben we onze spullen gepakt om naar onze volgende stop te gaan. De 
 
 Vanaf hier willen we wat meer dagtripjes gaan maken op Bali, dus kom vooral terug om later verder te lezen wat voor leuke dingen we allemaal gedaan hebben!
 
-Om swastiastu!
+Terwijl het hier nu een beetje begint te regenen, wat overigens de jungle nog mooier maakt, zeg ik “Om swastiastu” en tot laterrrr! 
 
 
 
