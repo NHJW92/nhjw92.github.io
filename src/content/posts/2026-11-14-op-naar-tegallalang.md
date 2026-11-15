@@ -8,7 +8,34 @@ lat: -8.443911
 lng: 115.280647
 travel: car
 island: Region
-draft: true
+cover: /uploads/dscf0008.jpeg
+coverAlt: De Luwak waarvan we de drolletjes hebben opgegeten
+gallery:
+  - image: /uploads/dscf0010.jpeg
+    caption: Luwak coffee mede mogelijk gemaakt door Tim!
+  - image: /uploads/dscf0015.jpeg
+    caption: "Bezig met te veel foto’s maken "
+  - image: /uploads/img7256.jpeg
+    caption: "Fire dance "
+  - image: /uploads/img7186.jpeg
+    caption: Coole selfie met danser
+  - image: /uploads/img7192.jpeg
+    caption: "Bali belly voedsel "
+  - image: /uploads/img7258.jpeg
+    caption: "De beach club "
+  - image: /uploads/img7228.jpeg
+    caption: "De cocktail in kwestie "
+  - image: /uploads/img7233.jpeg
+    caption: "Massage pakken "
+  - image: /uploads/img7234.jpeg
+    caption: "Op naar Tegallalang "
+  - image: /uploads/img7250.jpeg
+    caption: "De weg naar onze Airbnb "
+  - image: /uploads/img7264.jpeg
+    caption: "Lekker chillen op de hangmat "
+  - image: /uploads/img7245.jpeg
+    caption: "Onze douche "
+draft: false
 ---
 En het is alweer dag 5!
 
@@ -16,7 +43,9 @@ Sinds de vorige post zijn er alweer 3 dagen voorbijgegaan en is er weer veel geb
 
 Woensdagmiddag zijn we eerst nog naar Tanah Lot gegaan. De rit met de Grab-driver was insane en we waren allebei blij dat we het overleefd hadden. Ik kreeg eerst een helm aangeboden die ik met tegenzin opzette, want ja, iel, luizen. Maar achteraf was Niels jaloers dat ik wel een helm had en hij niet. Tanah Lot is een tempel die op een rots in het water staat. We waren op dit idee gekomen door (natuurlijk) Chat te gebruiken en hadden eerst niet door dat dit een van de meest toeristische plekken rondom Canggu is. Maar dat was ook wel begrijpelijk, want holy moly, wat was dit mooi!
 
-We hadden 45 minuten om naar de fire dance te lopen (een route van 10 minuten), maar waren uiteindelijk pas 1 minuut voor aanvang binnen. Dat kwam doordat het uitzicht zo mooi was en we overal foto's van wilden maken. Uiteindelijk waren we dus nét op tijd bij de fire dance en deze viel voor ons een beetje tegen. We hadden iets meer spektakel verwacht, maar gelukkig kregen we nog wel een coole selfie met een van de dansers.
+We begonnen eerst met een lekker bakje koffie, mede mogelijk gemaakt door: Tim, bedankt! Dit bakje koffie was alleen wel een heel bijzonder bakje koffie. Op Bali heb je namelijk luwaks. Dit zijn dieren die een beetje lijken op een mix van marters en katachtigen. In hun natuurlijke dieet zitten onder andere koffiebessen. Op Bali kun je daarom luwak-koffie bestellen. Hierbij worden de drolletjes van de luwak opgevangen en worden de koffiebonen vervolgens gereinigd en gedroogd. Doordat de bonen door het spijsverteringsstelsel van de luwak zijn gegaan, hebben ze een soort fermentatieproces ondergaan. Nou, allemaal heel leuk voor het idee en het bakje koffie was ook zeker lekker, maar Niels en ik zijn nou niet echt zulke koffiefijnproevers dat we ook daadwerkelijk iets anders proefden. 😂. 
+
+Daarna hadden we 45 minuten om naar de fire dance te lopen (een route van 10 minuten), maar waren uiteindelijk pas 1 minuut voor aanvang binnen. Dat kwam doordat het uitzicht zo mooi was en we overal foto's van wilden maken. Uiteindelijk waren we dus nét op tijd bij de fire dance en deze viel voor ons een beetje tegen. We hadden iets meer spektakel verwacht, maar gelukkig kregen we nog wel een coole selfie met een van de dansers.
 
 Daarna gingen we uit eten bij het café, maar blijkbaar had niemand anders eten nodig, want om 19:00 uur waren wij nog de enigen die er rondliepen en aan het eten waren. We werden helemaal lek geprikt en wilden dus snel weer weg. Dat bleek nog iets lastiger te zijn dan we hadden verwacht, want er reden helemaal geen Grab-drivers meer. Gelukkig was er nog een taxichauffeur die ons helemaal verdwaald zag staan en ons meenam. Tijdens deze rit hebben we weer een paar Balinese woorden geleerd, wat echt een lifehack blijkt te zijn, want elke local vindt je meteen 10x leuker als je 'Om Swastiastu' zegt (een Balinese begroeting waarmee je vrede en groeten van God wenst).
 
