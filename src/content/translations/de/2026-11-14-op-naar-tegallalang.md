@@ -9,6 +9,7 @@ captions:
   - Feuertanz
   - Cooles Selfie mit einem Tänzer
   - Bali-Belly-Essen
+  - Die gefälschten Salomons
   - Der Beach Club
   - Der besagte Cocktail
   - Massage-Zeit
@@ -17,7 +18,7 @@ captions:
   - Entspannen in der Hängematte
   - Unsere Dusche
 sourceLang: nl
-sourceHash: 9e9b057d1b241792
+sourceHash: 1902113b9311154b
 translatedBy: editorial translation
 ---
 

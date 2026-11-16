@@ -9,6 +9,7 @@ captions:
   - Fire dance
   - Cool selfie with a dancer
   - Bali belly food
+  - The fake Salomons
   - The beach club
   - The cocktail in question
   - Massage time
@@ -17,7 +18,7 @@ captions:
   - Chilling in the hammock
   - Our shower
 sourceLang: nl
-sourceHash: 9e9b057d1b241792
+sourceHash: 1902113b9311154b
 translatedBy: editorial translation
 ---
 
