@@ -15,6 +15,8 @@ gallery:
     caption: Luwak coffee mede mogelijk gemaakt door Tim!
   - image: /uploads/dscf0015.jpeg
     caption: "Bezig met te veel foto’s maken "
+  - image: /uploads/img7271.jpeg
+    caption: "De neppe Salamons "
   - image: /uploads/img7256.jpeg
     caption: "Fire dance "
   - image: /uploads/img7186.jpeg
@@ -35,8 +37,6 @@ gallery:
     caption: "Lekker chillen op de hangmat "
   - image: /uploads/img7245.jpeg
     caption: "Onze douche "
-  - image: /uploads/img7271.jpeg
-    caption: "De neppe Salamons "
 draft: false
 ---
 En het is alweer dag 5!
