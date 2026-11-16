@@ -71,7 +71,7 @@ type Strings = {
   thanks: { title: string; heading: string; text: string[]; listTitle: string; empty: string; cta: string };
   statsPage: {
     description: string; numbersTitle: string; daysOnRoad: string; flights: string; boats: string; photos: string; donors: string;
-    thanksTitle: (place: string) => string; thanksNote: string; everywhere: string;
+    thanksTitle: (place: string) => string; everywhere: string;
     timelineTitle: string; timelineHint: string; play: string; pause: string; day: (n: number, total: number) => string; arrivedIn: (place: string) => string;
     placesTitle: string; placesHint: string; islandsTitle: string; transit: string; now: string;
     days: (n: number) => string; hours: (n: number) => string;
@@ -227,7 +227,6 @@ export const ui: Record<Lang, Strings> = {
       photos: 'foto’s gedeeld',
       donors: 'keer getrakteerd',
       thanksTitle: (p) => `Dankjewel, ${p}, voor…`,
-      thanksNote: 'Echte cijfers. Niets overdreven, niets weggelaten.',
       everywhere: 'Indonesië',
       timelineTitle: 'De reis, dag voor dag',
       timelineHint: 'Sleep de schuif of druk op afspelen.',
@@ -392,7 +391,6 @@ export const ui: Record<Lang, Strings> = {
       photos: 'photos shared',
       donors: 'coffees bought for us',
       thanksTitle: (p) => `Thank you, ${p}, for…`,
-      thanksNote: 'Real numbers. Nothing exaggerated, nothing left out.',
       everywhere: 'Indonesia',
       timelineTitle: 'The trip, day by day',
       timelineHint: 'Drag the slider or press play.',
@@ -557,7 +555,6 @@ export const ui: Record<Lang, Strings> = {
       photos: 'Fotos geteilt',
       donors: 'Kaffees spendiert',
       thanksTitle: (p) => `Danke, ${p}, für…`,
-      thanksNote: 'Echte Zahlen. Nichts übertrieben, nichts weggelassen.',
       everywhere: 'Indonesien',
       timelineTitle: 'Die Reise, Tag für Tag',
       timelineHint: 'Zieh den Regler oder drück auf Abspielen.',

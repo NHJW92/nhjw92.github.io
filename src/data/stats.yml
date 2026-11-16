@@ -5,13 +5,13 @@ counters:
   - label: nasi/mie goreng gegeten
     label_en: nasi/mie goreng eaten
     label_de: Nasi/Mie Goreng gegessen
-    value: 2
+    value: 5
     place: Bali
     show: true
   - label: keer Bali belly
-    label_en: bout of Bali belly
+    label_en: bouts of Bali belly
     label_de: Mal Bali Belly
-    value: 1
+    value: 2
     place: Bali
     show: true
   - label: Bintangs gedronken
