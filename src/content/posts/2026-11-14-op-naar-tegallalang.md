@@ -35,6 +35,8 @@ gallery:
     caption: "Lekker chillen op de hangmat "
   - image: /uploads/img7245.jpeg
     caption: "Onze douche "
+  - image: /uploads/img7271.jpeg
+    caption: "De neppe Salamons "
 draft: false
 ---
 En het is alweer dag 5!
