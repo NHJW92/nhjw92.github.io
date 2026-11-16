@@ -65,9 +65,14 @@ const pager = [
         <p class="notice">{s.post.machineTranslated(sourceName)} <a href={originalUrl} hreflang={post.sourceLang}>{t(post.sourceLang).langNames[post.sourceLang]} ↗</a></p>
       )}
       {post.status === 'missing' && <p class="notice">{s.post.notYetTranslated(sourceName)}</p>}
+      <div class="layout-toggle" role="group" aria-label={s.post.layout} data-layout-toggle hidden>
+        <span class="label">{s.post.layout}</span>
+        <button type="button" data-cols="1" aria-pressed="true">{s.post.oneColumn}</button>
+        <button type="button" data-cols="2" aria-pressed="false">{s.post.twoColumns}</button>
+      </div>
     </div>
 
-    <div class="prose-wrap prose dropcap" lang={post.status === 'missing' ? post.sourceLang : undefined}>
+    <div class="prose-wrap prose dropcap" data-prose lang={post.status === 'missing' ? post.sourceLang : undefined}>
       <Content />
     </div>
 
@@ -121,7 +126,100 @@ const pager = [
   </article>
 </Base>
 
+<script>
+  // Wide screens: readers can switch the story between one and two columns (one is the default).
+  // Two columns are laid out in screen-sized blocks ("spreads"), each split over two balanced columns,
+  // so you never have to scroll back up to find the top of the next column.
+  const WIDE = matchMedia('(min-width: 1200px)');
+  const KEY = 'te-columns';
+  const prose = document.querySelector<HTMLElement>('[data-prose]');
+  const toggle = document.querySelector<HTMLElement>('[data-layout-toggle]');
+  if (prose && toggle) {
+    const original = [...prose.children];
+    let cols = '1';
+    try { cols = localStorage.getItem(KEY) === '2' ? '2' : '1'; } catch {}
+
+    const single = () => {
+      prose.classList.remove('two');
+      prose.replaceChildren(...original);
+    };
+
+    const spreads = () => {
+      single();
+      prose.classList.add('two');
+      const gap = parseFloat(getComputedStyle(prose).columnGap) || 64;
+      const colWidth = (prose.clientWidth - gap) / 2;
+      // Measure every block at column width, then group blocks until a group fills two columns
+      // of at most ~70% of the screen height.
+      const probe = document.createElement('div');
+      probe.className = 'spread-probe';
+      probe.style.width = `${colWidth}px`;
+      prose.replaceChildren(probe);
+      probe.append(...original);
+      const limit = 2 * Math.max(320, innerHeight * 0.7);
+      const groups: Element[][] = [];
+      let group: Element[] = [];
+      let height = 0;
+      for (const el of original) {
+        const cs = getComputedStyle(el);
+        const h = (el as HTMLElement).offsetHeight + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
+        if (group.length && height + h > limit) { groups.push(group); group = []; height = 0; }
+        group.push(el); height += h;
+      }
+      if (group.length) groups.push(group);
+      prose.replaceChildren(...groups.map((g) => {
+        const div = document.createElement('div');
+        div.className = 'spread';
+        div.append(...g);
+        return div;
+      }));
+    };
+
+    const apply = () => {
+      toggle.hidden = !WIDE.matches;
+      toggle.querySelectorAll<HTMLButtonElement>('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cols === cols)));
+      if (WIDE.matches && cols === '2') spreads(); else single();
+    };
+
+    toggle.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-cols]');
+      if (!b) return;
+      cols = b.dataset.cols!;
+      try { localStorage.setItem(KEY, cols); } catch {}
+      apply();
+    });
+    let t = 0;
+    addEventListener('resize', () => { clearTimeout(t); t = window.setTimeout(apply, 200); });
+    WIDE.addEventListener('change', apply);
+    apply();
+    document.fonts?.ready.then(apply);
+  }
+</script>
+
 <style>
+  /* One or two columns (wide screens only) */
+  .layout-toggle { display: flex; align-items: center; gap: 0.35rem; margin-top: 1rem; font-family: var(--label); font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .layout-toggle[hidden] { display: none; }
+  .layout-toggle .label { color: var(--muted); margin-right: 0.35rem; }
+  .layout-toggle button {
+    font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--ink); cursor: pointer;
+    background: transparent; border: 1px solid var(--line-strong); border-radius: 999px; padding: 0.35rem 0.8rem;
+    transition: background-color 150ms var(--ease-soft), border-color 150ms var(--ease-soft);
+  }
+  .layout-toggle button:hover { border-color: var(--ink); }
+  .layout-toggle button[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: var(--canvas); }
+  .prose.two { width: min(100% - 2 * var(--gutter), calc(2 * var(--prose) + 4rem)); column-gap: 4rem; }
+  .prose.two :global(.spread) { columns: 2; column-gap: 4rem; column-rule: 1px solid var(--line); margin: 0 0 2.2rem; }
+  .prose.two :global(.spread + .spread) { padding-top: 2.2rem; border-top: 1px solid var(--line); }
+  .prose.two :global(.spread > *) { margin: 0 0 1.3em; }
+  .prose.two :global(.spread > :last-child) { margin-bottom: 0; }
+  .prose.two :global(.spread img), .prose.two :global(.spread blockquote) { break-inside: avoid; }
+  .prose.two.dropcap :global(.spread:first-child > p:first-of-type::first-letter) {
+    font-family: var(--display); font-weight: 500; float: left; font-size: 4.6em; line-height: 0.8;
+    margin: 0.06em 0.1em 0 -0.02em; color: var(--ink);
+  }
+  .prose :global(.spread-probe > *) { margin: 0 0 1.3em; }
+
   .opener { display: grid; gap: 1rem; justify-items: start; max-width: 64rem; }
   .opener h1 { margin: 0; font-size: clamp(2.6rem, 6.5vw, 5.6rem); line-height: 1; letter-spacing: -0.025em; }
   .loc { margin: 0; color: inherit; }

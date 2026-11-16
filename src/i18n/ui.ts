@@ -49,6 +49,7 @@ type Strings = {
     whereTitle: string; previous: string; next: string; draft: string; photos: string; readingTime: (min: number) => string;
     machineTranslated: (from: string) => string;
     notYetTranslated: (from: string) => string;
+    layout: string; oneColumn: string; twoColumns: string;
   };
   map: { title: string; description: string; stopsSoFar: (n: number) => string; stop: string; needsJs: string };
   legend: { overland: string; boat: string; flight: string; story: string; stop: string };
@@ -125,6 +126,7 @@ export const ui: Record<Lang, Strings> = {
       readingTime: (m) => `${m} min lezen`,
       machineTranslated: (from) => `Automatisch vertaald uit het ${from}.`,
       notYetTranslated: (from) => `Dit verhaal is nog niet vertaald en staat hier in het ${from}.`,
+      layout: 'Weergave', oneColumn: '1 kolom', twoColumns: '2 kolommen',
     },
     map: {
       title: 'De route',
@@ -290,6 +292,7 @@ export const ui: Record<Lang, Strings> = {
       readingTime: (m) => `${m} min read`,
       machineTranslated: (from) => `Automatically translated from ${from}.`,
       notYetTranslated: (from) => `This story hasn’t been translated yet, so it’s shown in ${from}.`,
+      layout: 'Layout', oneColumn: '1 column', twoColumns: '2 columns',
     },
     map: {
       title: 'The route',
@@ -455,6 +458,7 @@ export const ui: Record<Lang, Strings> = {
       readingTime: (m) => `${m} Min. Lesezeit`,
       machineTranslated: (from) => `Automatisch aus dem ${from}en übersetzt.`,
       notYetTranslated: (from) => `Diese Geschichte ist noch nicht übersetzt und wird auf ${from} angezeigt.`,
+      layout: 'Ansicht', oneColumn: '1 Spalte', twoColumns: '2 Spalten',
     },
     map: {
       title: 'Die Route',

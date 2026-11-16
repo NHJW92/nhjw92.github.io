@@ -112,7 +112,7 @@ content:
         list:
           collapsible:
             collapsed: true
-            summary: "{name} ({date})"
+            summary: "{name}"
         fields:
           - name: name
             label: Place
@@ -160,21 +160,21 @@ content:
     format: yaml
     fields:
       - name: donors
-        label: People who bought us a coffee (only add people who are happy to be named)
+        label: People who bought us a coffee, first name only, in the order they donated. Add new donors at the bottom; the page shows the newest first.
         type: object
         list:
           collapsible:
             collapsed: true
-            summary: "{name} ({date})"
+            summary: "{name}"
         fields:
           - name: name
             label: Name
             type: string
             required: true
           - name: date
-            label: Date of the donation (newest is shown first)
+            label: Date of the donation (optional, not shown on the site)
             type: date
-            required: true
+            required: false
             options:
               format: yyyy-MM-dd
 

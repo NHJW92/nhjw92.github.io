@@ -6,14 +6,17 @@ import statsYaml from '../data/stats.yml?raw';
 import type { Lang } from '../i18n/ui';
 
 const donorSchema = z.object({
-  donors: z.array(z.object({ name: z.string().trim().min(1), date: z.coerce.date() })).nullable().default([]),
+  donors: z
+    .array(z.object({ name: z.string().trim().min(1), date: z.coerce.date().optional().nullable() }))
+    .nullable()
+    .default([]),
 });
 
-/** Donors, newest first. */
+/** Donors, newest first. donors.yml lists them in the order they donated (oldest at the top). */
 export function getDonors() {
   const parsed = donorSchema.safeParse(parse(donorsYaml) ?? {});
   if (!parsed.success) throw new Error(`src/data/donors.yml is invalid: ${parsed.error.message}`);
-  return [...(parsed.data.donors ?? [])].sort((a, b) => b.date.valueOf() - a.date.valueOf());
+  return [...(parsed.data.donors ?? [])].reverse();
 }
 
 const counterSchema = z.object({

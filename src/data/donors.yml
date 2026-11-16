@@ -1,5 +1,17 @@
-# People who bought us a coffee. Newest donations appear at the top of the thank-you page.
+# People who bought us a coffee, first names only, in the order they donated:
+# the first donor at the top, add new donors at the bottom.
+# The thank-you page shows them the other way round, newest first.
 # Only add people who are happy to be named.
 donors:
-  - name: Helma Roekevisch
-    date: 2026-11-08
+  - name: Helma
+  - name: Tim
+  - name: Martha
+  - name: Hetty
+  - name: Kees
+  - name: Teun
+  - name: Oma Marietje
+  - name: Henk
+  - name: Paul
+  - name: Frank
+  - name: John
+  - name: Neeltje

@@ -25,6 +25,8 @@ const nav = [
   { path: '/stats/', label: s.nav.stats },
   { path: '/photos/', label: s.nav.photos },
   { path: '/about/', label: s.nav.about },
+  { path: '/thanks/', label: s.nav.thanks },
+  ...(SITE.comments.endpoint ? [{ path: '/feedback/', label: s.nav.feedback }] : []),
 ];
 const isCurrent = (p: string) => (p === '/' ? path === '/' || path.startsWith('/posts/') : path.startsWith(p));
 ---
@@ -87,8 +89,6 @@ const isCurrent = (p: string) => (p === '/' ? path === '/' || path.startsWith('/
         </div>
         <nav aria-label="Footer" class="foot-nav">
           {nav.map((n) => <a href={localize(n.path, lang)}>{n.label}</a>)}
-          <a href={localize('/thanks/', lang)}>{s.nav.thanks}</a>
-          {SITE.comments.endpoint && <a href={localize('/feedback/', lang)}>{s.nav.feedback}</a>}
           <a href={localize('/rss.xml', lang)}>RSS</a>
         </nav>
         <p class="small">© {new Date().getFullYear()} {SITE.author}</p>
@@ -108,6 +108,9 @@ const isCurrent = (p: string) => (p === '/' ? path === '/' || path.startsWith('/
       } else {
         els.forEach((el) => el.classList.add('in'));
       }
+
+      // Phones: the section row scrolls sideways; bring the current section into view.
+      document.querySelector<HTMLElement>('.main-nav [aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'center' });
 
       // Masthead over a cover photo: turn solid once the photo scrolls away.
       const head = document.querySelector<HTMLElement>('[data-masthead]');
@@ -196,14 +199,21 @@ const isCurrent = (p: string) => (p === '/' ? path === '/' || path.startsWith('/
     .small { grid-column: 1 / -1; }
   }
 
-  @media (max-width: 850px) {
+  @media (max-width: 1100px) {
     .bar { height: auto; flex-wrap: wrap; padding: 0.55rem 0 0.3rem; row-gap: 0; }
     .name { font-size: 1.2rem; }
     /* Phones: brand and languages share the top row, sections get the second. */
     .right { display: contents; }
     .brand { order: 1; }
     .langs { order: 2; margin-left: auto; margin-right: -0.4rem; padding-left: 0; border-left: 0; }
-    .main-nav { order: 3; width: calc(100% + 1rem); margin-left: -0.5rem; flex-wrap: wrap; }
+    /* One row that scrolls sideways, so the header stays compact with seven sections. */
+    .main-nav {
+      order: 3; width: calc(100% + 2 * var(--gutter)); margin-inline: calc(-1 * var(--gutter));
+      padding-inline: calc(var(--gutter) - 0.5rem); flex-wrap: nowrap; overflow-x: auto;
+      scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-padding-inline: 2rem;
+      mask-image: linear-gradient(to right, transparent 0, #000 var(--gutter), #000 calc(100% - 2.5rem), transparent 100%);
+    }
+    .main-nav::-webkit-scrollbar { display: none; }
     nav a { padding: 0.75rem 0.5rem; font-size: 0.76rem; letter-spacing: 0.05em; white-space: nowrap; }
     .main-nav a::after { left: 0.5rem; right: 0.5rem; }
   }
