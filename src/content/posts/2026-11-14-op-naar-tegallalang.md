@@ -15,14 +15,14 @@ gallery:
     caption: Luwak coffee mede mogelijk gemaakt door Tim!
   - image: /uploads/dscf0015.jpeg
     caption: "Bezig met te veel foto’s maken "
-  - image: /uploads/img7271.jpeg
-    caption: "De neppe Salamons "
   - image: /uploads/img7256.jpeg
     caption: "Fire dance "
   - image: /uploads/img7186.jpeg
     caption: Coole selfie met danser
   - image: /uploads/img7192.jpeg
     caption: "Bali belly voedsel "
+  - image: /uploads/img7271.jpeg
+    caption: "De neppe Salamons "
   - image: /uploads/img7258.jpeg
     caption: "De beach club "
   - image: /uploads/img7228.jpeg
