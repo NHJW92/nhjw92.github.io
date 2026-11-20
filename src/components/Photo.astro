@@ -1,0 +1,35 @@
+---
+// Renders a photo from either source (see src/lib/images.ts) as a responsive image.
+import { Image, Picture } from 'astro:assets';
+import { cloudUrl, type Photo } from '../lib/images';
+
+interface Props {
+  photo: Photo;
+  alt: string;
+  widths: number[];
+  sizes: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  /** Local photos only: serve AVIF and WebP through <picture> (cloud photos negotiate this automatically). */
+  picture?: boolean;
+}
+const { photo, alt, widths, sizes, loading = 'lazy', fetchpriority, picture = false } = Astro.props;
+const fit = [...new Set(widths.map((w) => Math.min(w, photo.width)))].sort((a, b) => a - b);
+---
+{photo.kind === 'cloud' ? (
+  <img
+    src={cloudUrl(photo.id, fit.at(-1)!)}
+    srcset={fit.map((w) => `${cloudUrl(photo.id, w)} ${w}w`).join(', ')}
+    sizes={sizes}
+    width={photo.width}
+    height={photo.height}
+    alt={alt}
+    loading={loading}
+    decoding="async"
+    fetchpriority={fetchpriority}
+  />
+) : picture ? (
+  <Picture src={photo.meta} alt={alt} formats={['avif', 'webp']} widths={fit} sizes={sizes} loading={loading} fetchpriority={fetchpriority} />
+) : (
+  <Image src={photo.meta} alt={alt} widths={fit} sizes={sizes} loading={loading} fetchpriority={fetchpriority} />
+)}

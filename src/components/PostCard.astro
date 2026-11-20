@@ -1,7 +1,7 @@
 ---
-import { Image } from 'astro:assets';
+import Photo from './Photo.astro';
 import Dateline from './Dateline.astro';
-import { resolveImage } from '../lib/images';
+import { resolvePhoto } from '../lib/images';
 import { postUrl, type Post } from '../lib/posts';
 import type { Leg } from '../lib/journey';
 import { formatDate, t } from '../i18n/ui';
@@ -15,7 +15,7 @@ interface Props {
   leg?: Leg;
 }
 const { post, variant = 'card', flip = false, leg } = Astro.props;
-const cover = resolveImage(post.data.cover);
+const cover = resolvePhoto(post.data.cover);
 const s = t(post.lang);
 const feature = variant === 'feature';
 ---
@@ -23,8 +23,8 @@ const feature = variant === 'feature';
   <a href={postUrl(post)} class="link">
     <div class="media">
       {cover ? (
-        <Image
-          src={cover}
+        <Photo
+          photo={cover}
           alt={post.data.coverAlt ?? ''}
           widths={feature ? [640, 960, 1400, 1800] : [480, 720, 960]}
           sizes={feature ? '(min-width: 960px) 58vw, 100vw' : '(min-width: 960px) 30vw, (min-width: 640px) 50vw, 100vw'}

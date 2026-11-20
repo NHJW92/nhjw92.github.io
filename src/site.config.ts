@@ -35,6 +35,13 @@ export const SITE = {
   // Put your Buttondown username here to show the signup form; leave '' to hide it.
   buttondownUsername: 'TravelEngineers',
 
+  // Photos added with the upload page (comments-worker /upload) live in Cloudflare Images.
+  // accountHash: the "Account hash" shown on the Cloudflare Images page in the dashboard
+  // (it is public: it appears in every image URL).
+  photos: {
+    accountHash: 'ksUoLGkgmxY0PaEKVewCPw',
+  },
+
   // Comments: a small Cloudflare Worker in comments-worker/ (see "Comments" in the README).
   // Paste the Worker's URL here, e.g. 'https://travel-engineers-comments.<you>.workers.dev'.
   // Leave '' to hide the comment section.

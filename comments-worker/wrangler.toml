@@ -13,6 +13,10 @@ AUTO_APPROVE = "true"
 # Optional: an ntfy.sh topic for a phone notification on each new comment.
 # Pick a long, unguessable name and subscribe to it in the ntfy app. Leave "" to turn off.
 NTFY_TOPIC = ""
+# Photo upload page (/upload). Your Cloudflare account ID (dashboard > any zone or
+# Workers overview, right-hand column) and the GitHub repository that holds the blog.
+CF_ACCOUNT_ID = "0bd887035eff25077dbbb1bb8a18d76b"
+GITHUB_REPO = "NHJW92/nhjw92.github.io"
 
 [[d1_databases]]
 binding = "DB"
@@ -21,4 +25,6 @@ database_name = "blog-comments"
 database_id = "6d5b260a-a7d8-4c9f-8f27-52ad4548037a"
 
 # Secrets (set with `npx wrangler secret put <NAME>`, never stored in this file):
-#   ADMIN_PASSWORD  password for the approval page at /admin (user name: admin)
+#   ADMIN_PASSWORD  password for the approval page at /admin and the photo page at /upload (user name: admin)
+#   CF_IMAGES_TOKEN Cloudflare API token with "Cloudflare Images: Edit" (for /upload)
+#   GITHUB_TOKEN    fine-grained GitHub token, this repo only, "Contents: Read and write" (for /upload)

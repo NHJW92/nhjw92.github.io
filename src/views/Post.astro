@@ -1,15 +1,15 @@
 ---
 import { render } from 'astro:content';
-import { Image, getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Cover from '../components/Cover.astro';
+import Photo from '../components/Photo.astro';
 import Dateline from '../components/Dateline.astro';
 import Gallery from '../components/Gallery.astro';
 import Subscribe from '../components/Subscribe.astro';
 import Donate from '../components/Donate.astro';
 import Comments from '../components/Comments.astro';
 import RouteMap from '../components/RouteMap.astro';
-import { resolveImage } from '../lib/images';
+import { photoUrl, resolvePhoto } from '../lib/images';
 import { postUrl, routePoints, type Post } from '../lib/posts';
 import { legFor } from '../lib/journey';
 import { formatDate, localize, t } from '../i18n/ui';
@@ -19,8 +19,8 @@ const { post, newer, older, all } = Astro.props;
 const lang = post.lang;
 const s = t(lang);
 const { Content } = await render(post.entry);
-const cover = resolveImage(post.data.cover);
-const ogImage = cover ? (await getImage({ src: cover, width: 1200, format: 'jpg' })).src : undefined;
+const cover = resolvePhoto(post.data.cover);
+const ogImage = cover ? await photoUrl(cover, 1200, 'jpeg') : undefined;
 const hasCoords = typeof post.data.lat === 'number' && typeof post.data.lng === 'number';
 const sourceName = s.langNames[post.sourceLang];
 const originalUrl = localize(`/posts/${post.id}/`, post.sourceLang);
@@ -101,11 +101,11 @@ const pager = [
     {pager.length > 0 && (
       <nav class="wrap pager" aria-label={s.nav.stories}>
         {pager.map(({ post: p, label, cls }) => {
-          const img = resolveImage(p.data.cover);
+          const img = resolvePhoto(p.data.cover);
           return (
             <a href={postUrl(p)} class:list={['turn', cls]} data-reveal>
               <span class="turn-media">
-                {img ? <Image src={img} alt="" widths={[480, 800, 1200]} sizes="(min-width: 800px) 50vw, 100vw" loading="lazy" /> : <span class="turn-ph" aria-hidden="true"></span>}
+                {img ? <Photo photo={img} alt="" widths={[480, 800, 1200]} sizes="(min-width: 800px) 50vw, 100vw" loading="lazy" /> : <span class="turn-ph" aria-hidden="true"></span>}
               </span>
               <span class="turn-copy">
                 <span class="kicker">{label}</span>

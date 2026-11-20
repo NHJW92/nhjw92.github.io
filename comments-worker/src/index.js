@@ -7,6 +7,10 @@
 //   POST /admin/approve|delete|done|reopen   moderation actions from that page
 //
 // The feedback page uses the same comments, with post = "feedback" and a kind (bug/idea).
+//
+// The same Worker also serves the photo upload page at /upload (see photos.js).
+
+import { uploadRoute } from './photos.js';
 
 const LIMITS = { name: 60, body: 2000, perWindow: 4, windowMs: 10 * 60 * 1000, minFillMs: 3000 };
 const POST_ID = /^[a-z0-9][a-z0-9._-]{0,200}$/i;
@@ -55,6 +59,7 @@ export default {
       if (url.pathname === '/comments') return await commentsRoute(req, env, ctx, url);
       if (url.pathname === '/vote') return await voteRoute(req, env);
       if (url.pathname === '/admin' || url.pathname.startsWith('/admin/')) return await adminRoute(req, env, url);
+      if (url.pathname === '/upload' || url.pathname.startsWith('/upload/')) return await uploadRoute(req, env, url, authorized);
       return new Response('Not found', { status: 404 });
     } catch (err) {
       console.error(err);

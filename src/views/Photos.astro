@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Gallery from '../components/Gallery.astro';
 import { getPosts } from '../lib/posts';
+import { isPhotoRef } from '../lib/images';
 import { t, type Lang } from '../i18n/ui';
 
 interface Props { lang: Lang }
@@ -13,7 +14,7 @@ const photos = new Map<string, { image: string; caption?: string; alt: string }>
 const addPhoto = (path?: string | null, caption?: string | null) => {
   if (!path) return;
   const image = decodeURIComponent(path.trim());
-  if (!image.startsWith('/uploads/') || photos.has(image)) return;
+  if (!isPhotoRef(image) || photos.has(image)) return;
   photos.set(image, { image, caption: caption || undefined, alt: caption || s.photos.alt(photos.size + 1) });
 };
 for (const post of (await getPosts(lang)).filter((post) => !post.data.draft)) {

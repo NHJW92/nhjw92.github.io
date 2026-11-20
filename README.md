@@ -165,6 +165,43 @@ section, the feedback page and its footer link appear once that's set.
   subscribe to it in the [ntfy](https://ntfy.sh) app, and run `npx wrangler deploy` again.
 - To review comments before they appear instead, set `AUTO_APPROVE = "false"` and deploy again.
 
+## Photos
+
+New photos go through an upload page instead of Pages CMS: `<worker address>/upload`
+(user `admin`, the same password as `/admin`). Pick a story, choose *Galerij* or *Omslagfoto*,
+select photos straight from the iPhone library (HEIC is fine, any size), add captions and tap
+*Uploaden en toevoegen*. The page shrinks each photo to 3840 px in the browser, stores it in
+[Cloudflare Images](https://developers.cloudflare.com/images/) and commits it to the story, which
+starts a normal deploy. Captions can be changed later in Pages CMS.
+
+Photos added this way are written as `cf:<id>@<width>x<height>`; Cloudflare resizes them on request
+and serves AVIF/WebP per browser, so they never enter the repo or the build. Older `/uploads/...`
+photos keep working as before. Write and save the story in Pages CMS first, then add photos;
+the page re-reads the file before it writes, so it won't overwrite your text.
+
+### One-time setup
+
+1. Cloudflare dashboard → **Images**: subscribe to the paid plan ($5/month per 100,000 stored photos).
+   On the **Delivery** tab, turn on **Flexible variants**. Copy the **Account hash** into
+   `src/site.config.ts` → `photos.accountHash`, and your **Account ID** into
+   `comments-worker/wrangler.toml` → `CF_ACCOUNT_ID`.
+2. Cloudflare → My Profile → **API Tokens** → *Create custom token*: permission
+   *Account · Cloudflare Images · Edit*.
+3. GitHub → Settings → Developer settings → **Fine-grained tokens**: only this repository,
+   permission *Contents: Read and write*. Note the expiry date; renew it before then.
+4. In a terminal:
+
+```
+cd comments-worker
+npm install
+npx wrangler secret put CF_IMAGES_TOKEN
+npx wrangler secret put GITHUB_TOKEN
+npx wrangler deploy
+```
+
+5. Commit and push the site. On the iPhone, open `<worker address>/upload` in Safari and use
+   *Share → Add to Home Screen* to get it as an app icon.
+
 ## Donors and fun statistics
 
 - **Donors** (thank-you page): Pages CMS → *Donors*. Add a name and the date; the newest is shown on top.

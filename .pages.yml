@@ -73,8 +73,8 @@ content:
         label: Short summary (shown on the homepage and in emails)
         type: text
       - name: cover
-        label: Cover photo
-        type: image
+        label: Cover photo (add it with the photo upload page; it fills this in)
+        type: string
       - name: coverAlt
         label: Cover photo description (for screen readers)
         type: string
@@ -87,8 +87,8 @@ content:
             summary: "{index}. {caption}"
         fields:
           - name: image
-            label: Photo
-            type: image
+            label: Photo (added by the photo upload page; don't edit)
+            type: string
           - name: caption
             label: Caption
             type: string
