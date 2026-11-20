@@ -8,11 +8,9 @@ lat: -8.4128115
 lng: 115.2834654
 travel: car
 summary: Our jungle life and the daytrips during our stay in Tegallalang.
-cover: cf:e90de9c2-35a1-4d62-00ff-3ccdbd1db900@2880x3840
-coverAlt: Dagelijkse pak zon in de hangmat
+cover: cf:cb6852dc-fdf9-46f3-c0b9-55a33ad1b700@2880x3840
+coverAlt: Van het uitzicht genieten
 gallery:
-  - image: cf:cb6852dc-fdf9-46f3-c0b9-55a33ad1b700@2880x3840
-    caption: Van het uitzicht genieten
   - image: cf:f34c50bb-4c4a-449e-6475-b355fc71e900@3840x2880
     caption: Deze viel op mij, denk dat het een scorpioen was
   - image: cf:b79c07c1-c24c-4eca-2423-4b33e7e5ae00@2880x3840
