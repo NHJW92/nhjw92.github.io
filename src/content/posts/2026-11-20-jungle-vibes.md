@@ -9,6 +9,37 @@ lng: 115.2834654
 travel: car
 summary: Our jungle life and the daytrips during our stay in Tegallalang.
 draft: true
+cover: cf:e90de9c2-35a1-4d62-00ff-3ccdbd1db900@2880x3840
+coverAlt: Dagelijkse pak zon in de hangmat
+gallery:
+  - image: cf:cb6852dc-fdf9-46f3-c0b9-55a33ad1b700@2880x3840
+    caption: Van het uitzicht genieten
+  - image: cf:f34c50bb-4c4a-449e-6475-b355fc71e900@3840x2880
+    caption: Deze viel op mij, denk dat het een scorpioen was
+  - image: cf:b79c07c1-c24c-4eca-2423-4b33e7e5ae00@2880x3840
+    caption: Babet met de waterval
+  - image: cf:3325e103-4f89-44a2-e36f-d26046ecc800@2880x3840
+    caption: Niet ingezoomde Babet op speurtocht bij de waterval
+  - image: cf:d527a5b0-71b8-4f52-235f-b958c42bf400@3840x2880
+    caption: Midden in het onweer bij het restaurant
+  - image: cf:5003e3e9-c3b9-4151-87ed-dbe883000800@3840x2880
+    caption: E-bike tour door de rijstvelden
+  - image: cf:364d26ff-3466-4a2d-a3c8-497fe0f8a600@3840x2880
+    caption: Foto naast een rijstveld
+  - image: cf:645405b4-526f-4560-9b5e-65f81ab56200@2880x3840
+    caption: Houten diertjes die we bij iemand thuis hebben gekocht
+  - image: cf:4291d700-a54e-426b-ae30-136a9e8c7600@2316x3088
+    caption: 2uur sochtends richting batur
+  - image: cf:3db034a1-a08e-4684-3e32-6bfe8d8f0c00@3840x2880
+    caption: De eerste zonnenstralen vanaf de top
+  - image: cf:5cde030f-6cab-446f-b382-d82e834f5e00@2316x3088
+    caption: Broodje banaan op mount batur
+  - image: cf:ddd421a1-4d9e-42cc-6f6a-52fa6a1dd700@2880x3840
+    caption: Portret bali style
+  - image: cf:d50601b6-5d24-4dc6-43a9-7d8ef3ffde00@2880x3840
+    caption: Vulkaan aan het vapen
+  - image: cf:e6eb2cb2-e11f-45ef-dfc6-e53666cbfa00@3840x2880
+    caption: Terugweg van batur
 ---
 Hey there, great to have you back! Today I am gonna tell you about some of our days in the jungle, so sit back, get something to eat or drink and dig in. 
 
