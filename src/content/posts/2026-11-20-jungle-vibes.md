@@ -8,7 +8,6 @@ lat: -8.4128115
 lng: 115.2834654
 travel: car
 summary: Our jungle life and the daytrips during our stay in Tegallalang.
-draft: true
 cover: cf:e90de9c2-35a1-4d62-00ff-3ccdbd1db900@2880x3840
 coverAlt: Dagelijkse pak zon in de hangmat
 gallery:
@@ -40,6 +39,7 @@ gallery:
     caption: Vulkaan aan het vapen
   - image: cf:e6eb2cb2-e11f-45ef-dfc6-e53666cbfa00@3840x2880
     caption: Terugweg van batur
+draft: false
 ---
 Hey there, great to have you back! Today I am gonna tell you about some of our days in the jungle, so sit back, get something to eat or drink and dig in. 
 
