@@ -78,7 +78,7 @@ async function gh(env, path, init = {}) {
   return fetch(`https://api.github.com/repos/${env.GITHUB_REPO}/${path}`, {
     ...init,
     headers: {
-      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+      Authorization: `Bearer ${String(env.GITHUB_TOKEN).trim()}`,
       Accept: 'application/vnd.github+json',
       'User-Agent': 'travel-blog-photo-upload',
       'X-GitHub-Api-Version': '2022-11-28',
@@ -89,7 +89,12 @@ async function gh(env, path, init = {}) {
 
 async function listPosts(env) {
   const res = await gh(env, `contents/${POSTS_DIR}`);
-  if (!res.ok) return { error: 'github_failed', status: res.status };
+  if (!res.ok) {
+    // Safe hint for a rejected token: its length and whether it looks like a GitHub token (never the token itself).
+    const t = String(env.GITHUB_TOKEN).trim();
+    const hint = res.status === 401 ? { length: t.length, looksLikeGithub: /^(github_pat_|ghp_)/.test(t) } : undefined;
+    return { error: 'github_failed', status: res.status, hint };
+  }
   const files = (await res.json()).filter((f) => f.type === 'file' && POST_FILE.test(f.name));
   return { posts: files.map((f) => f.name).sort().reverse() };
 }
@@ -204,7 +209,14 @@ const items = [];
 
 fetch('/upload/posts').then((r) => r.json()).then((d) => {
   const sel = $('#post');
-  if (!d.posts) { sel.innerHTML = '<option>Kon verhalen niet laden</option>'; return; }
+  if (!d.posts) {
+    sel.innerHTML = '<option>Kon verhalen niet laden</option>';
+    const why = d.status === 401 ? 'GitHub accepteert de GITHUB_TOKEN niet. ' + (d.hint ? (d.hint.looksLikeGithub ? 'Hij begint wel met github_pat_ (' + d.hint.length + ' tekens); maak een nieuwe token.' : 'Wat er nu is opgeslagen is geen GitHub-token (' + d.hint.length + ' tekens); waarschijnlijk is iets anders geplakt.') : '')
+      : (d.status === 403 || d.status === 404) ? 'De GITHUB_TOKEN heeft geen toegang tot de blog-repository.'
+      : 'GitHub gaf fout ' + (d.status || '?') + '.';
+    $('#msg').className = 'msg err'; $('#msg').textContent = why;
+    return;
+  }
   sel.innerHTML = d.posts.map((p) => '<option value="' + p + '">' + p.replace(/\\.md$/, '').replace(/^(\\d{4}-\\d\\d-\\d\\d)-/, '$1 · ').replace(/-/g, ' ') + '</option>').join('');
 });
 
