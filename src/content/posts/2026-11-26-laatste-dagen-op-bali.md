@@ -7,6 +7,7 @@ location: "Tegallalang "
 lat: -8.4439
 lng: 115.2806
 draft: true
+cover: cf:3278accb-0f72-4efa-3269-4fe1489cfd00@1080x1920
 ---
 Ook de laatste paar dagen in Tegallalang hebben we nog leuke dingen meegemaakt. Dus ga er maar weer goed voor zitten om onze verhalen te lezen!
 
