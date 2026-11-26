@@ -7,7 +7,7 @@ location: "Tegallalang "
 lat: -8.4439
 lng: 115.2806
 draft: true
-cover: cf:3278accb-0f72-4efa-3269-4fe1489cfd00@1080x1920
+cover: cf:09f59c1d-8c52-4334-a7da-a4579a9c1a00@1080x1920
 gallery:
   - image: cf:94718456-dba4-477a-f82e-56378a495400@1080x1920
     caption: Niels die lekker koffie aan het maken is
@@ -31,6 +31,7 @@ gallery:
     caption: Lekker koffietje terwijl we wachten op de boot
   - image: cf:81d3df89-20c9-4e53-c958-e47e8dd53200@2316x3088
     caption: Super mooie ketting
+coverAlt: Niels die koffie aan het branden is
 ---
 Ook de laatste paar dagen in Tegallalang hebben we nog leuke dingen meegemaakt. Dus ga er maar weer goed voor zitten om onze verhalen te lezen!
 
