@@ -8,6 +8,29 @@ lat: -8.4439
 lng: 115.2806
 draft: true
 cover: cf:3278accb-0f72-4efa-3269-4fe1489cfd00@1080x1920
+gallery:
+  - image: cf:94718456-dba4-477a-f82e-56378a495400@1080x1920
+    caption: Niels die lekker koffie aan het maken is
+  - image: cf:895a61a4-6bcc-4eee-ff48-6f8807635600@1080x1920
+    caption: Niels die koffie aan het branden is
+  - image: cf:d07ee0d9-52e6-4ea0-8ec6-fe79c5a20200@2880x3840
+    caption: Aapjes kijken, ook op deze plek zitten vlooien
+  - image: cf:8c3546bf-07e5-48dc-af89-9b8f9cf3eb00@2880x3840
+    caption: Cooking class
+  - image: cf:a2ebb603-8fda-41d9-139b-e3a3050a2800@2880x3840
+    caption: Dadar gulung
+  - image: cf:9645c4e2-1fb2-4f20-597b-40b3e1b6f300@2000x3008
+    caption: Quad tour, wachten op Niels
+  - image: cf:cc7e1440-17ac-4a2f-dfa9-720f21545400@2000x3008
+    caption: Daar is hij eindelijk
+  - image: cf:2b1d9a3f-e75d-4aa9-c029-36a853b21000@3008x1688
+    caption: Lekker door de modder
+  - image: cf:00783b58-be89-4196-697e-58f6e19c9f00@2880x3840
+    caption: Als je goed kijkt zie je een normal hagedis en een super grote hagedis
+  - image: cf:e39fd7f8-d4cd-4731-ec9e-b2d7f2e6c600@2316x3088
+    caption: Lekker koffietje terwijl we wachten op de boot
+  - image: cf:81d3df89-20c9-4e53-c958-e47e8dd53200@2316x3088
+    caption: Super mooie ketting
 ---
 Ook de laatste paar dagen in Tegallalang hebben we nog leuke dingen meegemaakt. Dus ga er maar weer goed voor zitten om onze verhalen te lezen!
 
