@@ -1,0 +1,30 @@
+---
+title: Scuba Engineers
+location: Manta Dive Gili T
+summary: Wir haben auf Gili Trawangan unseren Open-Water-Tauchkurs gemacht, tolle Leute kennengelernt und unter Wasser jede Menge Spaß gehabt, mit ein paar unglaublichen Tieren unterwegs.
+coverAlt: Scuba Engineers
+captions:
+  - Noch eine Kokosnuss am Strand
+  - Auf dem Weg zum Tauchplatz
+  - Aktueller Stand im Logbuch
+  - Bootsfoto
+  - Kokosnuss Nr. 10
+  - Feiern auf Gili
+  - Frühstück im Hostel
+  - Radfahren auf der Insel
+  - Schildkrötenfoto
+  - "POV: beim Fotografieren der Schildkröte"
+  - Babets Bein nach dem Sturz, aktueller Stand
+  - Roter Mond
+sourceLang: en
+sourceHash: 0441d13c61377023
+translatedBy: editorial translation
+---
+
+Hallo und willkommen zu einer neuen Geschichte! Gerade sitzen wir in unserem Hostel, es heißt Tipsea Turtle und macht seinem Namen alle Ehre: Wir trinken eine alkoholfreie Piña Colada und einen Mojito und lassen unsere letzten Tage auf Gili T Revue passieren. Als wir auf der Insel ankamen, haben wir im Hostel eingecheckt und sofort die Gesellschaft genossen, die Hostels so mit sich bringen. Es ist unser erstes Hostel, und es ist eine schöne Abwechslung, auch mal andere Leute zum Kennenlernen zu haben. Am ersten Tag haben wir im Pool zwei Schottinnen getroffen, und dank der zwei Happy Hours in unserem Hostel, von 12 bis 15 und von 17 bis 20 Uhr, wurden wir ein bisschen betrunken und sind mit dem Hostel feiern gegangen. Die Party war lustig, aber die Insel ist ziemlich leer, weil gerade Nebensaison ist, und der Club deshalb auch. Im Hostel haben wir außerdem ein Mädchen namens Alma kennengelernt. Sie kommt aus Schweden und hatte ein paar ziemlich interessante Partytricks auf Lager, die sie gern vorgeführt hat. Einer davon war, ein Bier zwischen ihren Brüsten zu halten und dann zu versuchen, es jemandem in den Mund zu gießen.
+
+Am nächsten Tag sind wir in die Tauchbasis von Manta Dive neben dem Hafen gegangen und haben gesagt, dass wir den Open-Water-Kurs machen wollen. Andere Leute im Hostel hatten uns erzählt, dass das die beste Tauchschule auf Gili T sei, und das passte zu dem Rat meines Vaters, mit welchen Tauchschulen ich gehen sollte, weil sie bei SSI zertifiziert sind. Es gibt im Grunde zwei große Organisationen, die Leute im Tauchen ausbilden: Die eine heißt SSI, die andere PADI. Mein Vater hat seine ganze Ausbildung bei SSI gemacht, ist also vielleicht ein bisschen voreingenommen, aber andererseits ist er derjenige mit der ganzen Taucherfahrung und über 100 Tauchgängen, also habe ich seinen Rat berücksichtigt. Wir mussten ein paar Formulare ausfüllen, die App herunterladen, unsere medizinischen Angaben eintragen und bezahlen, und dann konnte es am nächsten Tag mit der Einführungstheorie und nachmittags einem Einführungstauchgang losgehen. Danach wollten wir den Rest des Tages an den Strand, aber auf dem Weg dorthin ist Babet auf einem Schotterweg hingefallen, und wir haben bei einem anderen Beachclub angehalten als geplant. Die Leute dort waren sehr hilfsbereit und haben die Wunde desinfiziert, und dann sind wir den Rest des Tages geblieben und haben dort zu Mittag gegessen, bevor wir wieder nach Hause gegangen sind. Abends haben wir in unserem Hostel Pizza gegessen und sind ziemlich früh ins Bett gegangen, weil wir früh aufstehen mussten: Um 8:30 Uhr sollten wir an der Tauchbasis sein.
+
+Die nächsten drei Tage sahen ziemlich ähnlich aus. Am ersten Tag gab es Theorie und Techniken im Pool: alles über das Tarierjackett, wie die Luft aus der Flasche überall dorthin kommt, wo sie gebraucht wird, und wie wir unsere Maske ausblasen, wenn sie sich mit Wasser füllt. Bei unserem ersten Tauchgang am Nachmittag haben wir einen kleinen Riffhai gesehen, der sich unter einem Felsen versteckte, ein paar Clownfische (Nemo), drei Schildkröten und Tausende andere Fische, die ich nicht bestimmen kann. Das Riff hier ist wunderschön, und der erste Tauchplatz hieß Halik (flach), weil wir bis 18 Meter getaucht sind, wie bei all unseren Open-Water-Tauchgängen. Am nächsten Morgen gab es mehr Theorie und Techniken und nachmittags einen weiteren Tauchgang. Und an unserem letzten Tag zwei weitere Tauchgänge, bei denen es darum ging, die gelernten Techniken im Meer anzuwenden, aber vorher immer auch ein bisschen Spaß und all das coole Meeresleben anschauen. Wir haben noch mehr Schildkröten und Nemos gesehen, einen riesigen Barrakuda, Patrick Star und ein paar Seegurken, die überraschend groß waren, auch wenn unter Wasser alles etwa 25 % größer aussieht, weil sich Licht in einer Flüssigkeit anders verhält. Wir waren ein zweites Mal bei Halik, danach bei Turbo und später am Turtle Point vor Gili Meno. Das Tauchen mit unseren Tauchlehrern hat so viel Spaß gemacht, dass wir beschlossen haben, heute Abend mit ihnen auszugehen, und dass wir auch den Advanced-Kurs bei ihnen machen wollen, um uns mehr ans Tauchen zu gewöhnen und bei zukünftigen Tauchgängen mehr Freiheit zu haben.
+
+Nachdem wir unseren Open-Water-Schein hatten, haben wir uns einen Tag freigenommen, weil es ziemlich anstrengend war: jeden Tag von 8 bis 17 Uhr Neues lernen, dann nach Hause kommen und danach noch den Online-Theoriekurs machen, weil man eine Online-Prüfung ablegen muss. Wir sind an den Strand gegangen, und Babet wollte schnorcheln, also hat sie sich eine Schnorchelausrüstung ausgeliehen. Obwohl sie sich eingecremt hatte, hat sie sich die Rückseite trotzdem richtig schlimm verbrannt, wahrscheinlich weil sie ziemlich lange geschnorchelt hat. Die Drückerfische, denen sie begegnet ist, haben sie eigentlich vor einem noch schlimmeren Sonnenbrand bewahrt, denn es waren so viele, dass sie aus dem Wasser geflüchtet ist, nachdem einer sie angegriffen hatte, weil er sein Revier verteidigte. Getroffen hat er sie aber nicht, denn Babet hatte gelernt, sich mit ihren Flossen zu verteidigen. Außerdem heilen ihre Schrammen vom ersten Tag auf Gili nicht besonders schnell, weil wir seitdem jeden Tag im Meer waren, also gönnen wir ihnen jetzt etwas Ruhe, damit sie hoffentlich verheilen, bevor wir den Advanced-Open-Water-Kurs machen.
