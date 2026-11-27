@@ -11,8 +11,8 @@ summary: We followed our openwater scuba diving course on gili trawangan, met
   some amazing people and had a lot of fun underwater seeing some incredible
   animals along the way.
 draft: true
-cover: cf:39f3b3fd-0d67-48ba-4285-d916245fac00@2880x3840
-coverAlt: Boat drop
+cover: cf:ee6abfb5-95ff-47f5-f720-284ac7d8a600@2880x3840
+coverAlt: Sundown on the northern side of the island
 gallery:
   - image: cf:53496d69-b303-4a6c-4b5c-9b5e63955d00@2749x3840
     caption: Another coconut on the beach
@@ -20,6 +20,8 @@ gallery:
     caption: On our way to the divesite
   - image: cf:f05077dc-82ad-4943-d520-2fcf93ab4f00@1179x2556
     caption: Current divelog status
+  - image: cf:4f62cfe0-705d-4e4f-1e2c-53959d599c00@2880x3840
+    caption: Sunset portait
 ---
 Hello for another story that I will tell you today! Currently we are sitting in our hostel, its called tipsea turtle - and it lives up to its name, drinking a virgin pina colada and a mojito and reflecting on our last few days on gili t. When we arrived on the island we checked in to the hostel and immediately enjoyed the company that hostels bring with them. Its our first hostel that we visit and its a nice change of scenery to also have some other people to connect to. On the first day we met two scottish girls in the pool and due to the two happy hours our hostel has from 12-15 and 17-20 o`clock we got a bit drunk and went on a night out with the hostel. The party was fun but the island is a bit empty due to it being low season and thus so was the club. We also met a girl called Alma at the hostel. Shes from sweden and had quite some interesting party tricks that she would show off. One of them was holding a beer between heer boobs and then tried to pour it into someones mouth. 
 
