@@ -16,3 +16,9 @@ stops:
     lat: -8.7484
     lng: 115.1671
     travel: flight
+  - name: Padang Bai
+    note: Harbour for the fast boat to Gili Trawangan.
+    date: 2026-11-26 12:00
+    lat: -8.5302
+    lng: 115.5087
+    travel: car
