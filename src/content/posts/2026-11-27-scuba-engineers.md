@@ -21,8 +21,6 @@ gallery:
     caption: Current divelog status
   - image: cf:50f57903-dd41-4648-27a9-b320b15d1900@3840x2880
     caption: Boat pic
-  - image: cf:84f506ab-dfea-40bd-2301-c82109ee5600@2749x3840
-    caption: Coconut nr.10
   - image: cf:150d8f44-d6bb-43d1-e84d-07999fe6df00@3840x2880
     caption: Clubbing in gili
   - image: cf:8441d90e-ef3d-4fea-3484-4038b4376200@3840x2880
