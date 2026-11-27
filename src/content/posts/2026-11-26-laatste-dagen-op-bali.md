@@ -29,6 +29,8 @@ gallery:
     caption: Lekker koffietje terwijl we wachten op de boot
   - image: cf:81d3df89-20c9-4e53-c958-e47e8dd53200@2316x3088
     caption: Super mooie ketting
+  - image: cf:1a7b70a0-a720-47fe-ec9e-4aed20144600@2880x3840
+    caption: Offering gemaakt bij de kookworkshop
 draft: true
 ---
 Ook de laatste paar dagen in Tegallalang hebben we nog leuke dingen meegemaakt. Dus ga er maar weer goed voor zitten om onze verhalen te lezen!
