@@ -10,8 +10,8 @@ travel: walk
 summary: We followed our openwater scuba diving course on gili trawangan, met
   some amazing people and had a lot of fun underwater seeing some incredible
   animals along the way.
-cover: cf:ee6abfb5-95ff-47f5-f720-284ac7d8a600@2880x3840
-coverAlt: Sundown on the northern side of the island
+cover: cf:3fb15c7a-b2ad-45f3-aab6-4b6ee686a900@2880x3840
+coverAlt: Scuba Engineers
 gallery:
   - image: cf:53496d69-b303-4a6c-4b5c-9b5e63955d00@2749x3840
     caption: Another coconut on the beach
@@ -19,6 +19,24 @@ gallery:
     caption: On our way to the divesite
   - image: cf:f05077dc-82ad-4943-d520-2fcf93ab4f00@1179x2556
     caption: Current divelog status
+  - image: cf:50f57903-dd41-4648-27a9-b320b15d1900@3840x2880
+    caption: Boat pic
+  - image: cf:84f506ab-dfea-40bd-2301-c82109ee5600@2749x3840
+    caption: Coconut nr.10
+  - image: cf:150d8f44-d6bb-43d1-e84d-07999fe6df00@3840x2880
+    caption: Clubbing in gili
+  - image: cf:8441d90e-ef3d-4fea-3484-4038b4376200@3840x2880
+    caption: Hostel breakfast
+  - image: cf:107437de-2117-408c-495e-11ecdd175300@2316x3088
+    caption: Biking on the island
+  - image: cf:b09fea0a-215e-4460-1633-6c5c9d399600@3840x2880
+    caption: Turtle picture
+  - image: cf:27a827fa-4c21-4e3e-4c09-e37196da7a00@3840x2880
+    caption: Pov taking picture of turtle
+  - image: cf:0966cd09-8d41-4dd6-9768-2c6a25022b00@2880x3840
+    caption: Current state of Babets leg after the fall
+  - image: cf:caa76a0f-768f-46b6-9d8d-2b279a0c3e00@2880x3840
+    caption: Red moon
 draft: false
 ---
 Hello for another story that I will tell you today! Currently we are sitting in our hostel, its called tipsea turtle - and it lives up to its name, drinking a virgin pina colada and a mojito and reflecting on our last few days on gili t. When we arrived on the island we checked in to the hostel and immediately enjoyed the company that hostels bring with them. Its our first hostel that we visit and its a nice change of scenery to also have some other people to connect to. On the first day we met two scottish girls in the pool and due to the two happy hours our hostel has from 12-15 and 17-20 o`clock we got a bit drunk and went on a night out with the hostel. The party was fun but the island is a bit empty due to it being low season and thus so was the club. We also met a girl called Alma at the hostel. Shes from sweden and had quite some interesting party tricks that she would show off. One of them was holding a beer between heer boobs and then tried to pour it into someones mouth. 
