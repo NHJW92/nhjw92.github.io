@@ -6,7 +6,7 @@ lang: en
 location: Manta Dive Gili T
 lat: -8.35341
 lng: 116.04339
-travel: walk
+travel: boat
 summary: We followed our openwater scuba diving course on gili trawangan, met
   some amazing people and had a lot of fun underwater seeing some incredible
   animals along the way.
