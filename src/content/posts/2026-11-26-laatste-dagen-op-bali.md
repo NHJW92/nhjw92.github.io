@@ -31,6 +31,8 @@ gallery:
     caption: Lekker koffietje terwijl we wachten op de boot
   - image: cf:81d3df89-20c9-4e53-c958-e47e8dd53200@2316x3088
     caption: Super mooie ketting
+  - image: cf:6068d8c2-3f57-4423-f4cd-6df741fce000@1206x2622
+    caption: De staart van de hagedis
 draft: false
 ---
 Ook de laatste paar dagen in Tegallalang hebben we nog leuke dingen meegemaakt. Dus ga er maar weer goed voor zitten om onze verhalen te lezen!
